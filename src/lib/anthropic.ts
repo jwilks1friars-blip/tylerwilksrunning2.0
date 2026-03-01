@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+function getClient() {
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+}
 
 interface WeeklyInsightParams {
   athleteName: string
@@ -46,7 +48,7 @@ ${upcomingText}
 
 Write a 150-200 word coaching note. Be specific — reference actual workouts, actual paces, actual dates. Flag any concerns. Explain any adjustments to next week. Tone: direct, data-driven, encouraging. Do not use bullet points — write in natural paragraphs as a coach would speak.`
 
-  const message = await client.messages.create({
+  const message = await getClient().messages.create({
     model: 'claude-opus-4-6',
     max_tokens: 400,
     messages: [{ role: 'user', content: prompt }],
@@ -97,7 +99,7 @@ Generate a week-by-week training plan. Return ONLY valid JSON in this exact form
   ]
 }`
 
-  const message = await client.messages.create({
+  const message = await getClient().messages.create({
     model: 'claude-opus-4-6',
     max_tokens: 4000,
     messages: [{ role: 'user', content: prompt }],

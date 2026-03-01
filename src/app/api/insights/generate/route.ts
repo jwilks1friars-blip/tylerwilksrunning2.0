@@ -5,7 +5,7 @@ import { metersToMiles, mpsToMinPerMile } from '@/lib/strava'
 import { startOfWeek, endOfWeek, format, differenceInWeeks } from 'date-fns'
 
 export async function POST(request: NextRequest) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   // Only Tyler can trigger insight generation
