@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 const FEATURES = [
   {
@@ -77,39 +78,52 @@ export default function HomePage() {
 
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-6 pt-24 pb-32">
-        <p
-          className="text-xs uppercase tracking-widest mb-6"
-          style={{ color: '#6b6560' }}
-        >
-          Online Running Coach
-        </p>
-        <h1
-          className="text-6xl md:text-8xl font-semibold uppercase tracking-tight leading-none mb-8 max-w-3xl"
-          style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
-        >
-          Train Smarter.<br />Race Faster.
-        </h1>
-        <p
-          className="text-lg leading-8 max-w-xl mb-10"
-          style={{ color: '#6b6560' }}
-        >
-          Data-driven training plans and weekly coaching from Tyler Wilks — built around your Strava data, your goal race, and your life.
-        </p>
-        <div className="flex flex-wrap gap-4">
-          <Link
-            href="/signup"
-            className="px-6 py-3 text-xs uppercase tracking-widest font-medium transition-opacity hover:opacity-80"
-            style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}
-          >
-            Start Training
-          </Link>
-          <Link
-            href="/coaching"
-            className="px-6 py-3 text-xs uppercase tracking-widest transition-opacity hover:opacity-80"
-            style={{ border: '1px solid #2a2521', color: '#e8e0d4', borderRadius: '2px' }}
-          >
-            View Plans
-          </Link>
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <p
+              className="text-xs uppercase tracking-widest mb-6"
+              style={{ color: '#6b6560' }}
+            >
+              Online Running Coach
+            </p>
+            <h1
+              className="text-6xl md:text-8xl font-semibold uppercase tracking-tight leading-none mb-8"
+              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+            >
+              Train Smarter.<br />Race Faster.
+            </h1>
+            <p
+              className="text-lg leading-8 mb-10"
+              style={{ color: '#6b6560' }}
+            >
+              Data-driven training plans and weekly coaching from Tyler Wilks — built around your Strava data, your goal race, and your life.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/signup"
+                className="px-6 py-3 text-xs uppercase tracking-widest font-medium transition-opacity hover:opacity-80"
+                style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}
+              >
+                Start Training
+              </Link>
+              <Link
+                href="/coaching"
+                className="px-6 py-3 text-xs uppercase tracking-widest transition-opacity hover:opacity-80"
+                style={{ border: '1px solid #2a2521', color: '#e8e0d4', borderRadius: '2px' }}
+              >
+                View Plans
+              </Link>
+            </div>
+          </div>
+          <div className="relative aspect-[3/4] hidden md:block">
+            <Image
+              src="/IMG_2270.jpg"
+              alt="Tyler Wilks finishing a race"
+              fill
+              className="object-cover object-top"
+              priority
+            />
+          </div>
         </div>
       </section>
 

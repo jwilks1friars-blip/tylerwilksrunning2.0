@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 const PLANS = [
   {
@@ -228,6 +229,15 @@ export default function CoachingPage() {
 
       {/* About Tyler */}
       <section className="max-w-6xl mx-auto px-6 py-24">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          <div className="relative aspect-[4/3]">
+            <Image
+              src="/479005126.jpg"
+              alt="Tyler Wilks in a race"
+              fill
+              className="object-cover"
+            />
+          </div>
         <div className="max-w-2xl">
           <p className="text-xs uppercase tracking-widest mb-6" style={{ color: '#6b6560' }}>
             About Tyler
@@ -251,6 +261,7 @@ export default function CoachingPage() {
           >
             More about Tyler →
           </Link>
+        </div>
         </div>
       </section>
 

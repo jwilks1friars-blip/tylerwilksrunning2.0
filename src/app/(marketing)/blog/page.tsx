@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { POSTS } from '@/lib/blog'
 import { format } from 'date-fns'
 
@@ -18,6 +19,17 @@ export default function BlogPage() {
           Training &<br />Racing
         </h1>
       </section>
+
+      <div className="relative h-64 md:h-96 w-full">
+        <Image
+          src="/477999289.jpg"
+          alt="Race start"
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        <div className="absolute inset-0" style={{ backgroundColor: 'rgba(10,9,8,0.5)' }} />
+      </div>
 
       <div style={{ borderTop: '1px solid #1e1b18' }} />
 

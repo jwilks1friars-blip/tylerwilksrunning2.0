@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 const STATS = [
   { value: '10+', label: 'Years running competitively' },
@@ -32,18 +33,31 @@ export default function AboutPage() {
 
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-6 pt-20 pb-24">
-        <p className="text-xs uppercase tracking-widest mb-6" style={{ color: '#6b6560' }}>
-          About
-        </p>
-        <h1
-          className="text-6xl md:text-8xl font-semibold uppercase tracking-tight leading-none mb-8 max-w-3xl"
-          style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
-        >
-          Hi, I'm Tyler.
-        </h1>
-        <p className="text-lg leading-8 max-w-xl" style={{ color: '#6b6560' }}>
-          I'm a runner and coach based in the US. I've spent the last decade learning what it actually takes to get faster — and building the tools to share that with other athletes.
-        </p>
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <p className="text-xs uppercase tracking-widest mb-6" style={{ color: '#6b6560' }}>
+              About
+            </p>
+            <h1
+              className="text-6xl md:text-8xl font-semibold uppercase tracking-tight leading-none mb-8"
+              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+            >
+              Hi, I'm Tyler.
+            </h1>
+            <p className="text-lg leading-8" style={{ color: '#6b6560' }}>
+              I'm a runner and coach based in the US. I've spent the last decade learning what it actually takes to get faster — and building the tools to share that with other athletes.
+            </p>
+          </div>
+          <div className="relative aspect-square hidden md:block">
+            <Image
+              src="/image_67227137.JPG"
+              alt="Tyler Wilks"
+              fill
+              className="object-cover object-top"
+              priority
+            />
+          </div>
+        </div>
       </section>
 
       <div style={{ borderTop: '1px solid #1e1b18' }} />
@@ -80,6 +94,14 @@ export default function AboutPage() {
       <section className="max-w-6xl mx-auto px-6 py-24">
         <div className="grid md:grid-cols-2 gap-16">
           <div>
+            <div className="relative aspect-video mb-8">
+              <Image
+                src="/477095054.jpg"
+                alt="Tyler Wilks racing"
+                fill
+                className="object-cover"
+              />
+            </div>
             <p className="text-xs uppercase tracking-widest mb-6" style={{ color: '#6b6560' }}>
               My story
             </p>
