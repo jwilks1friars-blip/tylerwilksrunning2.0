@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { metersToMiles } from '@/lib/strava'
 import { subDays, format } from 'date-fns'
 import Link from 'next/link'
+import InviteAthleteForm from '@/components/coach/InviteAthleteForm'
 
 const TIER_LABELS: Record<string, string> = {
   plan: 'Plan',
@@ -44,16 +45,19 @@ export default async function CoachPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h2
-          className="text-3xl font-semibold uppercase tracking-widest"
-          style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
-        >
-          Athletes
-        </h2>
-        <p className="text-sm mt-1" style={{ color: '#6b6560' }}>
-          {athletes?.length ?? 0} total
-        </p>
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h2
+            className="text-3xl font-semibold uppercase tracking-widest"
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+          >
+            Athletes
+          </h2>
+          <p className="text-sm mt-1" style={{ color: '#6b6560' }}>
+            {athletes?.length ?? 0} total
+          </p>
+        </div>
+        <InviteAthleteForm />
       </div>
 
       {!athletes?.length && (
