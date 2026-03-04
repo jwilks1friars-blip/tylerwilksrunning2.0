@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   await supabase
     .from('training_plans')
     .update({ status: 'paused' })
-    .eq('user_id', user.id)
+    .eq('user_id', user!.id)
     .eq('status', 'active')
 
   // Generate plan via Claude
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
   const { data: savedPlan, error: planError } = await supabase
     .from('training_plans')
     .insert({
-      user_id: user.id,
+      user_id: user!.id,
       goal_race: profile.goal_race,
       goal_time: profile.goal_time,
       start_date: startDate,
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
       workoutRows.push({
         plan_id: savedPlan.id,
-        user_id: user.id,
+        user_id: user!.id,
         scheduled_date: scheduledDate,
         workout_type: workout.type,
         target_distance_miles: workout.distanceMiles ?? null,
