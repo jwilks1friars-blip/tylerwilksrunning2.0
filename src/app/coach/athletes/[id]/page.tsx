@@ -91,7 +91,16 @@ export default async function AthletePage({
             )}
           </p>
         </div>
-        <GenerateInsightButton athleteId={id} />
+        <div className="flex gap-3">
+          <Link
+            href={`/coach/athletes/${id}/schedule`}
+            className="px-4 py-2 text-xs uppercase tracking-widest transition-opacity hover:opacity-80"
+            style={{ border: '1px solid #2a2521', color: '#e8e0d4', borderRadius: '2px' }}
+          >
+            Manage Schedule
+          </Link>
+          <GenerateInsightButton athleteId={id} />
+        </div>
       </div>
 
       {/* Stats row */}

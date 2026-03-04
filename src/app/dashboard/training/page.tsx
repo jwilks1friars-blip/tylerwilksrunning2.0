@@ -1,8 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { differenceInWeeks, format } from 'date-fns'
 import WorkoutCalendar from '@/components/dashboard/WorkoutCalendar'
-import GeneratePlanButton from '@/components/dashboard/GeneratePlanButton'
-import Link from 'next/link'
 
 export default async function TrainingPage() {
   const supabase = await createClient()
@@ -95,15 +93,11 @@ export default async function TrainingPage() {
               className="text-xl font-semibold uppercase tracking-widest mb-3"
               style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
             >
-              No active plan
+              No active plan yet
             </p>
-            <p className="text-sm leading-7 mb-6" style={{ color: '#6b6560' }}>
-              Generate a training plan built around your goal race and current fitness.
-              {!profile?.goal_race && (
-                <> First, <Link href="/dashboard/settings" className="underline" style={{ color: '#e8e0d4' }}>set your goal race in settings</Link>.</>
-              )}
+            <p className="text-sm leading-7" style={{ color: '#6b6560' }}>
+              Your coach will set up your training plan. Check back soon.
             </p>
-            {profile?.goal_race && <GeneratePlanButton />}
           </div>
         </div>
       )}
