@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Upsert profile with all coach-provided data
-  await admin.from('profiles').upsert({
+  const { error: profileError } = await admin.from('profiles').upsert({
     id: userData.user.id,
     email,
     full_name: fullName,
@@ -43,6 +43,10 @@ export async function POST(request: NextRequest) {
     experience: experience || null,
     weekly_miles: weeklyMiles ? parseInt(weeklyMiles) : 0,
   })
+
+  if (profileError) {
+    return NextResponse.json({ error: profileError.message }, { status: 500 })
+  }
 
   // Generate a password-setup link so they can log in when ready
   const { data: linkData } = await admin.auth.admin.generateLink({

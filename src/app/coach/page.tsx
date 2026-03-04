@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 import { metersToMiles } from '@/lib/strava'
 import { subDays, format } from 'date-fns'
 import Link from 'next/link'
@@ -12,7 +12,10 @@ const TIER_LABELS: Record<string, string> = {
 }
 
 export default async function CoachPage() {
-  const supabase = await createClient()
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
 
   const sevenDaysAgo = subDays(new Date(), 7).toISOString()
 
