@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getStripe } from '@/lib/stripe'
 import { createClient } from '@supabase/supabase-js'
 
+async function postToSlack(webhookUrl: string, text: string) {
+  await fetch(webhookUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  })
+}
+
 export async function POST(request: NextRequest) {
   const stripe = getStripe()
   const body = await request.text()
@@ -28,6 +36,18 @@ export async function POST(request: NextRequest) {
       .from('profiles')
       .update({ plan_tier: tier })
       .eq('id', userId)
+
+    if (process.env.SLACK_WEBHOOK_PAYMENTS) {
+      const amount = session.amount_total ? `$${(session.amount_total / 100).toFixed(2)}` : 'unknown'
+      await postToSlack(
+        process.env.SLACK_WEBHOOK_PAYMENTS,
+        [
+          `*Payment received* :money_with_wings:`,
+          `*Tier:* ${tier}  |  *Amount:* ${amount}`,
+          `*Customer:* ${session.customer_email}`,
+        ].join('\n')
+      )
+    }
   }
 
   if (event.type === 'customer.subscription.deleted') {

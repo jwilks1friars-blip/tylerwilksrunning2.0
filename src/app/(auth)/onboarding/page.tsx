@@ -54,6 +54,19 @@ export default function OnboardingPage() {
       return
     }
 
+    fetch('/api/notify/new-athlete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: user.user_metadata?.full_name ?? '',
+        email: user.email ?? '',
+        goalRace,
+        goalTime,
+        experience,
+        weeklyMiles,
+      }),
+    }).catch(() => {}) // fire-and-forget, don't block redirect
+
     router.push('/dashboard')
   }
 

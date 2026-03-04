@@ -3,10 +3,10 @@ import Image from 'next/image'
 
 const PLANS = [
   {
-    name: 'Plan',
-    price: '$29',
-    period: 'per month',
-    description: 'A structured, periodized training plan built around your goal race and current fitness. Updated monthly based on your progress.',
+    name: 'Coaching',
+    price: '$150',
+    period: 'per block of training',
+    description: 'A structured, periodized training plan built around your goal race and current fitness — with personal coaching from Tyler based on your Strava data.',
     features: [
       'Custom training plan (12–20 weeks)',
       'Strava auto-sync',
@@ -14,47 +14,16 @@ const PLANS = [
       'Daily workout schedule',
       'Pace targets for every run',
       'Race-day pacing guide',
-      'Cancel anytime',
-    ],
-    cta: 'Get the Plan',
-    highlight: false,
-    tier: 'plan',
-  },
-  {
-    name: 'Coaching',
-    price: '$99',
-    period: 'per month',
-    description: 'Everything in Plan, plus a personal coaching note from Tyler every Monday — written specifically for you based on your Strava data.',
-    features: [
-      'Everything in Plan',
       'Weekly coaching note from Tyler',
-      'Tyler reviews every run',
       'Plan adjustments when life happens',
       'HR and pace analysis',
       'Pre-race and post-race debriefs',
-      'Cancel anytime',
+      'Race strategy sessions',
+      'Strength & cross-training guidance',
     ],
     cta: 'Start Coaching',
     highlight: true,
     tier: 'coaching',
-  },
-  {
-    name: 'Elite',
-    price: '$249',
-    period: 'per month',
-    description: 'Full-access coaching for athletes chasing serious goals. Direct communication, real-time adjustments, and monthly video calls.',
-    features: [
-      'Everything in Coaching',
-      'Direct messaging with Tyler',
-      'Real-time plan adjustments',
-      'Monthly 1-on-1 video call',
-      'Race strategy sessions',
-      'Strength & cross-training guidance',
-      'Cancel anytime',
-    ],
-    cta: 'Go Elite',
-    highlight: false,
-    tier: 'elite',
   },
 ]
 
@@ -113,15 +82,15 @@ export default function CoachingPage() {
     <div>
 
       {/* Hero */}
-      <section className="max-w-6xl mx-auto px-6 pt-20 pb-24">
+      <section className="max-w-6xl mx-auto px-6 pt-20 pb-10">
         <p className="text-xs uppercase tracking-widest mb-6" style={{ color: '#6b6560' }}>
           Coaching Plans
         </p>
         <h1
-          className="text-6xl md:text-8xl font-semibold uppercase tracking-tight leading-none mb-8 max-w-3xl"
+          className="text-6xl md:text-8xl font-semibold uppercase tracking-tight leading-none mb-8 w-full"
           style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
         >
-          Real Coaching.<br />Real Results.
+          Real Coaching. Real Results.
         </h1>
         <p className="text-lg leading-8 max-w-xl" style={{ color: '#6b6560' }}>
           Every plan is built around your data — your runs, your paces, your schedule. Not a template. Not a generic 16-week PDF.
@@ -130,13 +99,53 @@ export default function CoachingPage() {
 
       <div style={{ borderTop: '1px solid #1e1b18' }} />
 
+      {/* About Tyler */}
+      <section className="max-w-6xl mx-auto px-6 py-10">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          <div className="relative aspect-[4/3]">
+            <Image
+              src="/479005126.jpg"
+              alt="Tyler Wilks in a race"
+              fill
+              className="object-cover"
+            />
+          </div>
+        <div className="max-w-2xl">
+          <p className="text-xs uppercase tracking-widest mb-6" style={{ color: '#6b6560' }}>
+            About Tyler
+          </p>
+          <h2
+            className="text-4xl font-semibold uppercase tracking-widest mb-6"
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+          >
+            Coached by someone who actually runs
+          </h2>
+          <p className="text-sm leading-8 mb-4" style={{ color: '#6b6560' }}>
+            I'm Tyler Wilks. I've been running competitively for over a decade — from 5Ks to 100-milers, roads to trails. I've made every mistake there is to make in training, and I've learned from all of them.
+          </p>
+          <p className="text-sm leading-8 mb-8" style={{ color: '#6b6560' }}>
+            My coaching is built on one principle: the plan has to fit your life. Not the other way around. I use your Strava data to understand how you're actually responding to training, then adjust accordingly. No guessing. No templates.
+          </p>
+          <Link
+            href="/about"
+            className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
+            style={{ color: '#e8e0d4' }}
+          >
+            More about Tyler →
+          </Link>
+        </div>
+        </div>
+      </section>
+
+      <div style={{ borderTop: '1px solid #1e1b18' }} />
+
       {/* Pricing */}
       <section className="max-w-6xl mx-auto px-6 py-24">
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="flex justify-center">
           {PLANS.map(plan => (
             <div
               key={plan.name}
-              className="p-8 flex flex-col"
+              className="p-8 flex flex-col w-full max-w-4xl"
               style={{
                 backgroundColor: plan.highlight ? '#141210' : 'transparent',
                 border: plan.highlight ? '1px solid #e8e0d4' : '1px solid #1e1b18',
@@ -171,7 +180,7 @@ export default function CoachingPage() {
                 {plan.description}
               </p>
 
-              <ul className="space-y-3 mb-10 flex-1">
+              <ul className="grid grid-cols-2 gap-x-12 gap-y-3 mb-10 flex-1">
                 {plan.features.map(f => (
                   <li key={f} className="flex items-start gap-3 text-sm" style={{ color: '#e8e0d4' }}>
                     <span className="mt-0.5 shrink-0" style={{ color: '#6b6560' }}>—</span>
@@ -227,46 +236,6 @@ export default function CoachingPage() {
 
       <div style={{ borderTop: '1px solid #1e1b18' }} />
 
-      {/* About Tyler */}
-      <section className="max-w-6xl mx-auto px-6 py-24">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div className="relative aspect-[4/3]">
-            <Image
-              src="/479005126.jpg"
-              alt="Tyler Wilks in a race"
-              fill
-              className="object-cover"
-            />
-          </div>
-        <div className="max-w-2xl">
-          <p className="text-xs uppercase tracking-widest mb-6" style={{ color: '#6b6560' }}>
-            About Tyler
-          </p>
-          <h2
-            className="text-4xl font-semibold uppercase tracking-widest mb-6"
-            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
-          >
-            Coached by someone who actually runs
-          </h2>
-          <p className="text-sm leading-8 mb-4" style={{ color: '#6b6560' }}>
-            I'm Tyler Wilks. I've been running competitively for over a decade — from 5Ks to 100-milers, roads to trails. I've made every mistake there is to make in training, and I've learned from all of them.
-          </p>
-          <p className="text-sm leading-8 mb-8" style={{ color: '#6b6560' }}>
-            My coaching is built on one principle: the plan has to fit your life. Not the other way around. I use your Strava data to understand how you're actually responding to training, then adjust accordingly. No guessing. No templates.
-          </p>
-          <Link
-            href="/about"
-            className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-            style={{ color: '#e8e0d4' }}
-          >
-            More about Tyler →
-          </Link>
-        </div>
-        </div>
-      </section>
-
-      <div style={{ borderTop: '1px solid #1e1b18' }} />
-
       {/* FAQ */}
       <section className="max-w-6xl mx-auto px-6 py-24">
         <p className="text-xs uppercase tracking-widest mb-16" style={{ color: '#6b6560' }}>
@@ -297,10 +266,10 @@ export default function CoachingPage() {
           className="text-5xl md:text-7xl font-semibold uppercase tracking-tight mb-6"
           style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
         >
-          Pick your plan.
+          Ready to race?
         </h2>
         <p className="text-sm mb-10 max-w-sm mx-auto leading-7" style={{ color: '#6b6560' }}>
-          Cancel anytime. No contracts. Just training that works.
+          One block. One coach. Training built around you.
         </p>
         <Link
           href="/signup"
