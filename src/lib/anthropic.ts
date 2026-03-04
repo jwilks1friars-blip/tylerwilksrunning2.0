@@ -100,11 +100,13 @@ Generate a week-by-week training plan. Return ONLY valid JSON in this exact form
 }`
 
   const message = await getClient().messages.create({
-    model: 'claude-opus-4-6',
-    max_tokens: 4000,
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 8000,
     messages: [{ role: 'user', content: prompt }],
   })
 
   const text = (message.content[0] as { text: string }).text
-  return JSON.parse(text)
+  // Strip markdown code fences if present
+  const json = text.replace(/^```(?:json)?\n?/m, '').replace(/\n?```$/m, '').trim()
+  return JSON.parse(json)
 }
