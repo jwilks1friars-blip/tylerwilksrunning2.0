@@ -56,7 +56,7 @@ export default async function DashboardPage() {
     }
   })
 
-  const firstName = profile?.full_name?.split(' ')[0]
+  const displayName = profile?.full_name ?? null
 
   return (
     <div>
@@ -66,7 +66,7 @@ export default async function DashboardPage() {
           className="text-3xl font-semibold uppercase tracking-widest"
           style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
         >
-          {firstName ? `Hey, ${firstName}` : 'Overview'}
+          {displayName ? `Hey, ${displayName}` : 'Overview'}
         </h2>
         {profile?.goal_race && (
           <p className="text-sm mt-1" style={{ color: '#6b6560' }}>

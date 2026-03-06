@@ -41,6 +41,7 @@ export default function OnboardingPage() {
     const { error } = await supabase
       .from('profiles')
       .update({
+        full_name: user.user_metadata?.full_name ?? null,
         goal_race: goalRace,
         goal_time: goalTime,
         experience: experience || null,
