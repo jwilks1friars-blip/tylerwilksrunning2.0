@@ -42,4 +42,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico|api).*)"],
+  unstable_allowDynamic: [
+    "/node_modules/@supabase/**",
+    "/node_modules/jose/**",
+  ],
 };
