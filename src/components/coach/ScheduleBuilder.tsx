@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { format, addDays, startOfWeek, differenceInCalendarWeeks, parseISO } from 'date-fns'
+import { format, addDays, parseISO, differenceInCalendarWeeks } from 'date-fns'
 
 const WORKOUT_TYPES = ['easy', 'tempo', 'intervals', 'long', 'recovery', 'rest', 'race'] as const
 type WorkoutType = typeof WORKOUT_TYPES[number]
@@ -55,6 +55,7 @@ type Props = {
   plan: Plan | null
   workouts: Workout[]
   profile: Profile
+  weeklyNotes?: Record<number, string>
 }
 
 const emptyWorkoutForm = {
@@ -65,18 +66,33 @@ const emptyWorkoutForm = {
   description: '',
 }
 
-export default function ScheduleBuilder({ athleteId, plan: initialPlan, workouts: initialWorkouts, profile }: Props) {
+export default function ScheduleBuilder({
+  athleteId,
+  plan: initialPlan,
+  workouts: initialWorkouts,
+  profile,
+  weeklyNotes: initialWeeklyNotes = {},
+}: Props) {
   const [plan, setPlan] = useState<Plan | null>(initialPlan)
   const [workouts, setWorkouts] = useState<Workout[]>(initialWorkouts)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Tabs
+  const [activeTab, setActiveTab] = useState<'schedule' | 'weekly-note'>('schedule')
+
+  // Weekly notes
+  const [weeklyNotes, setWeeklyNotes] = useState<Record<number, string>>(initialWeeklyNotes)
+  const [selectedWeekNum, setSelectedWeekNum] = useState(1)
+  const [noteSaving, setNoteSaving] = useState(false)
+  const [noteSaved, setNoteSaved] = useState(false)
 
   // Plan creation form
   const [planForm, setPlanForm] = useState({
     goalRace: profile.goal_race ?? '',
     goalTime: profile.goal_time ?? '',
     raceDate: '',
-    startDate: format(addDays(new Date(), (8 - new Date().getDay()) % 7 || 7), 'yyyy-MM-dd'), // next Monday
+    startDate: format(addDays(new Date(), (8 - new Date().getDay()) % 7 || 7), 'yyyy-MM-dd'),
   })
 
   // Workout modal
@@ -101,9 +117,6 @@ export default function ScheduleBuilder({ athleteId, plan: initialPlan, workouts
     setLoading(false)
     if (!res.ok) { setError(data.error); return }
     setPlan(data.plan)
-    // Reload workouts
-    const wRes = await fetch(`/api/coach/schedule/workout?planId=${data.plan.id}`)
-    // Workouts come back via page reload — just reload
     window.location.reload()
   }
 
@@ -193,6 +206,26 @@ export default function ScheduleBuilder({ athleteId, plan: initialPlan, workouts
     closeModal()
   }
 
+  // --- Weekly note ---
+
+  async function handleSaveWeeklyNote() {
+    if (!plan) return
+    setNoteSaving(true)
+    setNoteSaved(false)
+    await fetch('/api/coach/schedule/weekly-note', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        planId: plan.id,
+        weekNum: selectedWeekNum,
+        content: weeklyNotes[selectedWeekNum] ?? '',
+      }),
+    })
+    setNoteSaving(false)
+    setNoteSaved(true)
+    setTimeout(() => setNoteSaved(false), 2500)
+  }
+
   // --- Organize by week ---
 
   function getWeeks() {
@@ -274,6 +307,24 @@ export default function ScheduleBuilder({ athleteId, plan: initialPlan, workouts
   // --- Active plan ---
   return (
     <div>
+      {/* Tabs */}
+      <div className="flex gap-0 mb-6" style={{ borderBottom: '1px solid #1e1b18' }}>
+        {(['schedule', 'weekly-note'] as const).map(tab => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className="px-1 pb-3 mr-6 text-xs uppercase tracking-widest transition-colors"
+            style={{
+              color: activeTab === tab ? '#f5f2ee' : '#6b6560',
+              borderBottom: activeTab === tab ? '1px solid #f5f2ee' : '1px solid transparent',
+              marginBottom: '-1px',
+            }}
+          >
+            {tab === 'schedule' ? 'Schedule' : 'Weekly Note'}
+          </button>
+        ))}
+      </div>
+
       {/* Plan header */}
       <div className="flex items-start justify-between mb-6 p-4"
         style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
@@ -295,89 +346,180 @@ export default function ScheduleBuilder({ athleteId, plan: initialPlan, workouts
 
       {error && <p className="text-xs mb-4" style={{ color: '#fc4c02' }}>{error}</p>}
 
-      {/* Weeks */}
-      <div className="space-y-6">
-        {weeks.map(({ weekNum, weekStart, days }) => (
-          <div key={weekNum}>
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>
-                Week {weekNum} — {format(weekStart, 'MMM d')}
-              </p>
-              <button
-                onClick={() => openAdd(format(weekStart, 'yyyy-MM-dd'))}
-                className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-                style={{ color: '#6b6560' }}>
-                + Add
-              </button>
-            </div>
-
-            <div style={{ border: '1px solid #1e1b18' }}>
-              {days.map(({ date, dayWorkouts }, i) => (
-                <div key={date}>
-                  {dayWorkouts.length === 0 ? (
-                    <div
-                      className="flex items-center justify-between px-4 py-2.5 cursor-pointer hover:bg-[#141210] transition-colors"
-                      style={{ borderTop: i === 0 ? 'none' : '1px solid #1e1b18' }}
-                      onClick={() => openAdd(date)}
-                    >
-                      <span className="text-xs" style={{ color: '#2a2521' }}>
-                        {format(parseISO(date), 'EEE MMM d')}
-                      </span>
-                      <span className="text-xs" style={{ color: '#2a2521' }}>+</span>
-                    </div>
-                  ) : (
-                    dayWorkouts.map(workout => (
-                      <div
-                        key={workout.id}
-                        className="flex items-center justify-between px-4 py-3"
-                        style={{ borderTop: i === 0 ? 'none' : '1px solid #1e1b18' }}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs w-24 shrink-0" style={{ color: '#6b6560' }}>
-                            {format(parseISO(date), 'EEE MMM d')}
-                          </span>
-                          <span
-                            className="text-xs uppercase tracking-widest px-2 py-0.5 shrink-0"
-                            style={{
-                              backgroundColor: TYPE_COLORS[workout.workout_type],
-                              color: TYPE_TEXT[workout.workout_type],
-                              borderRadius: '2px',
-                            }}
-                          >
-                            {workout.workout_type}
-                          </span>
-                          {workout.target_distance_miles && (
-                            <span className="text-sm tabular-nums" style={{ color: '#f5f2ee' }}>
-                              {workout.target_distance_miles} mi
-                            </span>
-                          )}
-                          {workout.target_pace_desc && (
-                            <span className="text-xs hidden md:block" style={{ color: '#6b6560' }}>
-                              {workout.target_pace_desc}
-                            </span>
-                          )}
-                          {workout.description && (
-                            <span className="text-xs hidden lg:block truncate max-w-xs" style={{ color: '#3a3633' }}>
-                              {workout.description}
-                            </span>
-                          )}
-                        </div>
-                        <button
-                          onClick={() => openEdit(workout)}
-                          className="text-xs uppercase tracking-widest ml-4 shrink-0 transition-colors hover:text-[#f5f2ee]"
-                          style={{ color: '#3a3633' }}
-                        >
-                          Edit
-                        </button>
-                      </div>
-                    ))
+      {/* ── SCHEDULE TAB ── */}
+      {activeTab === 'schedule' && (
+        <div className="space-y-6">
+          {weeks.map(({ weekNum, weekStart, days }) => (
+            <div key={weekNum}>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>
+                  Week {weekNum} — {format(weekStart, 'MMM d')}
+                  {weeklyNotes[weekNum] && (
+                    <span className="ml-3 normal-case tracking-normal" style={{ color: '#3a3633' }}>
+                      · note
+                    </span>
                   )}
+                </p>
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => { setSelectedWeekNum(weekNum); setActiveTab('weekly-note') }}
+                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
+                    style={{ color: '#3a3633' }}>
+                    Note
+                  </button>
+                  <button
+                    onClick={() => openAdd(format(weekStart, 'yyyy-MM-dd'))}
+                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
+                    style={{ color: '#6b6560' }}>
+                    + Add
+                  </button>
                 </div>
-              ))}
+              </div>
+
+              <div style={{ border: '1px solid #1e1b18' }}>
+                {days.map(({ date, dayWorkouts }, i) => (
+                  <div key={date}>
+                    {dayWorkouts.length === 0 ? (
+                      <div
+                        className="flex items-center justify-between px-4 py-2.5 cursor-pointer hover:bg-[#141210] transition-colors"
+                        style={{ borderTop: i === 0 ? 'none' : '1px solid #1e1b18' }}
+                        onClick={() => openAdd(date)}
+                      >
+                        <span className="text-xs" style={{ color: '#2a2521' }}>
+                          {format(parseISO(date), 'EEE MMM d')}
+                        </span>
+                        <span className="text-xs" style={{ color: '#2a2521' }}>+</span>
+                      </div>
+                    ) : (
+                      dayWorkouts.map(workout => (
+                        <div
+                          key={workout.id}
+                          className="flex items-center justify-between px-4 py-3"
+                          style={{ borderTop: i === 0 ? 'none' : '1px solid #1e1b18' }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs w-24 shrink-0" style={{ color: '#6b6560' }}>
+                              {format(parseISO(date), 'EEE MMM d')}
+                            </span>
+                            <span
+                              className="text-xs uppercase tracking-widest px-2 py-0.5 shrink-0"
+                              style={{
+                                backgroundColor: TYPE_COLORS[workout.workout_type],
+                                color: TYPE_TEXT[workout.workout_type],
+                                borderRadius: '2px',
+                              }}
+                            >
+                              {workout.workout_type}
+                            </span>
+                            {workout.target_distance_miles && (
+                              <span className="text-sm tabular-nums" style={{ color: '#f5f2ee' }}>
+                                {workout.target_distance_miles} mi
+                              </span>
+                            )}
+                            {workout.target_pace_desc && (
+                              <span className="text-xs hidden md:block" style={{ color: '#6b6560' }}>
+                                {workout.target_pace_desc}
+                              </span>
+                            )}
+                            {workout.description && (
+                              <span className="text-xs hidden lg:block truncate max-w-xs" style={{ color: '#3a3633' }}>
+                                {workout.description}
+                              </span>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => openEdit(workout)}
+                            className="text-xs uppercase tracking-widest ml-4 shrink-0 transition-colors hover:text-[#f5f2ee]"
+                            style={{ color: '#3a3633' }}
+                          >
+                            Edit
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── WEEKLY NOTE TAB ── */}
+      {activeTab === 'weekly-note' && (
+        <div>
+          {/* Week selector */}
+          <div className="flex items-center gap-4 mb-6">
+            <button
+              onClick={() => setSelectedWeekNum(n => Math.max(1, n - 1))}
+              disabled={selectedWeekNum <= 1}
+              className="w-8 h-8 flex items-center justify-center text-sm transition-colors hover:text-[#f5f2ee] disabled:opacity-30"
+              style={{ color: '#6b6560', border: '1px solid #1e1b18' }}
+            >
+              ←
+            </button>
+            <div className="text-center" style={{ minWidth: '120px' }}>
+              <p className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>Week</p>
+              <p className="text-2xl font-semibold"
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
+                {selectedWeekNum}
+                <span className="text-sm font-normal ml-1" style={{ color: '#6b6560' }}>
+                  / {weeks.length}
+                </span>
+              </p>
+              {weeks[selectedWeekNum - 1] && (
+                <p className="text-xs mt-0.5" style={{ color: '#3a3633' }}>
+                  {format(weeks[selectedWeekNum - 1].weekStart, 'MMM d')}
+                </p>
+              )}
+            </div>
+            <button
+              onClick={() => setSelectedWeekNum(n => Math.min(weeks.length, n + 1))}
+              disabled={selectedWeekNum >= weeks.length}
+              className="w-8 h-8 flex items-center justify-center text-sm transition-colors hover:text-[#f5f2ee] disabled:opacity-30"
+              style={{ color: '#6b6560', border: '1px solid #1e1b18' }}
+            >
+              →
+            </button>
           </div>
-        ))}
-      </div>
+
+          {/* Note textarea */}
+          <div className="mb-4">
+            <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: '#6b6560' }}>
+              Note to Athlete — Week {selectedWeekNum}
+            </label>
+            <textarea
+              value={weeklyNotes[selectedWeekNum] ?? ''}
+              onChange={e => {
+                const val = e.target.value
+                setWeeklyNotes(prev => ({ ...prev, [selectedWeekNum]: val }))
+                setNoteSaved(false)
+              }}
+              rows={14}
+              className="w-full px-4 py-3 text-sm bg-transparent outline-none resize-none leading-relaxed"
+              style={{ border: '1px solid #2a2521', color: '#f5f2ee' }}
+              placeholder={`Write your coaching note for Week ${selectedWeekNum}...\n\nWhat's the focus of this week? Any key workouts to highlight? Advice on pacing, recovery, or mindset?`}
+            />
+          </div>
+
+          {/* Save button */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleSaveWeeklyNote}
+              disabled={noteSaving}
+              className="px-6 py-3 text-xs uppercase tracking-widest font-medium transition-opacity hover:opacity-80 disabled:opacity-50"
+              style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}
+            >
+              {noteSaving ? 'Saving...' : 'Save Note'}
+            </button>
+            {noteSaved && (
+              <p className="text-xs uppercase tracking-widest" style={{ color: '#4ade80' }}>
+                Saved
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Workout Modal */}
       {workoutModal.open && (
@@ -433,13 +575,15 @@ export default function ScheduleBuilder({ athleteId, plan: initialPlan, workouts
                     style={{ border: '1px solid #2a2521', color: '#f5f2ee' }} placeholder="7:30/mi" />
                 </div>
               </div>
+
+              {/* Notes — bigger textarea */}
               <div>
                 <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>Notes</label>
                 <textarea value={workoutForm.description}
                   onChange={e => setWorkoutForm(p => ({ ...p, description: e.target.value }))}
-                  rows={3} className="w-full px-3 py-2.5 text-sm bg-transparent outline-none resize-none"
+                  rows={7} className="w-full px-3 py-2.5 text-sm bg-transparent outline-none resize-none leading-relaxed"
                   style={{ border: '1px solid #2a2521', color: '#f5f2ee' }}
-                  placeholder="Workout notes..." />
+                  placeholder="Workout notes, instructions, or cues..." />
               </div>
 
               {error && <p className="text-xs" style={{ color: '#fc4c02' }}>{error}</p>}
