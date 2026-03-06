@@ -33,6 +33,13 @@ export default function SignupPage() {
       return
     }
 
+    // Notify Tyler immediately — fire-and-forget
+    fetch('/api/notify/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: fullName, email }),
+    }).catch(() => {})
+
     router.push('/onboarding')
   }
 

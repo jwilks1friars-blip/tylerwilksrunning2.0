@@ -17,9 +17,9 @@ export async function POST(req: NextRequest) {
   await resend.emails.send({
     from: 'onboarding@tylerwilksrunning.com',
     to: 'jwilks1.friars@gmail.com',
-    subject: `New athlete: ${name}`,
+    subject: `Setup complete: ${name}`,
     text: [
-      `New athlete signed up on Tyler Wilks Running.`,
+      `An athlete just finished onboarding on Tyler Wilks Running.`,
       ``,
       `Name: ${name}`,
       `Email: ${email}`,
