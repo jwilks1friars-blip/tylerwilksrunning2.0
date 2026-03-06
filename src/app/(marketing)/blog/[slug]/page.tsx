@@ -1,12 +1,10 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getPost, POSTS } from '@/lib/blog'
+import { fetchPost, fetchPosts } from '@/lib/blog'
 import { format } from 'date-fns'
 import type { Metadata } from 'next'
 
-export async function generateStaticParams() {
-  return POSTS.map(p => ({ slug: p.slug }))
-}
+export const revalidate = 60
 
 export async function generateMetadata({
   params,
@@ -14,7 +12,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const post = getPost(slug)
+  const post = await fetchPost(slug)
   if (!post) return {}
   return { title: `${post.title} — Tyler Wilks Running`, description: post.excerpt }
 }
@@ -25,8 +23,11 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const post = getPost(slug)
+  const post = await fetchPost(slug)
   if (!post) notFound()
+
+  const allPosts = await fetchPosts()
+  const morePosts = allPosts.filter(p => p.slug !== slug).slice(0, 3)
 
   return (
     <div>
@@ -111,13 +112,14 @@ export default async function BlogPostPage({
       </article>
 
       {/* More posts */}
-      <div style={{ borderTop: '1px solid #1e1b18' }} />
+      {morePosts.length > 0 && <div style={{ borderTop: '1px solid #1e1b18' }} />}
+      {morePosts.length > 0 && (
       <section className="max-w-6xl mx-auto px-6 py-16">
         <p className="text-xs uppercase tracking-widest mb-8" style={{ color: '#6b6560' }}>
           More posts
         </p>
         <div className="grid md:grid-cols-3 gap-6">
-          {POSTS.filter(p => p.slug !== post.slug).slice(0, 3).map(p => (
+          {morePosts.map(p => (
             <Link
               key={p.slug}
               href={`/blog/${p.slug}`}
@@ -140,6 +142,7 @@ export default async function BlogPostPage({
           ))}
         </div>
       </section>
+      )}
 
       {/* Footer */}
       <footer className="px-6 py-10" style={{ borderTop: '1px solid #1e1b18' }}>

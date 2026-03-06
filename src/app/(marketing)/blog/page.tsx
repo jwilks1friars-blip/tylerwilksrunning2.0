@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { POSTS } from '@/lib/blog'
+import { fetchPosts } from '@/lib/blog'
 import { format } from 'date-fns'
 
-export default function BlogPage() {
-  const sorted = [...POSTS].sort((a, b) => b.date.localeCompare(a.date))
+export const revalidate = 60
+
+export default async function BlogPage() {
+  const posts = await fetchPosts()
 
   return (
     <div>
@@ -35,7 +37,7 @@ export default function BlogPage() {
 
       <section className="max-w-6xl mx-auto px-6 py-16">
         <div className="divide-y" style={{ borderColor: '#1e1b18' }}>
-          {sorted.map(post => (
+          {posts.map(post => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}

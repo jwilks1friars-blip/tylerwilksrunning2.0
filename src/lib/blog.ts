@@ -1,3 +1,5 @@
+import { createClient } from '@supabase/supabase-js'
+
 export interface Post {
   slug: string
   title: string
@@ -7,6 +9,9 @@ export interface Post {
   sections: { heading?: string; body: string }[]
 }
 
+// ---------------------------------------------------------------------------
+// Hardcoded seed posts — used as fallback if the DB table is empty
+// ---------------------------------------------------------------------------
 export const POSTS: Post[] = [
   {
     slug: 'how-to-build-aerobic-base',
@@ -102,6 +107,104 @@ export const POSTS: Post[] = [
   },
 ]
 
+// ---------------------------------------------------------------------------
+// Supabase-backed async helpers (used by blog pages)
+// ---------------------------------------------------------------------------
+
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
+
+/** Fetch all published posts, newest first. Falls back to hardcoded POSTS. */
+export async function fetchPosts(): Promise<Post[]> {
+  try {
+    const supabase = getSupabase()
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('slug, title, date, category, excerpt, sections')
+      .eq('published', true)
+      .order('date', { ascending: false })
+
+    if (error || !data || data.length === 0) {
+      return [...POSTS].sort((a, b) => b.date.localeCompare(a.date))
+    }
+    return data as Post[]
+  } catch {
+    return [...POSTS].sort((a, b) => b.date.localeCompare(a.date))
+  }
+}
+
+/** Fetch a single published post by slug. Falls back to hardcoded POSTS. */
+export async function fetchPost(slug: string): Promise<Post | undefined> {
+  try {
+    const supabase = getSupabase()
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('slug, title, date, category, excerpt, sections')
+      .eq('slug', slug)
+      .eq('published', true)
+      .maybeSingle()
+
+    if (error || !data) return POSTS.find(p => p.slug === slug)
+    return data as Post
+  } catch {
+    return POSTS.find(p => p.slug === slug)
+  }
+}
+
+/** Fetch ALL posts (including unpublished) for the coach admin. */
+export async function fetchAllPostsAdmin(): Promise<(Post & { published: boolean; id: string })[]> {
+  const supabase = getSupabase()
+  const { data } = await supabase
+    .from('blog_posts')
+    .select('id, slug, title, date, category, excerpt, sections, published')
+    .order('date', { ascending: false })
+
+  return (data ?? []) as (Post & { published: boolean; id: string })[]
+}
+
+/** Sync helper kept for any code still using it */
 export function getPost(slug: string): Post | undefined {
   return POSTS.find(p => p.slug === slug)
+}
+
+// ---------------------------------------------------------------------------
+// Body text → sections parser (used by the blog admin form)
+// ---------------------------------------------------------------------------
+
+/**
+ * Parses a plain-text body where `## Heading` lines start new sections.
+ *
+ * Example input:
+ *   Opening paragraph with no heading.
+ *
+ *   ## First Section Heading
+ *   Body for the first section.
+ *
+ *   ## Second Section Heading
+ *   Body for the second section.
+ */
+export function parseBodyToSections(raw: string): { heading?: string; body: string }[] {
+  const sections: { heading?: string; body: string }[] = []
+  let currentHeading: string | undefined = undefined
+  let currentLines: string[] = []
+
+  for (const line of raw.split('\n')) {
+    if (line.startsWith('## ')) {
+      const text = currentLines.join('\n').trim()
+      if (text) sections.push({ heading: currentHeading, body: text })
+      currentHeading = line.slice(3).trim()
+      currentLines = []
+    } else {
+      currentLines.push(line)
+    }
+  }
+
+  const text = currentLines.join('\n').trim()
+  if (text) sections.push({ heading: currentHeading, body: text })
+
+  return sections
 }

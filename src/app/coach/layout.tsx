@@ -33,6 +33,13 @@ export default function CoachLayout({ children }: { children: React.ReactNode })
             Athletes
           </Link>
           <Link
+            href="/coach/blog"
+            className="block py-2 px-3 text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
+            style={{ color: '#6b6560' }}
+          >
+            Blog
+          </Link>
+          <Link
             href="/dashboard"
             className="block py-2 px-3 text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
             style={{ color: '#6b6560' }}
