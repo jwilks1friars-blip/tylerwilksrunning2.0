@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createClient } from '@supabase/supabase-js'
 import { metersToMiles } from '@/lib/strava'
 import { subDays, format } from 'date-fns'

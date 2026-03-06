@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createClient } from '@/lib/supabase/server'
 import { differenceInWeeks, format } from 'date-fns'
 import WorkoutCalendar from '@/components/dashboard/WorkoutCalendar'

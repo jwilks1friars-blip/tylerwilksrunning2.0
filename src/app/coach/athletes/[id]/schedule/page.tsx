@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
@@ -29,9 +31,20 @@ export default async function AthleteSchedulePage({
 
   if (!profile) notFound()
 
-  const { data: workouts } = plan
-    ? await admin.from('workouts').select('*').eq('plan_id', plan.id).order('scheduled_date', { ascending: true })
-    : { data: [] }
+  const [workoutsResult, weeklyNotesResult] = await Promise.all([
+    plan
+      ? admin.from('workouts').select('*').eq('plan_id', plan.id).order('scheduled_date', { ascending: true })
+      : Promise.resolve({ data: [] }),
+    plan
+      ? admin.from('weekly_notes').select('week_num, content').eq('plan_id', plan.id)
+      : Promise.resolve({ data: [] }),
+  ])
+
+  const workouts = workoutsResult.data
+  const weeklyNotesMap: Record<number, string> = {}
+  weeklyNotesResult.data?.forEach((n: { week_num: number; content: string }) => {
+    weeklyNotesMap[n.week_num] = n.content
+  })
 
   return (
     <div className="max-w-4xl">
@@ -60,6 +73,7 @@ export default async function AthleteSchedulePage({
         plan={plan ?? null}
         workouts={workouts ?? []}
         profile={{ goal_race: profile.goal_race, goal_time: profile.goal_time }}
+        weeklyNotes={weeklyNotesMap}
       />
     </div>
   )
