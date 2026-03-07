@@ -5,7 +5,7 @@ const STATS = [
   { value: '10+', label: 'Years running competitively' },
   { value: '20+', label: 'Marathons & ultras completed' },
   { value: 'BQ', label: 'Boston Qualifier' },
-  { value: '100mi', label: 'Longest race finished' },
+  { value: 'Ultra', label: 'Longest race finished' },
 ]
 
 const VALUES = [
@@ -94,14 +94,6 @@ export default function AboutPage() {
       <section className="max-w-6xl mx-auto px-6 py-24">
         <div className="grid md:grid-cols-2 gap-16">
           <div>
-            <div className="relative aspect-video mb-8">
-              <Image
-                src="/477095054.jpg"
-                alt="Tyler Wilks racing"
-                fill
-                className="object-cover"
-              />
-            </div>
             <p className="text-xs uppercase tracking-widest mb-6" style={{ color: '#6b6560' }}>
               My story
             </p>
@@ -113,7 +105,7 @@ export default function AboutPage() {
                 Over the next few years I became obsessed with the data side of training. Heart rate, pace zones, mileage progression, periodization. I read everything. I tested everything on myself first.
               </p>
               <p>
-                Eventually I qualified for Boston, finished my first 100-miler, and started helping friends train for their goal races. The feedback was consistent: the weekly coaching notes were the most valuable part. Not just the plan — the analysis, the adjustments, the human context.
+                Eventually I qualified for Boston, finished my first ultra, and started helping friends train for their goal races. The feedback was consistent: the weekly coaching notes were the most valuable part. Not just the plan — the analysis, the adjustments, the human context.
               </p>
               <p>
                 So I built a platform around that. One where your Strava data feeds directly into your coaching, where your plan adapts as you go, and where you hear from me every single week — not just when you ask.
