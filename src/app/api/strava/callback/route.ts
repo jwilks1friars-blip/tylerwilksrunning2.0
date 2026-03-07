@@ -13,6 +13,12 @@ export async function GET(request: NextRequest) {
 
   const tokenData = await exchangeStravaCode(code)
 
+  // If Strava returns an error (e.g. bad client ID/secret), surface it
+  if (tokenData.errors || !tokenData.athlete) {
+    console.error('Strava token exchange failed:', JSON.stringify(tokenData))
+    return NextResponse.redirect(`${base}/dashboard/settings?error=strava_token`)
+  }
+
   await supabase.from('strava_connections').upsert({
     user_id: user.id,
     strava_athlete_id: tokenData.athlete.id,
@@ -21,5 +27,5 @@ export async function GET(request: NextRequest) {
     token_expires_at: new Date(tokenData.expires_at * 1000).toISOString(),
   })
 
-  return NextResponse.redirect(`${process.env.APP_URL}/dashboard?strava=connected`)
+  return NextResponse.redirect(`${base}/dashboard?strava=connected`)
 }
