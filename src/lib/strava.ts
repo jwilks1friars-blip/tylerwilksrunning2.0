@@ -3,7 +3,7 @@ const STRAVA_BASE = 'https://www.strava.com/api/v3'
 export function getStravaAuthUrl() {
   const params = new URLSearchParams({
     client_id: process.env.STRAVA_CLIENT_ID!,
-    redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/strava/callback`,
+    redirect_uri: `${process.env.APP_URL}/api/strava/callback`,
     response_type: 'code',
     scope: 'read,activity:read_all',
   })

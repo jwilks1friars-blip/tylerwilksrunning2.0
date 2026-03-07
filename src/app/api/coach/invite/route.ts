@@ -52,10 +52,10 @@ export async function POST(request: NextRequest) {
   const { data: linkData } = await admin.auth.admin.generateLink({
     type: 'recovery',
     email,
-    options: { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard` },
+    options: { redirectTo: `${process.env.APP_URL}/dashboard` },
   })
 
-  const loginUrl = linkData?.properties?.action_link ?? `${process.env.NEXT_PUBLIC_APP_URL}/login`
+  const loginUrl = linkData?.properties?.action_link ?? `${process.env.APP_URL}/login`
 
   // Send welcome email via Resend
   const resend = new Resend(process.env.RESEND_API_KEY)

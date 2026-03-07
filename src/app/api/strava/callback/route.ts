@@ -20,5 +20,5 @@ export async function GET(request: NextRequest) {
     token_expires_at: new Date(tokenData.expires_at * 1000).toISOString(),
   })
 
-  return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard?strava=connected`)
+  return NextResponse.redirect(`${process.env.APP_URL}/dashboard?strava=connected`)
 }

@@ -35,8 +35,8 @@ export async function POST(request: NextRequest) {
     mode: 'subscription',
     payment_method_types: ['card'],
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?subscription=success`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/coaching`,
+    success_url: `${process.env.APP_URL}/dashboard?subscription=success`,
+    cancel_url: `${process.env.APP_URL}/coaching`,
     metadata: { supabase_user_id: user.id, tier },
   })
 

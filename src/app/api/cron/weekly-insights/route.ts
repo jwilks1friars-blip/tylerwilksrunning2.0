@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
   // Trigger insight generation for each athlete
   for (const athlete of athletes ?? []) {
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/insights/generate`, {
+    await fetch(`${process.env.APP_URL}/api/insights/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: athlete.id }),
