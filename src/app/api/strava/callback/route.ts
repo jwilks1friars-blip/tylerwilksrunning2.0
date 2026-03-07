@@ -4,11 +4,12 @@ import { exchangeStravaCode } from '@/lib/strava'
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get('code')
-  if (!code) return NextResponse.redirect('/dashboard/settings?error=strava')
+  const base = process.env.APP_URL ?? request.nextUrl.origin
+  if (!code) return NextResponse.redirect(`${base}/dashboard/settings?error=strava`)
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.redirect('/login')
+  if (!user) return NextResponse.redirect(`${base}/login`)
 
   const tokenData = await exchangeStravaCode(code)
 
