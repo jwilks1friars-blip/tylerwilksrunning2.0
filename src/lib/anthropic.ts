@@ -23,6 +23,7 @@ interface WeeklyInsightParams {
     type: string
     description: string
   }>
+  coachNotes?: string
 }
 
 export async function generateWeeklyInsight(params: WeeklyInsightParams) {
@@ -33,6 +34,10 @@ export async function generateWeeklyInsight(params: WeeklyInsightParams) {
   const upcomingText = params.upcomingWorkouts
     ?.map(w => `- ${w.date}: ${w.type} — ${w.description}`)
     .join('\n') ?? 'Not yet planned'
+
+  const coachObservations = params.coachNotes
+    ? `\nCOACH'S OWN OBSERVATIONS (weave these naturally into the note — do not quote them verbatim):\n${params.coachNotes}\n`
+    : ''
 
   const prompt = `You are an elite running coach reviewing your athlete's weekly data.
 
@@ -45,7 +50,7 @@ ${activitiesText}
 
 NEXT WEEK'S PLAN:
 ${upcomingText}
-
+${coachObservations}
 Write a 150-200 word coaching note. Be specific — reference actual workouts, actual paces, actual dates. Flag any concerns. Explain any adjustments to next week. Tone: direct, data-driven, encouraging. Do not use bullet points — write in natural paragraphs as a coach would speak.`
 
   const message = await getClient().messages.create({

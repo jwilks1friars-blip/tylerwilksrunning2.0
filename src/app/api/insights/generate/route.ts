@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { userId } = await request.json()
+  const { userId, coachNotes } = await request.json()
 
   // Get athlete profile
   const { data: profile } = await supabase
@@ -72,6 +72,7 @@ export async function POST(request: NextRequest) {
       type: w.workout_type,
       description: w.description ?? '',
     })),
+    coachNotes: coachNotes || undefined,
   })
 
   // Save insight (unapproved until Tyler reviews)
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
       user_id: userId,
       week_start: format(weekStart, 'yyyy-MM-dd'),
       content,
-      data_snapshot: { activities, weeklyMiles },
+      data_snapshot: { activities, weeklyMiles, coachNotes: coachNotes || null },
       approved: false,
     })
     .select()
