@@ -94,14 +94,6 @@ export default function AboutPage() {
       <section className="max-w-6xl mx-auto px-6 py-24">
         <div className="grid md:grid-cols-2 gap-16">
           <div>
-            <div className="relative aspect-video mb-8">
-              <Image
-                src="/477095054.jpg"
-                alt="Tyler Wilks racing"
-                fill
-                className="object-cover"
-              />
-            </div>
             <p className="text-xs uppercase tracking-widest mb-6" style={{ color: '#6b6560' }}>
               My story
             </p>
