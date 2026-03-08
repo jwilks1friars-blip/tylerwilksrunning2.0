@@ -22,46 +22,27 @@ const FEATURES = [
 
 const PLANS = [
   {
-    name: 'Plan',
-    price: '$29',
-    description: 'A structured training plan built for your goal race. Updated monthly.',
-    features: [
-      'Custom training plan',
-      'Strava sync',
-      'Weekly mileage dashboard',
-      'Race-day pacing guide',
-    ],
-    cta: 'Get the Plan',
-    tier: 'plan',
-    highlight: false,
-  },
-  {
     name: 'Coaching',
-    price: '$99',
-    description: 'Everything in Plan plus weekly coaching notes from Tyler, written for you.',
+    price: '$150',
+    period: 'per block of training',
+    description: 'A structured, periodized training plan built around your goal race and current fitness — with personal coaching from Tyler based on your Strava data.',
     features: [
-      'Everything in Plan',
+      'Custom training plan (12–20 weeks)',
+      'Strava auto-sync',
+      'Weekly mileage dashboard',
+      'Daily workout schedule',
+      'Pace targets for every run',
+      'Race-day pacing guide',
       'Weekly coaching note from Tyler',
-      'Insight approval & editing',
-      'Priority support',
+      'Plan adjustments when life happens',
+      'HR and pace analysis',
+      'Pre-race and post-race debriefs',
+      'Race strategy sessions',
+      'Strength & cross-training guidance',
     ],
     cta: 'Start Coaching',
     tier: 'coaching',
     highlight: true,
-  },
-  {
-    name: 'Elite',
-    price: '$249',
-    description: 'Full-access coaching with direct communication and real-time plan adjustments.',
-    features: [
-      'Everything in Coaching',
-      'Direct messaging with Tyler',
-      'Real-time plan adjustments',
-      'Monthly video call',
-    ],
-    cta: 'Go Elite',
-    tier: 'elite',
-    highlight: false,
   },
 ]
 
@@ -208,43 +189,41 @@ export default function HomePage() {
         >
           Pricing
         </p>
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="flex justify-center">
           {PLANS.map(plan => (
             <div
               key={plan.name}
-              className="p-8 flex flex-col"
+              className="p-8 flex flex-col w-full max-w-4xl"
               style={{
                 backgroundColor: plan.highlight ? '#141210' : 'transparent',
                 border: plan.highlight ? '1px solid #e8e0d4' : '1px solid #1e1b18',
               }}
             >
-              <div className="mb-6">
-                <p
-                  className="text-xs uppercase tracking-widest mb-4"
-                  style={{ color: plan.highlight ? '#e8e0d4' : '#6b6560' }}
+              <p
+                className="text-xs uppercase tracking-widest mb-4"
+                style={{ color: plan.highlight ? '#e8e0d4' : '#6b6560' }}
+              >
+                {plan.name}
+              </p>
+              <div className="flex items-baseline gap-2 mb-3">
+                <span
+                  className="text-5xl font-semibold"
+                  style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
                 >
-                  {plan.name}
-                </p>
-                <div className="flex items-baseline gap-2 mb-4">
-                  <span
-                    className="text-5xl font-semibold"
-                    style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
-                  >
-                    {plan.price}
-                  </span>
-                  <span className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>
-                    / mo
-                  </span>
-                </div>
-                <p className="text-sm leading-7" style={{ color: '#6b6560' }}>
-                  {plan.description}
-                </p>
+                  {plan.price}
+                </span>
+                <span className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>
+                  {plan.period}
+                </span>
               </div>
+              <p className="text-sm leading-7 mb-8" style={{ color: '#6b6560' }}>
+                {plan.description}
+              </p>
 
-              <ul className="space-y-2 mb-8 flex-1">
+              <ul className="grid grid-cols-2 gap-x-12 gap-y-3 mb-10 flex-1">
                 {plan.features.map(f => (
                   <li key={f} className="flex items-start gap-3 text-sm" style={{ color: '#e8e0d4' }}>
-                    <span style={{ color: '#6b6560' }}>—</span>
+                    <span className="mt-0.5 shrink-0" style={{ color: '#6b6560' }}>—</span>
                     {f}
                   </li>
                 ))}
