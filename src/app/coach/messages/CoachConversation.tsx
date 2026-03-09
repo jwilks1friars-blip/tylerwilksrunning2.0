@@ -131,13 +131,13 @@ export default function CoachConversation({
             Messages
           </h2>
           <p className="text-xs uppercase tracking-widest mt-1" style={{ color: '#6b6560' }}>
-            {athletes.length} active {athletes.length === 1 ? 'athlete' : 'athletes'}
+            {athletes.length} {athletes.length === 1 ? 'athlete' : 'athletes'}
           </p>
         </div>
 
         <div className="flex-1 overflow-y-auto">
           {athletes.length === 0 ? (
-            <p className="p-5 text-sm" style={{ color: '#6b6560' }}>No active athletes.</p>
+            <p className="p-5 text-sm" style={{ color: '#6b6560' }}>No athletes yet.</p>
           ) : (
             athletes.map(athlete => {
               const unreadCount = unread.bySender[athlete.id] ?? 0

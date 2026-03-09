@@ -27,7 +27,6 @@ export default async function CoachMessagesPage({
     .from('profiles')
     .select('id, full_name, email, plan_tier')
     .neq('id', process.env.COACH_USER_ID)
-    .neq('plan_tier', 'none')
     .order('full_name', { ascending: true })
 
   return (
