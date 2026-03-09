@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import SignOutButton from '@/components/dashboard/SignOutButton'
+import DashboardMessagesLink from './messages/DashboardMessagesLink'
 
 const NAV_LINKS = [
   { href: '/dashboard', label: 'Overview' },
@@ -15,6 +16,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const isCoach = user?.id === process.env.COACH_USER_ID
+
+  // Fetch unread count server-side for initial render
+  let unreadCount = 0
+  if (user && !isCoach) {
+    const { count } = await supabase
+      .from('messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('recipient_id', user.id)
+      .is('read_at', null)
+    unreadCount = count ?? 0
+  }
 
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: '#0a0908' }}>
@@ -46,6 +58,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
               {link.label}
             </Link>
           ))}
+
+          {!isCoach && (
+            <DashboardMessagesLink initialUnread={unreadCount} />
+          )}
 
           {isCoach && (
             <>

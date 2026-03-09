@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import SignOutButton from '@/components/dashboard/SignOutButton'
+import CoachMessagesLink from './messages/CoachMessagesLink'
 
 export default function CoachLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -32,6 +33,7 @@ export default function CoachLayout({ children }: { children: React.ReactNode })
           >
             Athletes
           </Link>
+          <CoachMessagesLink />
           <Link
             href="/coach/blog"
             className="block py-2 px-3 text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
