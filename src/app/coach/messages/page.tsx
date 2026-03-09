@@ -32,7 +32,7 @@ export default async function CoachMessagesPage({
 
   return (
     <CoachConversation
-      coachId={user.id}
+      coachId={user!.id}
       athletes={athletes ?? []}
       initialAthleteId={selectedAthleteId ?? null}
     />
