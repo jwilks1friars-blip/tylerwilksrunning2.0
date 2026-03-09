@@ -42,6 +42,7 @@ export default function CoachConversation({
   const [messages, setMessages] = useState<Message[]>([])
   const [unread, setUnread] = useState<UnreadCounts>({ total: 0, bySender: {} })
   const [input, setInput] = useState('')
+  const [sendEmail, setSendEmail] = useState(false)
   const [sending, setSending] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -97,7 +98,7 @@ export default function CoachConversation({
       const res = await fetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipient_id: athleteId, content: input.trim() }),
+        body: JSON.stringify({ recipient_id: athleteId, content: input.trim(), sendEmail }),
       })
       if (res.ok) {
         setInput('')
@@ -274,9 +275,22 @@ export default function CoachConversation({
                 Send
               </button>
             </div>
-            <p className="text-xs mt-2" style={{ color: '#6b6560' }}>
-              Enter to send · Shift+Enter for new line
-            </p>
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-xs" style={{ color: '#6b6560' }}>
+                Enter to send · Shift+Enter for new line
+              </p>
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={sendEmail}
+                  onChange={e => setSendEmail(e.target.checked)}
+                  style={{ accentColor: '#fc4c02', width: '14px', height: '14px' }}
+                />
+                <span className="text-xs uppercase tracking-widest" style={{ color: sendEmail ? '#e8e0d4' : '#6b6560' }}>
+                  Also send via email
+                </span>
+              </label>
+            </div>
           </div>
         </div>
       )}

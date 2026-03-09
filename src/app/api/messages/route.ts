@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { Resend } from 'resend'
 
 // GET /api/messages?with=<user_id>
 // Fetches full conversation between current user and the specified user,
@@ -41,13 +43,13 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/messages
-// Body: { recipient_id: string, content: string }
+// Body: { recipient_id: string, content: string, sendEmail?: boolean }
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { recipient_id, content } = await request.json()
+  const { recipient_id, content, sendEmail } = await request.json()
 
   if (!recipient_id || !content?.trim()) {
     return NextResponse.json({ error: 'recipient_id and content are required' }, { status: 400 })
@@ -76,6 +78,41 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Optionally send email — only coach can trigger this
+  if (sendEmail && isCoach) {
+    try {
+      const serviceSupabase = createServiceClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      )
+      const { data: recipient } = await serviceSupabase
+        .from('profiles')
+        .select('email, full_name')
+        .eq('id', recipient_id)
+        .single()
+
+      if (recipient?.email) {
+        const resend = new Resend(process.env.RESEND_API_KEY)
+        await resend.emails.send({
+          from: 'coach@tylerwilksrunning.com',
+          to: recipient.email,
+          subject: 'New message from your coach',
+          text: [
+            `Hi ${recipient.full_name ?? 'there'},`,
+            ``,
+            `You have a new message from your coach:`,
+            ``,
+            `"${content.trim()}"`,
+            ``,
+            `Reply in the app: https://tylerwilksrunning.com/dashboard/messages`,
+          ].join('\n'),
+        })
+      }
+    } catch {
+      // Email failure shouldn't block the message from being saved
+    }
+  }
 
   return NextResponse.json({ message }, { status: 201 })
 }
