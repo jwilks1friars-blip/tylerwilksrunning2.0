@@ -15,7 +15,7 @@ export default async function CoachMessagesPage({
   // Verify coach
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (user?.id !== process.env.COACH_USER_ID) redirect('/dashboard')
+  if (!user || user.id !== process.env.COACH_USER_ID) redirect('/dashboard')
 
   // Use service role to get all active athletes
   const serviceSupabase = createServiceClient(
