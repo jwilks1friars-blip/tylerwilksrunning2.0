@@ -263,7 +263,7 @@ export default function HomePage() {
           className="inline-block px-8 py-3 text-xs uppercase tracking-widest font-medium transition-opacity hover:opacity-80"
           style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}
         >
-          Start for Free
+          Get Started
         </Link>
       </section>
 
