@@ -148,10 +148,27 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
                     <button
                       onClick={() => toggleComplete(workout)}
                       disabled={toggling === workout.id}
-                      className="mt-2 self-start text-xs transition-opacity disabled:opacity-40"
-                      style={{ color: workout.completed ? '#7fbf7f' : '#2a2521' }}
+                      className="mt-3 self-start flex items-center gap-1.5 text-xs uppercase tracking-widest transition-opacity disabled:opacity-40"
+                      style={{
+                        color: workout.completed ? '#7fbf7f' : '#3a3633',
+                        opacity: toggling === workout.id ? 0.4 : 1,
+                      }}
                     >
-                      {workout.completed ? '✓ Done' : '○ Mark done'}
+                      <span
+                        className="flex items-center justify-center w-4 h-4 shrink-0"
+                        style={{
+                          border: `1px solid ${workout.completed ? '#7fbf7f' : '#3a3633'}`,
+                          borderRadius: '2px',
+                          backgroundColor: workout.completed ? '#7fbf7f22' : 'transparent',
+                        }}
+                      >
+                        {workout.completed && (
+                          <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                            <path d="M1 3.5L3.5 6L8 1" stroke="#7fbf7f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        )}
+                      </span>
+                      {workout.completed ? 'Done' : 'Mark done'}
                     </button>
                   )}
                 </div>

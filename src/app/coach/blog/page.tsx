@@ -78,7 +78,7 @@ export default async function CoachBlogPage() {
             style={{
               color: '#6b6560',
               borderBottom: '1px solid #1e1b18',
-              gridTemplateColumns: '1fr 100px 90px 120px',
+              gridTemplateColumns: '1fr 100px 90px 160px',
             }}
           >
             <span>Post</span>
@@ -110,6 +110,13 @@ export default async function CoachBlogPage() {
                 </div>
 
                 <div className="flex justify-end gap-3 items-center">
+                  <Link
+                    href={`/coach/blog/${post.slug}/edit`}
+                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
+                    style={{ color: '#6b6560' }}
+                  >
+                    Edit
+                  </Link>
                   <Link
                     href={`/blog/${post.slug}`}
                     target="_blank"

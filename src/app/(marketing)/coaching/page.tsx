@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import FaqAccordion from '@/components/marketing/FaqAccordion'
 
 const PLANS = [
   {
@@ -238,24 +239,10 @@ export default function CoachingPage() {
 
       {/* FAQ */}
       <section className="max-w-6xl mx-auto px-6 py-24">
-        <p className="text-xs uppercase tracking-widest mb-16" style={{ color: '#6b6560' }}>
+        <p className="text-xs uppercase tracking-widest mb-12" style={{ color: '#6b6560' }}>
           FAQ
         </p>
-        <div className="grid md:grid-cols-2 gap-x-16 gap-y-10 max-w-4xl">
-          {FAQS.map(faq => (
-            <div key={faq.q}>
-              <h3
-                className="text-base font-semibold uppercase tracking-widest mb-3"
-                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
-              >
-                {faq.q}
-              </h3>
-              <p className="text-sm leading-7" style={{ color: '#6b6560' }}>
-                {faq.a}
-              </p>
-            </div>
-          ))}
-        </div>
+        <FaqAccordion faqs={FAQS} />
       </section>
 
       <div style={{ borderTop: '1px solid #1e1b18' }} />

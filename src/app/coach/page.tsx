@@ -2,16 +2,9 @@ export const dynamic = 'force-dynamic'
 
 import { createClient } from '@supabase/supabase-js'
 import { metersToMiles } from '@/lib/strava'
-import { subDays, format } from 'date-fns'
-import Link from 'next/link'
+import { subDays } from 'date-fns'
 import InviteAthleteForm from '@/components/coach/InviteAthleteForm'
-
-const TIER_LABELS: Record<string, string> = {
-  plan: 'Plan',
-  coaching: 'Coaching',
-  elite: 'Elite',
-  none: 'Free',
-}
+import AthleteTable from '@/components/coach/AthleteTable'
 
 export default async function CoachPage() {
   const supabase = createClient(
@@ -75,66 +68,16 @@ export default async function CoachPage() {
       )}
 
       {!!athletes?.length && (
-        <>
-          {/* Column headers */}
-          <div
-            className="grid text-xs uppercase tracking-widest pb-2 mb-1 px-4"
-            style={{
-              color: '#6b6560',
-              borderBottom: '1px solid #1e1b18',
-              gridTemplateColumns: '1fr 100px 80px 120px',
-            }}
-          >
-            <span>Athlete</span>
-            <span>Plan</span>
-            <span className="text-right">Mi / Wk</span>
-            <span className="text-right">Last Run</span>
-          </div>
-
-          <div className="space-y-px">
-            {athletes.map(athlete => {
-              const miles = weeklyMilesMap[athlete.id] ?? 0
-              const lastRun = lastRunMap[athlete.id]
-
-              return (
-                <Link
-                  key={athlete.id}
-                  href={`/coach/athletes/${athlete.id}`}
-                  className="grid items-center px-4 py-3.5 transition-colors hover:bg-[#141210]"
-                  style={{ gridTemplateColumns: '1fr 100px 80px 120px' }}
-                >
-                  <div>
-                    <p className="text-sm" style={{ color: '#f5f2ee' }}>
-                      {athlete.full_name ?? '—'}
-                    </p>
-                    <p className="text-xs mt-0.5" style={{ color: '#6b6560' }}>
-                      {athlete.email}
-                    </p>
-                  </div>
-
-                  <span
-                    className="text-xs uppercase tracking-widest"
-                    style={{
-                      color: athlete.plan_tier === 'none' ? '#6b6560' : '#e8e0d4',
-                    }}
-                  >
-                    {TIER_LABELS[athlete.plan_tier] ?? athlete.plan_tier}
-                  </span>
-
-                  <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
-                    {miles > 0 ? miles.toFixed(1) : '—'}
-                  </p>
-
-                  <p className="text-sm text-right" style={{ color: '#6b6560' }}>
-                    {lastRun
-                      ? format(new Date(lastRun), 'MMM d')
-                      : '—'}
-                  </p>
-                </Link>
-              )
-            })}
-          </div>
-        </>
+        <AthleteTable
+          athletes={athletes.map(athlete => ({
+            id: athlete.id,
+            full_name: athlete.full_name,
+            email: athlete.email,
+            plan_tier: athlete.plan_tier,
+            miles: weeklyMilesMap[athlete.id] ?? 0,
+            lastRun: lastRunMap[athlete.id] ?? null,
+          }))}
+        />
       )}
     </div>
   )
