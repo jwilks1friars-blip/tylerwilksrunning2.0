@@ -144,7 +144,8 @@ export default async function RunsPage() {
 
       {/* Activity List */}
       {!!displayActivities.length && (
-        <>
+        <div className="overflow-x-auto -mx-5 md:mx-0">
+          <div className="min-w-[500px] px-5 md:px-0">
           <div
             className="grid text-xs uppercase tracking-widest pb-2 mb-1 px-4"
             style={{
@@ -216,7 +217,8 @@ export default async function RunsPage() {
               Showing 100 of {acts.length} activities
             </p>
           )}
-        </>
+          </div>
+        </div>
       )}
     </div>
   )

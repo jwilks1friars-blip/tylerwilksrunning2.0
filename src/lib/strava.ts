@@ -47,6 +47,24 @@ export async function getStravaActivities(accessToken: string, after?: number) {
   return res.json()
 }
 
+// Fetch ALL activities by paginating through every page
+export async function getAllStravaActivities(accessToken: string): Promise<unknown[]> {
+  const all: unknown[] = []
+  let page = 1
+  while (true) {
+    const params = new URLSearchParams({ per_page: '100', page: String(page) })
+    const res = await fetch(`${STRAVA_BASE}/athlete/activities?${params}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    const batch = await res.json()
+    if (!Array.isArray(batch) || batch.length === 0) break
+    all.push(...batch)
+    if (batch.length < 100) break // last page
+    page++
+  }
+  return all
+}
+
 export async function getStravaActivity(accessToken: string, activityId: number) {
   const res = await fetch(`${STRAVA_BASE}/activities/${activityId}`, {
     headers: { Authorization: `Bearer ${accessToken}` },

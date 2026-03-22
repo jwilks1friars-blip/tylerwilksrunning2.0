@@ -1,14 +1,18 @@
 import Link from 'next/link'
 import SignOutButton from '@/components/dashboard/SignOutButton'
 import CoachMessagesLink from './messages/CoachMessagesLink'
+import CoachMobileNav from '@/components/coach/CoachMobileNav'
 
 export default function CoachLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: '#0a0908' }}>
+    <div className="min-h-screen md:flex flex-col" style={{ backgroundColor: '#0a0908' }}>
 
-      {/* Sidebar */}
+      {/* Mobile nav (hamburger) */}
+      <CoachMobileNav />
+
+      {/* Sidebar — desktop only */}
       <aside
-        className="w-52 shrink-0 min-h-screen flex flex-col px-6 py-8"
+        className="hidden md:flex w-52 shrink-0 min-h-screen flex-col px-6 py-8"
         style={{ borderRight: '1px solid #1e1b18' }}
       >
         <div className="mb-10">
@@ -56,7 +60,7 @@ export default function CoachLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-10">
+      <main className="flex-1 p-5 md:p-10">
         {children}
       </main>
     </div>

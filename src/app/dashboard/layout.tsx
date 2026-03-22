@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import SignOutButton from '@/components/dashboard/SignOutButton'
 import DashboardMessagesLink from './messages/DashboardMessagesLink'
+import DashboardMobileNav from '@/components/dashboard/DashboardMobileNav'
 
 const NAV_LINKS = [
   { href: '/dashboard', label: 'Overview' },
@@ -29,11 +30,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: '#0a0908' }}>
+    <div className="min-h-screen md:flex flex-col" style={{ backgroundColor: '#0a0908' }}>
 
-      {/* Sidebar */}
+      {/* Mobile nav (hamburger) */}
+      <DashboardMobileNav initialUnread={unreadCount} isCoach={isCoach} />
+
+      {/* Sidebar — desktop only */}
       <aside
-        className="w-52 shrink-0 min-h-screen flex flex-col px-6 py-8"
+        className="hidden md:flex w-52 shrink-0 min-h-screen flex-col px-6 py-8"
         style={{ borderRight: '1px solid #1e1b18' }}
       >
         <div className="mb-10">
@@ -83,7 +87,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-10 max-w-4xl">
+      <main className="flex-1 p-5 md:p-10 max-w-4xl">
         {children}
       </main>
     </div>
