@@ -1,12 +1,20 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { fetchPosts } from '@/lib/blog'
+import { fetchPostsPaginated, BLOG_PAGE_SIZE } from '@/lib/blog'
 import { format } from 'date-fns'
+import Pagination from '@/components/ui/Pagination'
 
 export const revalidate = 60
 
-export default async function BlogPage() {
-  const posts = await fetchPosts()
+interface Props {
+  searchParams: Promise<{ page?: string }>
+}
+
+export default async function BlogPage({ searchParams }: Props) {
+  const { page: pageStr } = await searchParams
+  const currentPage = Math.max(1, parseInt(pageStr ?? '1', 10))
+  const { posts, total } = await fetchPostsPaginated(currentPage)
+  const totalPages = Math.ceil(total / BLOG_PAGE_SIZE)
 
   return (
     <div>
@@ -71,6 +79,12 @@ export default async function BlogPage() {
             </Link>
           ))}
         </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          basePath="/blog"
+        />
       </section>
 
       {/* Footer */}

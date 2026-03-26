@@ -118,6 +118,36 @@ function getSupabase() {
   )
 }
 
+export const BLOG_PAGE_SIZE = 10
+
+/** Fetch paginated published posts, newest first. Falls back to hardcoded POSTS. */
+export async function fetchPostsPaginated(
+  page = 1
+): Promise<{ posts: Post[]; total: number }> {
+  try {
+    const supabase = getSupabase()
+    const from = (page - 1) * BLOG_PAGE_SIZE
+    const to = from + BLOG_PAGE_SIZE - 1
+
+    const { data, error, count } = await supabase
+      .from('blog_posts')
+      .select('slug, title, date, category, excerpt, sections', { count: 'exact' })
+      .eq('published', true)
+      .order('date', { ascending: false })
+      .range(from, to)
+
+    if (error || !data || data.length === 0) {
+      const sorted = [...POSTS].sort((a, b) => b.date.localeCompare(a.date))
+      const sliced = sorted.slice(from, to + 1)
+      return { posts: sliced.length ? sliced : sorted, total: sorted.length }
+    }
+    return { posts: data as Post[], total: count ?? data.length }
+  } catch {
+    const sorted = [...POSTS].sort((a, b) => b.date.localeCompare(a.date))
+    return { posts: sorted, total: sorted.length }
+  }
+}
+
 /** Fetch all published posts, newest first. Falls back to hardcoded POSTS. */
 export async function fetchPosts(): Promise<Post[]> {
   try {

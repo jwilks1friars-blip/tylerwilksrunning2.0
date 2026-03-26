@@ -2,17 +2,17 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/ui/Toast'
 
 export default function GeneratePlanButton() {
   const router = useRouter()
+  const { toast } = useToast()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [raceDate, setRaceDate] = useState('')
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    setError(null)
 
     const res = await fetch('/api/plans/generate', {
       method: 'POST',
@@ -23,11 +23,12 @@ export default function GeneratePlanButton() {
     const data = await res.json()
 
     if (!res.ok) {
-      setError(data.error ?? 'Failed to generate plan')
+      toast(data.error ?? 'Failed to generate plan', 'error')
       setLoading(false)
       return
     }
 
+    toast('Training plan generated!', 'success')
     router.refresh()
   }
 
@@ -53,10 +54,6 @@ export default function GeneratePlanButton() {
           }}
         />
       </div>
-
-      {error && (
-        <p className="text-xs" style={{ color: '#e8a0a0' }}>{error}</p>
-      )}
 
       <button
         type="submit"

@@ -1,22 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export const maxDuration = 60
-import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { generateTrainingPlan } from '@/lib/anthropic'
 import { addDays, format, nextMonday } from 'date-fns'
+import { requireCoach, rateLimit, validateBody } from '@/lib/api-helpers'
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const limited = rateLimit(request, 5, 60_000)
+  if (limited) return limited
 
-  if (user?.id !== process.env.COACH_USER_ID) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const auth = await requireCoach()
+  if (auth instanceof NextResponse) return auth
 
-  const { athleteId, raceDate, goalRace, goalTime, startDate } = await request.json()
+  const body = await request.json()
+  const validationError = validateBody(body, {
+    athleteId: { type: 'string', required: true },
+  })
+  if (validationError) return NextResponse.json({ error: validationError }, { status: 400 })
 
-  if (!athleteId) return NextResponse.json({ error: 'Missing athleteId' }, { status: 400 })
+  const { athleteId, raceDate, goalRace, goalTime, startDate } = body
 
   const admin = createAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { requireCoach, validateBody } from '@/lib/api-helpers'
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const auth = await requireCoach()
+  if (auth instanceof NextResponse) return auth
 
-  if (user?.id !== process.env.COACH_USER_ID) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const body = await request.json()
+  const validationError = validateBody(body, {
+    athleteId: { type: 'string', required: true },
+    startDate: { type: 'date', required: true },
+    raceDate: { type: 'date', required: true },
+  })
+  if (validationError) return NextResponse.json({ error: validationError }, { status: 400 })
 
-  const { athleteId, goalRace, goalTime, startDate, raceDate } = await request.json()
-
-  if (!athleteId || !startDate || !raceDate) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-  }
+  const { athleteId, goalRace, goalTime, startDate, raceDate } = body
 
   const admin = createAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

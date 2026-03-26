@@ -4,6 +4,9 @@ import { createClient } from '@/lib/supabase/server'
 import { metersToMiles, mpsToMinPerMile } from '@/lib/strava'
 import { format } from 'date-fns'
 import MileageChart from '@/components/dashboard/MileageChart'
+import Pagination from '@/components/ui/Pagination'
+
+const PAGE_SIZE = 25
 
 function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600)
@@ -25,21 +28,44 @@ const TYPE_COLORS: Record<string, string> = {
 const RUNNING_TYPES = new Set(['Run', 'VirtualRun', 'TrailRun'])
 const THREE_MILES_IN_METERS = 4828
 
-export default async function RunsPage() {
+interface Props {
+  searchParams: Promise<{ page?: string }>
+}
+
+export default async function RunsPage({ searchParams }: Props) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const { page: pageStr } = await searchParams
+  const currentPage = Math.max(1, parseInt(pageStr ?? '1', 10))
 
-  // Fetch all activities — needed for all-time PRs and monthly chart
+  // Fetch count for pagination
+  const { count: totalCount } = await supabase
+    .from('activities')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', user!.id)
+
+  const totalPages = Math.ceil((totalCount ?? 0) / PAGE_SIZE)
+
+  // Fetch paginated activities for the table
   const { data: activities } = await supabase
     .from('activities')
     .select('*')
     .eq('user_id', user!.id)
     .order('started_at', { ascending: false })
+    .range((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE - 1)
+
+  // Fetch all-time stats (lightweight — only needed columns)
+  const { data: allActivities } = await supabase
+    .from('activities')
+    .select('distance, avg_pace, activity_type, started_at')
+    .eq('user_id', user!.id)
+    .order('started_at', { ascending: false })
 
   const acts = activities ?? []
+  const allActs = allActivities ?? []
 
   // --- Personal Records ---
-  const runningActs = acts.filter(a => RUNNING_TYPES.has(a.activity_type))
+  const runningActs = allActs.filter(a => RUNNING_TYPES.has(a.activity_type))
   const longRunningActs = runningActs.filter(a => a.distance > THREE_MILES_IN_METERS && a.avg_pace)
 
   const longestRunMeters = runningActs.length > 0
@@ -47,10 +73,10 @@ export default async function RunsPage() {
     : 0
 
   const fastestPaceAct = longRunningActs.length > 0
-    ? longRunningActs.reduce((best, a) => (!best || a.avg_pace < best.avg_pace) ? a : best, null as typeof acts[0] | null)
+    ? longRunningActs.reduce((best, a) => (!best || a.avg_pace < best.avg_pace) ? a : best, null as typeof allActs[0] | null)
     : null
 
-  const allTimeMiles = acts.reduce((sum, a) => sum + metersToMiles(a.distance), 0)
+  const allTimeMiles = allActs.reduce((sum, a) => sum + metersToMiles(a.distance), 0)
 
   // --- 6-Month Chart ---
   const now = new Date()
@@ -58,7 +84,7 @@ export default async function RunsPage() {
     const offset = 5 - i
     const monthStart = new Date(now.getFullYear(), now.getMonth() - offset, 1)
     const monthEnd = new Date(now.getFullYear(), now.getMonth() - offset + 1, 1)
-    const monthMiles = acts
+    const monthMiles = allActs
       .filter(a => {
         const d = new Date(a.started_at)
         return d >= monthStart && d < monthEnd
@@ -69,9 +95,6 @@ export default async function RunsPage() {
       miles: Math.round(monthMiles * 10) / 10,
     }
   })
-
-  // Display first 100 in the table
-  const displayActivities = acts.slice(0, 100)
 
   return (
     <div>
@@ -84,7 +107,7 @@ export default async function RunsPage() {
           Runs
         </h2>
         <p className="text-sm mt-1" style={{ color: '#6b6560' }}>
-          {acts.length} activities synced
+          {totalCount ?? 0} activities synced
         </p>
       </div>
 
@@ -143,80 +166,81 @@ export default async function RunsPage() {
       )}
 
       {/* Activity List */}
-      {!!displayActivities.length && (
+      {!!acts.length && (
         <div className="overflow-x-auto -mx-5 md:mx-0">
           <div className="min-w-[500px] px-5 md:px-0">
-          <div
-            className="grid text-xs uppercase tracking-widest pb-2 mb-1 px-4"
-            style={{
-              color: '#6b6560',
-              borderBottom: '1px solid #1e1b18',
-              gridTemplateColumns: '1fr 80px 80px 70px 60px 60px',
-            }}
-          >
-            <span>Activity</span>
-            <span className="text-right">Distance</span>
-            <span className="text-right">Pace</span>
-            <span className="text-right">Time</span>
-            <span className="text-right">HR</span>
-            <span className="text-right">Elev</span>
-          </div>
+            <div
+              className="grid text-xs uppercase tracking-widest pb-2 mb-1 px-4"
+              style={{
+                color: '#6b6560',
+                borderBottom: '1px solid #1e1b18',
+                gridTemplateColumns: '1fr 80px 80px 70px 60px 60px',
+              }}
+            >
+              <span>Activity</span>
+              <span className="text-right">Distance</span>
+              <span className="text-right">Pace</span>
+              <span className="text-right">Time</span>
+              <span className="text-right">HR</span>
+              <span className="text-right">Elev</span>
+            </div>
 
-          <div className="space-y-px">
-            {displayActivities.map(activity => {
-              const miles = metersToMiles(activity.distance)
-              const pace = activity.avg_pace ? mpsToMinPerMile(1 / activity.avg_pace) : '—'
-              const typeColor = TYPE_COLORS[activity.activity_type] ?? '#6b6560'
+            <div className="space-y-px">
+              {acts.map(activity => {
+                const miles = metersToMiles(activity.distance)
+                const pace = activity.avg_pace ? mpsToMinPerMile(1 / activity.avg_pace) : '—'
+                const typeColor = TYPE_COLORS[activity.activity_type] ?? '#6b6560'
 
-              return (
-                <div
-                  key={activity.id}
-                  className="grid items-center px-4 py-3.5 transition-colors hover:bg-[#141210] group"
-                  style={{
-                    gridTemplateColumns: '1fr 80px 80px 70px 60px 60px',
-                    borderLeft: `2px solid ${typeColor}40`,
-                  }}
-                >
-                  <div className="min-w-0 pr-4">
-                    <p className="text-sm truncate" style={{ color: typeColor }}>
-                      {activity.name}
+                return (
+                  <div
+                    key={activity.id}
+                    className="grid items-center px-4 py-3.5 transition-colors hover:bg-[#141210] group"
+                    style={{
+                      gridTemplateColumns: '1fr 80px 80px 70px 60px 60px',
+                      borderLeft: `2px solid ${typeColor}40`,
+                    }}
+                  >
+                    <div className="min-w-0 pr-4">
+                      <p className="text-sm truncate" style={{ color: typeColor }}>
+                        {activity.name}
+                      </p>
+                      <p className="text-xs mt-0.5" style={{ color: '#6b6560' }}>
+                        {format(new Date(activity.started_at), 'EEE, MMM d')}
+                      </p>
+                    </div>
+
+                    <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
+                      {miles} <span className="text-xs" style={{ color: '#6b6560' }}>mi</span>
                     </p>
-                    <p className="text-xs mt-0.5" style={{ color: '#6b6560' }}>
-                      {format(new Date(activity.started_at), 'EEE, MMM d')}
+
+                    <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
+                      {pace}
+                      {pace !== '—' && <span className="text-xs" style={{ color: '#6b6560' }}>/mi</span>}
+                    </p>
+
+                    <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
+                      {activity.moving_time ? formatDuration(activity.moving_time) : '—'}
+                    </p>
+
+                    <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
+                      {activity.avg_hr ?? '—'}
+                    </p>
+
+                    <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
+                      {activity.elevation_gain != null
+                        ? `${Math.round(activity.elevation_gain * 3.281)}′`
+                        : '—'}
                     </p>
                   </div>
+                )
+              })}
+            </div>
 
-                  <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
-                    {miles} <span className="text-xs" style={{ color: '#6b6560' }}>mi</span>
-                  </p>
-
-                  <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
-                    {pace}
-                    {pace !== '—' && <span className="text-xs" style={{ color: '#6b6560' }}>/mi</span>}
-                  </p>
-
-                  <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
-                    {activity.moving_time ? formatDuration(activity.moving_time) : '—'}
-                  </p>
-
-                  <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
-                    {activity.avg_hr ?? '—'}
-                  </p>
-
-                  <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
-                    {activity.elevation_gain != null
-                      ? `${Math.round(activity.elevation_gain * 3.281)}′`
-                      : '—'}
-                  </p>
-                </div>
-              )
-            })}
-          </div>
-          {acts.length > 100 && (
-            <p className="text-xs text-center mt-4" style={{ color: '#3a3633' }}>
-              Showing 100 of {acts.length} activities
-            </p>
-          )}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              basePath="/dashboard/runs"
+            />
           </div>
         </div>
       )}

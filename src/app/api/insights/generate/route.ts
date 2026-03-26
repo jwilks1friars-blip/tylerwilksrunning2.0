@@ -3,17 +3,26 @@ import { createClient } from '@/lib/supabase/server'
 import { generateWeeklyInsight } from '@/lib/anthropic'
 import { metersToMiles, mpsToMinPerMile } from '@/lib/strava'
 import { startOfWeek, endOfWeek, format, differenceInWeeks } from 'date-fns'
+import { requireCoach, rateLimit, validateBody } from '@/lib/api-helpers'
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 20 insight generations per minute
+  const limited = rateLimit(request, 20)
+  if (limited) return limited
+
+  // Only Tyler (coach) can trigger insight generation
+  const auth = await requireCoach()
+  if (auth instanceof NextResponse) return auth
+
+  const body = await request.json()
+  const validationError = validateBody(body, {
+    userId: { type: 'string', required: true },
+  })
+  if (validationError) return NextResponse.json({ error: validationError }, { status: 400 })
+
+  const { userId, coachNotes } = body
+
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  // Only Tyler can trigger insight generation
-  if (user?.id !== process.env.COACH_USER_ID) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const { userId, coachNotes } = await request.json()
 
   // Get athlete profile
   const { data: profile } = await supabase

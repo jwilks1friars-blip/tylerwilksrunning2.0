@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: '/dashboard', label: 'Overview' },
   { href: '/dashboard/runs', label: 'Runs' },
   { href: '/dashboard/training', label: 'Training' },
+  { href: '/dashboard/races', label: 'Races' },
   { href: '/dashboard/settings', label: 'Settings' },
 ]
 

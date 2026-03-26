@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
+import { rateLimit, validateBody } from '@/lib/api-helpers'
 
 // GET /api/messages?with=<user_id>
 // Fetches full conversation between current user and the specified user,
@@ -45,15 +46,22 @@ export async function GET(request: NextRequest) {
 // POST /api/messages
 // Body: { recipient_id: string, content: string, sendEmail?: boolean }
 export async function POST(request: NextRequest) {
+  // Rate limit: 30 messages per minute per IP
+  const limited = rateLimit(request, 30, 60_000)
+  if (limited) return limited
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { recipient_id, content, sendEmail } = await request.json()
+  const body = await request.json()
+  const validationError = validateBody(body, {
+    recipient_id: { type: 'string', required: true },
+    content: { type: 'string', required: true, minLength: 1, maxLength: 2000 },
+  })
+  if (validationError) return NextResponse.json({ error: validationError }, { status: 400 })
 
-  if (!recipient_id || !content?.trim()) {
-    return NextResponse.json({ error: 'recipient_id and content are required' }, { status: 400 })
-  }
+  const { recipient_id, content, sendEmail } = body
 
   // Enforce that conversations only happen between coach and athletes
   const coachId = process.env.COACH_USER_ID
@@ -88,11 +96,11 @@ export async function POST(request: NextRequest) {
       )
       const { data: recipient } = await serviceSupabase
         .from('profiles')
-        .select('email, full_name')
+        .select('email, full_name, notify_new_message')
         .eq('id', recipient_id)
         .single()
 
-      if (recipient?.email) {
+      if (recipient?.email && recipient.notify_new_message !== false) {
         const resend = new Resend(process.env.RESEND_API_KEY)
         await resend.emails.send({
           from: 'coach@tylerwilksrunning.com',

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/ui/Toast'
 
 interface Insight {
   id: string
@@ -17,6 +18,7 @@ interface Props {
 
 export default function InsightEditor({ insight, athleteId }: Props) {
   const router = useRouter()
+  const { toast } = useToast()
   const [content, setContent] = useState(insight.content)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(insight.approved)
@@ -31,7 +33,11 @@ export default function InsightEditor({ insight, athleteId }: Props) {
 
     if (res.ok) {
       setSaved(true)
+      toast('Insight approved and sent', 'success')
       router.refresh()
+    } else {
+      const data = await res.json()
+      toast(data.error ?? 'Failed to save insight', 'error')
     }
     setSaving(false)
   }

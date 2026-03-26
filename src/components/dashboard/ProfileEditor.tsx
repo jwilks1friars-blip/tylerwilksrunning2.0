@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/ui/Toast'
 
 interface Props {
   initialGoalRace: string
@@ -13,17 +14,14 @@ interface Props {
 
 export default function ProfileEditor({ initialGoalRace, initialGoalTime, initialWeeklyMiles, name, email }: Props) {
   const router = useRouter()
+  const { toast } = useToast()
   const [goalRace, setGoalRace] = useState(initialGoalRace)
   const [goalTime, setGoalTime] = useState(initialGoalTime)
   const [weeklyMiles, setWeeklyMiles] = useState(initialWeeklyMiles?.toString() ?? '')
   const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
-  const [error, setError] = useState('')
 
   async function handleSave() {
     setSaving(true)
-    setSaved(false)
-    setError('')
     const res = await fetch('/api/profile', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -31,12 +29,11 @@ export default function ProfileEditor({ initialGoalRace, initialGoalTime, initia
     })
     setSaving(false)
     if (res.ok) {
-      setSaved(true)
+      toast('Profile saved', 'success')
       router.refresh()
-      setTimeout(() => setSaved(false), 3000)
     } else {
       const data = await res.json()
-      setError(data.error ?? 'Something went wrong')
+      toast(data.error ?? 'Something went wrong', 'error')
     }
   }
 
@@ -102,8 +99,6 @@ export default function ProfileEditor({ initialGoalRace, initialGoalTime, initia
         </div>
       </div>
 
-      {error && <p className="text-xs" style={{ color: '#fc4c02' }}>{error}</p>}
-
       <div className="flex items-center gap-4 pt-1">
         <button
           onClick={handleSave}
@@ -113,9 +108,6 @@ export default function ProfileEditor({ initialGoalRace, initialGoalTime, initia
         >
           {saving ? 'Saving…' : 'Save Changes'}
         </button>
-        {saved && (
-          <p className="text-xs uppercase tracking-widest" style={{ color: '#4ade80' }}>Saved</p>
-        )}
       </div>
     </div>
   )

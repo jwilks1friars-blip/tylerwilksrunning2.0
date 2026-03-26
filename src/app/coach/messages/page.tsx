@@ -15,7 +15,9 @@ export default async function CoachMessagesPage({
   // Verify coach
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user || user.id !== process.env.COACH_USER_ID) redirect('/dashboard')
+  const { getCoachId } = await import('@/lib/coach')
+  const coachId = await getCoachId()
+  if (!user || user.id !== coachId) redirect('/dashboard')
 
   // Use service role to get all active athletes
   const serviceSupabase = createServiceClient(
@@ -26,7 +28,7 @@ export default async function CoachMessagesPage({
   const { data: athletes } = await serviceSupabase
     .from('profiles')
     .select('id, full_name, email, plan_tier')
-    .neq('id', process.env.COACH_USER_ID)
+    .neq('id', coachId)
     .order('full_name', { ascending: true })
 
   return (

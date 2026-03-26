@@ -3,13 +3,15 @@ export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import AthleteConversation from './AthleteConversation'
+import { getCoachId } from '@/lib/coach'
 
 export default async function AthleteMessagesPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const coachId = process.env.COACH_USER_ID!
+  const coachId = await getCoachId()
+  if (!coachId) redirect('/dashboard')
 
   return (
     <div>

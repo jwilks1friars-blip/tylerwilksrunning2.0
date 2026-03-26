@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getStravaActivity, metersToMiles, mpsToMinPerMile } from '@/lib/strava'
+import { getStravaActivity } from '@/lib/strava'
+import { getValidStravaTokenByAthleteId } from '@/lib/strava-auth'
 
 // Strava calls GET to verify the webhook endpoint
 export async function GET(request: NextRequest) {
@@ -28,21 +29,18 @@ export async function POST(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  // Find which user this Strava athlete belongs to
-  const { data: connection } = await supabase
-    .from('strava_connections')
-    .select('user_id, access_token')
-    .eq('strava_athlete_id', body.owner_id)
-    .single()
+  // Find which user this Strava athlete belongs to, refreshing token if needed
+  const result = await getValidStravaTokenByAthleteId(body.owner_id, supabase)
+  if (!result) return NextResponse.json({ received: true })
 
-  if (!connection) return NextResponse.json({ received: true })
+  const { accessToken, userId } = result
 
   // Fetch full activity details from Strava
-  const activity = await getStravaActivity(connection.access_token, body.object_id)
+  const activity = await getStravaActivity(accessToken, body.object_id)
 
   // Save to database
   await supabase.from('activities').upsert({
-    user_id: connection.user_id,
+    user_id: userId,
     strava_id: activity.id,
     name: activity.name,
     distance: activity.distance,
@@ -55,7 +53,13 @@ export async function POST(request: NextRequest) {
     activity_type: activity.type,
     started_at: activity.start_date,
     raw_data: activity,
-  })
+  }, { onConflict: 'strava_id' })
+
+  // Update last_synced_at timestamp
+  await supabase
+    .from('strava_connections')
+    .update({ last_synced_at: new Date().toISOString() })
+    .eq('strava_athlete_id', body.owner_id)
 
   return NextResponse.json({ received: true })
 }

@@ -1,12 +1,22 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAuth, validateBody } from '@/lib/api-helpers'
 
 export async function PATCH(req: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const auth = await requireAuth()
+  if (auth instanceof NextResponse) return auth
+  const { user } = auth
 
-  const { goal_race, goal_time, weekly_miles } = await req.json()
+  const supabase = await createClient()
+
+  const body = await req.json()
+  const validationError = validateBody(body, {
+    goal_time: { type: 'string', maxLength: 20 },
+    weekly_miles: { type: 'number', min: 0, max: 300 },
+  })
+  if (validationError) return NextResponse.json({ error: validationError }, { status: 400 })
+
+  const { goal_race, goal_time, weekly_miles } = body
 
   const { error } = await supabase
     .from('profiles')

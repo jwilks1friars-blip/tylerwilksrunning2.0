@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createClient as createServerClient } from '@/lib/supabase/server'
-import { getAllStravaActivities, refreshStravaToken } from '@/lib/strava'
+import { getAllStravaActivities } from '@/lib/strava'
+import { getValidStravaToken } from '@/lib/strava-auth'
 
 // Allow up to 5 minutes for a full history backfill
 export const maxDuration = 300
@@ -16,28 +17,18 @@ export async function POST() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  // Get the user's Strava connection
-  const { data: connection } = await supabase
-    .from('strava_connections')
-    .select('access_token, refresh_token, token_expires_at')
-    .eq('user_id', user.id)
-    .single()
-
-  if (!connection) return NextResponse.json({ error: 'No Strava connection' }, { status: 400 })
-
-  // Refresh token if expired
-  let accessToken = connection.access_token
-  if (new Date(connection.token_expires_at) <= new Date()) {
-    const refreshed = await refreshStravaToken(connection.refresh_token)
-    accessToken = refreshed.access_token
-    await supabase.from('strava_connections').update({
-      access_token: refreshed.access_token,
-      refresh_token: refreshed.refresh_token,
-      token_expires_at: new Date(refreshed.expires_at * 1000).toISOString(),
-    }).eq('user_id', user.id)
-  }
+  // Get a valid (auto-refreshed if expired) access token
+  const accessToken = await getValidStravaToken(user.id, supabase)
+  if (!accessToken) return NextResponse.json({ error: 'No Strava connection' }, { status: 400 })
 
   const synced = await syncAllActivities(user.id, accessToken, supabase)
+
+  // Track last sync time
+  await supabase
+    .from('strava_connections')
+    .update({ last_synced_at: new Date().toISOString() })
+    .eq('user_id', user.id)
+
   return NextResponse.json({ synced })
 }
 

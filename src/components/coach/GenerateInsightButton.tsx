@@ -2,17 +2,17 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/ui/Toast'
 
 export default function GenerateInsightButton({ athleteId }: { athleteId: string }) {
   const router = useRouter()
+  const { toast } = useToast()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [coachNotes, setCoachNotes] = useState('')
   const [showNotes, setShowNotes] = useState(false)
 
   async function handleGenerate() {
     setLoading(true)
-    setError(null)
 
     const res = await fetch('/api/insights/generate', {
       method: 'POST',
@@ -26,8 +26,9 @@ export default function GenerateInsightButton({ athleteId }: { athleteId: string
     const data = await res.json()
 
     if (!res.ok) {
-      setError(data.error ?? 'Failed to generate insight')
+      toast(data.error ?? 'Failed to generate insight', 'error')
     } else {
+      toast('Insight generated!', 'success')
       setCoachNotes('')
       setShowNotes(false)
       router.refresh()
@@ -86,9 +87,6 @@ export default function GenerateInsightButton({ athleteId }: { athleteId: string
         </button>
       </div>
 
-      {error && (
-        <p className="text-xs" style={{ color: '#e8a0a0' }}>{error}</p>
-      )}
     </div>
   )
 }
