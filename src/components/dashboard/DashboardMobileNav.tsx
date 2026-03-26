@@ -3,15 +3,29 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X } from 'lucide-react'
-import DashboardMessagesLink from '@/app/dashboard/messages/DashboardMessagesLink'
+import { Menu, X, LayoutDashboard, Activity, CalendarDays, Settings, MessageSquare, UserCheck, Zap } from 'lucide-react'
 import SignOutButton from './SignOutButton'
 
-const NAV_LINKS = [
-  { href: '/dashboard', label: 'Overview' },
-  { href: '/dashboard/runs', label: 'Runs' },
-  { href: '/dashboard/training', label: 'Training' },
-  { href: '/dashboard/settings', label: 'Settings' },
+const NAV_SECTIONS = [
+  {
+    label: 'OVERVIEW',
+    links: [
+      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+      { href: '/dashboard/runs', label: 'Runs', icon: Activity, exact: false },
+    ],
+  },
+  {
+    label: 'TRAINING',
+    links: [
+      { href: '/dashboard/training', label: 'Training Plan', icon: CalendarDays, exact: false },
+    ],
+  },
+  {
+    label: 'ACCOUNT',
+    links: [
+      { href: '/dashboard/settings', label: 'Settings', icon: Settings, exact: false },
+    ],
+  },
 ]
 
 interface Props {
@@ -21,26 +35,52 @@ interface Props {
 
 export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
   const [open, setOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(initialUnread)
   const pathname = usePathname()
 
-  // Close drawer when route changes
   useEffect(() => { setOpen(false) }, [pathname])
+
+  useEffect(() => {
+    if (isCoach) return
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch('/api/messages/unread-counts')
+        if (res.ok) {
+          const data = await res.json()
+          setUnreadCount(data.total ?? 0)
+        }
+      } catch { /* ignore */ }
+    }
+    const interval = setInterval(fetchUnread, 15_000)
+    return () => clearInterval(interval)
+  }, [isCoach])
+
+  const isActive = (href: string, exact: boolean) =>
+    exact ? pathname === href : pathname.startsWith(href)
 
   return (
     <>
       {/* Mobile top bar */}
       <div
-        className="md:hidden flex items-center justify-between px-5 py-4"
+        className="md:hidden flex items-center justify-between px-5 h-14"
         style={{ borderBottom: '1px solid #1e1b18', backgroundColor: '#0a0908' }}
       >
-        <Link href="/dashboard">
-          <h1
-            className="text-base font-semibold uppercase tracking-widest leading-tight"
-            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-6 h-6 flex items-center justify-center rounded-md"
+            style={{ backgroundColor: '#fc4c02' }}
           >
-            Tyler Wilks Running
-          </h1>
-        </Link>
+            <Zap size={12} color="white" strokeWidth={2.5} />
+          </div>
+          <Link href="/dashboard">
+            <span
+              className="text-sm font-semibold uppercase tracking-widest"
+              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+            >
+              Tyler Wilks Running
+            </span>
+          </Link>
+        </div>
         <button
           onClick={() => setOpen(true)}
           className="p-1"
@@ -62,18 +102,30 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
 
       {/* Slide-in drawer */}
       <div
-        className={`md:hidden fixed top-0 left-0 h-full z-50 w-64 flex flex-col px-6 py-8 transition-transform duration-200 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`md:hidden fixed top-0 left-0 h-full z-50 w-64 flex flex-col transition-transform duration-200 ${open ? 'translate-x-0' : '-translate-x-full'}`}
         style={{ backgroundColor: '#0a0908', borderRight: '1px solid #1e1b18' }}
       >
-        <div className="flex items-start justify-between mb-10">
-          <Link href="/dashboard" onClick={() => setOpen(false)}>
-            <h1
-              className="text-lg font-semibold uppercase tracking-widest leading-tight"
-              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+        {/* Drawer header */}
+        <div
+          className="flex items-center justify-between px-5 h-14 shrink-0"
+          style={{ borderBottom: '1px solid #1e1b18' }}
+        >
+          <div className="flex items-center gap-2.5">
+            <div
+              className="w-6 h-6 flex items-center justify-center rounded-md"
+              style={{ backgroundColor: '#fc4c02' }}
             >
-              Tyler Wilks<br />Running
-            </h1>
-          </Link>
+              <Zap size={12} color="white" strokeWidth={2.5} />
+            </div>
+            <Link href="/dashboard" onClick={() => setOpen(false)}>
+              <span
+                className="text-sm font-semibold uppercase tracking-widest"
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+              >
+                Tyler Wilks Running
+              </span>
+            </Link>
+          </div>
           <button
             onClick={() => setOpen(false)}
             className="p-1"
@@ -84,37 +136,95 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
           </button>
         </div>
 
-        <nav className="space-y-1 flex-1">
-          {NAV_LINKS.map(link => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="block py-2 px-3 text-xs uppercase tracking-widest rounded transition-colors hover:text-[#f5f2ee]"
-              style={{ color: '#6b6560' }}
-            >
-              {link.label}
-            </Link>
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-5 overflow-y-auto space-y-6">
+          {NAV_SECTIONS.map((section) => (
+            <div key={section.label}>
+              <p
+                className="text-xs px-3 mb-1.5 font-semibold tracking-widest"
+                style={{ color: '#3a3633' }}
+              >
+                {section.label}
+              </p>
+              <div className="space-y-0.5">
+                {section.links.map((link) => {
+                  const Icon = link.icon
+                  const active = isActive(link.href, link.exact)
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors"
+                      style={{
+                        color: active ? '#f5f2ee' : '#6b6560',
+                        backgroundColor: active ? '#1e1b18' : 'transparent',
+                      }}
+                    >
+                      <Icon size={16} strokeWidth={active ? 2 : 1.5} />
+                      <span>{link.label}</span>
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
           ))}
 
+          {/* Messages */}
           {!isCoach && (
-            <DashboardMessagesLink initialUnread={initialUnread} />
+            <div>
+              <p
+                className="text-xs px-3 mb-1.5 font-semibold tracking-widest"
+                style={{ color: '#3a3633' }}
+              >
+                COACH
+              </p>
+              <Link
+                href="/dashboard/messages"
+                className="flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors"
+                style={{
+                  color: pathname.startsWith('/dashboard/messages') ? '#f5f2ee' : '#6b6560',
+                  backgroundColor: pathname.startsWith('/dashboard/messages') ? '#1e1b18' : 'transparent',
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <MessageSquare size={16} strokeWidth={pathname.startsWith('/dashboard/messages') ? 2 : 1.5} />
+                  <span>Messages</span>
+                </div>
+                {unreadCount > 0 && (
+                  <span
+                    className="text-xs font-semibold px-1.5 py-0.5 rounded-full"
+                    style={{ backgroundColor: '#fc4c02', color: '#fff', fontSize: '10px', minWidth: '18px', textAlign: 'center' }}
+                  >
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
+            </div>
           )}
 
+          {/* Coach link */}
           {isCoach && (
-            <>
-              <div className="my-3" style={{ borderTop: '1px solid #1e1b18' }} />
+            <div>
+              <p
+                className="text-xs px-3 mb-1.5 font-semibold tracking-widest"
+                style={{ color: '#3a3633' }}
+              >
+                COACH
+              </p>
               <Link
                 href="/coach"
-                className="block py-2 px-3 text-xs uppercase tracking-widest rounded transition-colors hover:text-[#f5f2ee]"
+                className="flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors"
                 style={{ color: '#6b6560' }}
               >
-                Coach Dashboard
+                <UserCheck size={16} strokeWidth={1.5} />
+                <span>Coach Dashboard</span>
               </Link>
-            </>
+            </div>
           )}
         </nav>
 
-        <div className="pt-6" style={{ borderTop: '1px solid #1e1b18' }}>
+        {/* Footer */}
+        <div className="px-4 py-4 shrink-0" style={{ borderTop: '1px solid #1e1b18' }}>
           <SignOutButton />
         </div>
       </div>
