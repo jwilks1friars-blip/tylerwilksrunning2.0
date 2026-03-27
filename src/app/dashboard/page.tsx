@@ -16,7 +16,6 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Plus,
-  Sparkles,
   ChevronRight,
 } from 'lucide-react'
 
@@ -200,15 +199,6 @@ export default async function DashboardPage() {
             >
               <Plus size={13} />
               Log Run
-            </button>
-          </Link>
-          <Link href="/dashboard/training">
-            <button
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded-md transition-colors hover:opacity-90"
-              style={{ backgroundColor: '#1a1917', color: '#ffffff' }}
-            >
-              <Sparkles size={13} />
-              Generate Plan
             </button>
           </Link>
         </div>
