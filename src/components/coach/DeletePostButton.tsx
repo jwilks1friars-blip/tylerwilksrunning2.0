@@ -28,7 +28,7 @@ export default function DeletePostButton({ slug }: { slug: string }) {
         <button
           onClick={() => setConfirming(false)}
           className="text-xs uppercase tracking-widest"
-          style={{ color: '#6b6560' }}
+          style={{ color: '#9c9895' }}
         >
           Cancel
         </button>
@@ -40,7 +40,7 @@ export default function DeletePostButton({ slug }: { slug: string }) {
     <button
       onClick={() => setConfirming(true)}
       className="text-xs uppercase tracking-widest transition-colors hover:text-[#e87070]"
-      style={{ color: '#2a2521' }}
+      style={{ color: '#c8c4c0' }}
     >
       Delete
     </button>

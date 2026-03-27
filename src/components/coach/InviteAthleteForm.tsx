@@ -54,7 +54,7 @@ export default function InviteAthleteForm() {
       <button
         onClick={() => setOpen(true)}
         className="px-4 py-2 text-xs uppercase tracking-widest font-medium transition-opacity hover:opacity-80"
-        style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}
+        style={{ backgroundColor: '#1a1917', color: '#ffffff', borderRadius: '2px' }}
       >
         Add Athlete
       </button>
@@ -62,29 +62,29 @@ export default function InviteAthleteForm() {
       {open && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center px-4"
-          style={{ backgroundColor: 'rgba(10,9,8,0.85)' }}
+          style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}
           onClick={handleClose}
         >
           <div
             className="w-full max-w-md p-8"
-            style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}
+            style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea', borderRadius: '4px' }}
             onClick={e => e.stopPropagation()}
           >
             {success ? (
               <div className="text-center py-4">
                 <p
                   className="text-2xl font-semibold uppercase tracking-widest mb-3"
-                  style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+                  style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
                 >
                   Invite Sent
                 </p>
-                <p className="text-sm mb-6" style={{ color: '#6b6560' }}>
+                <p className="text-sm mb-6" style={{ color: '#9c9895' }}>
                   {form.email || 'The athlete'} will receive an email with a link to access their dashboard.
                 </p>
                 <button
                   onClick={handleClose}
-                  className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-                  style={{ color: '#6b6560' }}
+                  className="text-xs uppercase tracking-widest transition-colors hover:text-[#1a1917]"
+                  style={{ color: '#9c9895' }}
                 >
                   Close
                 </button>
@@ -94,14 +94,14 @@ export default function InviteAthleteForm() {
                 <div className="flex items-center justify-between mb-6">
                   <p
                     className="text-xl font-semibold uppercase tracking-widest"
-                    style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+                    style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
                   >
                     Add Athlete
                   </p>
                   <button
                     onClick={handleClose}
-                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-                    style={{ color: '#6b6560' }}
+                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#1a1917]"
+                    style={{ color: '#9c9895' }}
                   >
                     Cancel
                   </button>
@@ -110,7 +110,7 @@ export default function InviteAthleteForm() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>
+                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>
                         Full Name *
                       </label>
                       <input
@@ -119,13 +119,13 @@ export default function InviteAthleteForm() {
                         onChange={handleChange}
                         required
                         className="w-full px-3 py-2.5 text-sm bg-transparent outline-none"
-                        style={{ border: '1px solid #2a2521', color: '#f5f2ee' }}
+                        style={{ border: '1px solid #e0deda', color: '#1a1917' }}
                         placeholder="Jane Smith"
                       />
                     </div>
 
                     <div className="col-span-2">
-                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>
+                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>
                         Email *
                       </label>
                       <input
@@ -135,13 +135,13 @@ export default function InviteAthleteForm() {
                         onChange={handleChange}
                         required
                         className="w-full px-3 py-2.5 text-sm bg-transparent outline-none"
-                        style={{ border: '1px solid #2a2521', color: '#f5f2ee' }}
+                        style={{ border: '1px solid #e0deda', color: '#1a1917' }}
                         placeholder="jane@example.com"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>
+                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>
                         Goal Race
                       </label>
                       <input
@@ -149,13 +149,13 @@ export default function InviteAthleteForm() {
                         value={form.goalRace}
                         onChange={handleChange}
                         className="w-full px-3 py-2.5 text-sm bg-transparent outline-none"
-                        style={{ border: '1px solid #2a2521', color: '#f5f2ee' }}
+                        style={{ border: '1px solid #e0deda', color: '#1a1917' }}
                         placeholder="Boston Marathon"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>
+                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>
                         Goal Time
                       </label>
                       <input
@@ -163,21 +163,21 @@ export default function InviteAthleteForm() {
                         value={form.goalTime}
                         onChange={handleChange}
                         className="w-full px-3 py-2.5 text-sm bg-transparent outline-none"
-                        style={{ border: '1px solid #2a2521', color: '#f5f2ee' }}
+                        style={{ border: '1px solid #e0deda', color: '#1a1917' }}
                         placeholder="3:30:00"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>
+                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>
                         Experience
                       </label>
                       <select
                         name="experience"
                         value={form.experience}
                         onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-sm bg-[#141210] outline-none"
-                        style={{ border: '1px solid #2a2521', color: form.experience ? '#f5f2ee' : '#6b6560' }}
+                        className="w-full px-3 py-2.5 text-sm bg-white outline-none"
+                        style={{ border: '1px solid #e0deda', color: form.experience ? '#1a1917' : '#9c9895' }}
                       >
                         <option value="">Select</option>
                         <option value="beginner">Beginner</option>
@@ -187,7 +187,7 @@ export default function InviteAthleteForm() {
                     </div>
 
                     <div>
-                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>
+                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>
                         Weekly Miles
                       </label>
                       <input
@@ -196,7 +196,7 @@ export default function InviteAthleteForm() {
                         value={form.weeklyMiles}
                         onChange={handleChange}
                         className="w-full px-3 py-2.5 text-sm bg-transparent outline-none"
-                        style={{ border: '1px solid #2a2521', color: '#f5f2ee' }}
+                        style={{ border: '1px solid #e0deda', color: '#1a1917' }}
                         placeholder="30"
                       />
                     </div>
@@ -210,7 +210,7 @@ export default function InviteAthleteForm() {
                     type="submit"
                     disabled={loading}
                     className="w-full py-3 text-xs uppercase tracking-widest font-medium transition-opacity hover:opacity-80 disabled:opacity-50 mt-2"
-                    style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}
+                    style={{ backgroundColor: '#1a1917', color: '#ffffff', borderRadius: '2px' }}
                   >
                     {loading ? 'Sending Invite...' : 'Add Athlete & Send Invite'}
                   </button>

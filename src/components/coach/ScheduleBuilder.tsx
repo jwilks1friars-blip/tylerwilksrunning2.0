@@ -12,7 +12,7 @@ const TYPE_COLORS: Record<WorkoutType, string> = {
   intervals: '#f87171',
   long: '#60a5fa',
   recovery: '#c4b5fd',
-  rest: '#3a3633',
+  rest: '#ebebea',
   race: '#fc4c02',
 }
 
@@ -22,7 +22,7 @@ const TYPE_TEXT: Record<WorkoutType, string> = {
   intervals: '#450a0a',
   long: '#082f49',
   recovery: '#2e1065',
-  rest: '#6b6560',
+  rest: '#9c9895',
   race: '#fff',
 }
 
@@ -250,37 +250,37 @@ export default function ScheduleBuilder({
   if (!plan) {
     return (
       <div className="max-w-lg">
-        <div className="p-8" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
+        <div className="p-8" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
           <p className="text-xl font-semibold uppercase tracking-widest mb-6"
-            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
             Create Training Plan
           </p>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>Goal Race</label>
+              <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>Goal Race</label>
               <input value={planForm.goalRace} onChange={e => setPlanForm(p => ({ ...p, goalRace: e.target.value }))}
                 className="w-full px-3 py-2.5 text-sm bg-transparent outline-none"
-                style={{ border: '1px solid #2a2521', color: '#f5f2ee' }} placeholder="Boston Marathon" />
+                style={{ border: '1px solid #e0deda', color: '#1a1917' }} placeholder="Boston Marathon" />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>Goal Time</label>
+              <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>Goal Time</label>
               <input value={planForm.goalTime} onChange={e => setPlanForm(p => ({ ...p, goalTime: e.target.value }))}
                 className="w-full px-3 py-2.5 text-sm bg-transparent outline-none"
-                style={{ border: '1px solid #2a2521', color: '#f5f2ee' }} placeholder="3:30:00" />
+                style={{ border: '1px solid #e0deda', color: '#1a1917' }} placeholder="3:30:00" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>Start Date</label>
+                <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>Start Date</label>
                 <input type="date" value={planForm.startDate} onChange={e => setPlanForm(p => ({ ...p, startDate: e.target.value }))}
-                  className="w-full px-3 py-2.5 text-sm bg-[#141210] outline-none"
-                  style={{ border: '1px solid #2a2521', color: '#f5f2ee' }} />
+                  className="w-full px-3 py-2.5 text-sm bg-white outline-none"
+                  style={{ border: '1px solid #e0deda', color: '#1a1917' }} />
               </div>
               <div>
-                <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>Race Date</label>
+                <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>Race Date</label>
                 <input type="date" value={planForm.raceDate} onChange={e => setPlanForm(p => ({ ...p, raceDate: e.target.value }))}
-                  className="w-full px-3 py-2.5 text-sm bg-[#141210] outline-none"
-                  style={{ border: '1px solid #2a2521', color: '#f5f2ee' }} />
+                  className="w-full px-3 py-2.5 text-sm bg-white outline-none"
+                  style={{ border: '1px solid #e0deda', color: '#1a1917' }} />
               </div>
             </div>
           </div>
@@ -290,12 +290,12 @@ export default function ScheduleBuilder({
           <div className="flex gap-3 mt-6">
             <button onClick={handleGeneratePlan} disabled={loading}
               className="flex-1 py-3 text-xs uppercase tracking-widest font-medium transition-opacity hover:opacity-80 disabled:opacity-50"
-              style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}>
+              style={{ backgroundColor: '#1a1917', color: '#ffffff', borderRadius: '2px' }}>
               {loading ? 'Generating...' : 'Generate with AI'}
             </button>
             <button onClick={handleCreateEmptyPlan} disabled={loading}
               className="flex-1 py-3 text-xs uppercase tracking-widest transition-opacity hover:opacity-80 disabled:opacity-50"
-              style={{ border: '1px solid #2a2521', color: '#e8e0d4', borderRadius: '2px' }}>
+              style={{ border: '1px solid #e0deda', color: '#6b6865', borderRadius: '2px' }}>
               Create Empty
             </button>
           </div>
@@ -308,15 +308,15 @@ export default function ScheduleBuilder({
   return (
     <div>
       {/* Tabs */}
-      <div className="flex gap-0 mb-6" style={{ borderBottom: '1px solid #1e1b18' }}>
+      <div className="flex gap-0 mb-6" style={{ borderBottom: '1px solid #ebebea' }}>
         {(['schedule', 'weekly-note'] as const).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className="px-1 pb-3 mr-6 text-xs uppercase tracking-widest transition-colors"
             style={{
-              color: activeTab === tab ? '#f5f2ee' : '#6b6560',
-              borderBottom: activeTab === tab ? '1px solid #f5f2ee' : '1px solid transparent',
+              color: activeTab === tab ? '#1a1917' : '#9c9895',
+              borderBottom: activeTab === tab ? '1px solid #1a1917' : '1px solid transparent',
               marginBottom: '-1px',
             }}
           >
@@ -327,19 +327,19 @@ export default function ScheduleBuilder({
 
       {/* Plan header */}
       <div className="flex items-start justify-between mb-6 p-4"
-        style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
+        style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
         <div>
-          <p className="text-sm font-medium" style={{ color: '#f5f2ee' }}>
+          <p className="text-sm font-medium" style={{ color: '#1a1917' }}>
             {plan.goal_race ?? 'Training Plan'}
-            {plan.goal_time && <span style={{ color: '#6b6560' }}> — {plan.goal_time}</span>}
+            {plan.goal_time && <span style={{ color: '#9c9895' }}> — {plan.goal_time}</span>}
           </p>
-          <p className="text-xs mt-1" style={{ color: '#6b6560' }}>
+          <p className="text-xs mt-1" style={{ color: '#9c9895' }}>
             {format(parseISO(plan.start_date), 'MMM d')} → {format(parseISO(plan.race_date), 'MMM d, yyyy')} · {plan.total_weeks} weeks
           </p>
         </div>
         <button onClick={() => { setPlan(null); setWorkouts([]) }}
-          className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-          style={{ color: '#6b6560' }}>
+          className="text-xs uppercase tracking-widest transition-colors hover:text-[#1a1917]"
+          style={{ color: '#9c9895' }}>
           New Plan
         </button>
       </div>
@@ -352,10 +352,10 @@ export default function ScheduleBuilder({
           {weeks.map(({ weekNum, weekStart, days }) => (
             <div key={weekNum}>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>
+                <p className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>
                   Week {weekNum} — {format(weekStart, 'MMM d')}
                   {weeklyNotes[weekNum] && (
-                    <span className="ml-3 normal-case tracking-normal" style={{ color: '#3a3633' }}>
+                    <span className="ml-3 normal-case tracking-normal" style={{ color: '#c8c4c0' }}>
                       · note
                     </span>
                   )}
@@ -363,42 +363,42 @@ export default function ScheduleBuilder({
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => { setSelectedWeekNum(weekNum); setActiveTab('weekly-note') }}
-                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-                    style={{ color: '#3a3633' }}>
+                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#1a1917]"
+                    style={{ color: '#c8c4c0' }}>
                     Note
                   </button>
                   <button
                     onClick={() => openAdd(format(weekStart, 'yyyy-MM-dd'))}
-                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-                    style={{ color: '#6b6560' }}>
+                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#1a1917]"
+                    style={{ color: '#9c9895' }}>
                     + Add
                   </button>
                 </div>
               </div>
 
-              <div style={{ border: '1px solid #1e1b18' }}>
+              <div style={{ border: '1px solid #ebebea' }}>
                 {days.map(({ date, dayWorkouts }, i) => (
                   <div key={date}>
                     {dayWorkouts.length === 0 ? (
                       <div
-                        className="flex items-center justify-between px-4 py-2.5 cursor-pointer hover:bg-[#141210] transition-colors"
-                        style={{ borderTop: i === 0 ? 'none' : '1px solid #1e1b18' }}
+                        className="flex items-center justify-between px-4 py-2.5 cursor-pointer hover:bg-[#f5f4f2] transition-colors"
+                        style={{ borderTop: i === 0 ? 'none' : '1px solid #ebebea' }}
                         onClick={() => openAdd(date)}
                       >
-                        <span className="text-xs" style={{ color: '#2a2521' }}>
+                        <span className="text-xs" style={{ color: '#c8c4c0' }}>
                           {format(parseISO(date), 'EEE MMM d')}
                         </span>
-                        <span className="text-xs" style={{ color: '#2a2521' }}>+</span>
+                        <span className="text-xs" style={{ color: '#c8c4c0' }}>+</span>
                       </div>
                     ) : (
                       dayWorkouts.map(workout => (
                         <div
                           key={workout.id}
                           className="flex items-center justify-between px-4 py-3"
-                          style={{ borderTop: i === 0 ? 'none' : '1px solid #1e1b18' }}
+                          style={{ borderTop: i === 0 ? 'none' : '1px solid #ebebea' }}
                         >
                           <div className="flex items-center gap-3">
-                            <span className="text-xs w-24 shrink-0" style={{ color: '#6b6560' }}>
+                            <span className="text-xs w-24 shrink-0" style={{ color: '#9c9895' }}>
                               {format(parseISO(date), 'EEE MMM d')}
                             </span>
                             <span
@@ -412,25 +412,25 @@ export default function ScheduleBuilder({
                               {workout.workout_type}
                             </span>
                             {workout.target_distance_miles && (
-                              <span className="text-sm tabular-nums" style={{ color: '#f5f2ee' }}>
+                              <span className="text-sm tabular-nums" style={{ color: '#1a1917' }}>
                                 {workout.target_distance_miles} mi
                               </span>
                             )}
                             {workout.target_pace_desc && (
-                              <span className="text-xs hidden md:block" style={{ color: '#6b6560' }}>
+                              <span className="text-xs hidden md:block" style={{ color: '#9c9895' }}>
                                 {workout.target_pace_desc}
                               </span>
                             )}
                             {workout.description && (
-                              <span className="text-xs hidden lg:block truncate max-w-xs" style={{ color: '#3a3633' }}>
+                              <span className="text-xs hidden lg:block truncate max-w-xs" style={{ color: '#c8c4c0' }}>
                                 {workout.description}
                               </span>
                             )}
                           </div>
                           <button
                             onClick={() => openEdit(workout)}
-                            className="text-xs uppercase tracking-widest ml-4 shrink-0 transition-colors hover:text-[#f5f2ee]"
-                            style={{ color: '#3a3633' }}
+                            className="text-xs uppercase tracking-widest ml-4 shrink-0 transition-colors hover:text-[#1a1917]"
+                            style={{ color: '#c8c4c0' }}
                           >
                             Edit
                           </button>
@@ -453,22 +453,22 @@ export default function ScheduleBuilder({
             <button
               onClick={() => setSelectedWeekNum(n => Math.max(1, n - 1))}
               disabled={selectedWeekNum <= 1}
-              className="w-8 h-8 flex items-center justify-center text-sm transition-colors hover:text-[#f5f2ee] disabled:opacity-30"
-              style={{ color: '#6b6560', border: '1px solid #1e1b18' }}
+              className="w-8 h-8 flex items-center justify-center text-sm transition-colors hover:text-[#1a1917] disabled:opacity-30"
+              style={{ color: '#9c9895', border: '1px solid #ebebea' }}
             >
               ←
             </button>
             <div className="text-center" style={{ minWidth: '120px' }}>
-              <p className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>Week</p>
+              <p className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>Week</p>
               <p className="text-2xl font-semibold"
-                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
                 {selectedWeekNum}
-                <span className="text-sm font-normal ml-1" style={{ color: '#6b6560' }}>
+                <span className="text-sm font-normal ml-1" style={{ color: '#9c9895' }}>
                   / {weeks.length}
                 </span>
               </p>
               {weeks[selectedWeekNum - 1] && (
-                <p className="text-xs mt-0.5" style={{ color: '#3a3633' }}>
+                <p className="text-xs mt-0.5" style={{ color: '#c8c4c0' }}>
                   {format(weeks[selectedWeekNum - 1].weekStart, 'MMM d')}
                 </p>
               )}
@@ -476,8 +476,8 @@ export default function ScheduleBuilder({
             <button
               onClick={() => setSelectedWeekNum(n => Math.min(weeks.length, n + 1))}
               disabled={selectedWeekNum >= weeks.length}
-              className="w-8 h-8 flex items-center justify-center text-sm transition-colors hover:text-[#f5f2ee] disabled:opacity-30"
-              style={{ color: '#6b6560', border: '1px solid #1e1b18' }}
+              className="w-8 h-8 flex items-center justify-center text-sm transition-colors hover:text-[#1a1917] disabled:opacity-30"
+              style={{ color: '#9c9895', border: '1px solid #ebebea' }}
             >
               →
             </button>
@@ -485,7 +485,7 @@ export default function ScheduleBuilder({
 
           {/* Note textarea */}
           <div className="mb-4">
-            <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: '#6b6560' }}>
+            <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: '#9c9895' }}>
               Note to Athlete — Week {selectedWeekNum}
             </label>
             <textarea
@@ -497,7 +497,7 @@ export default function ScheduleBuilder({
               }}
               rows={14}
               className="w-full px-4 py-3 text-sm bg-transparent outline-none resize-none leading-relaxed"
-              style={{ border: '1px solid #2a2521', color: '#f5f2ee' }}
+              style={{ border: '1px solid #e0deda', color: '#1a1917' }}
               placeholder={`Write your coaching note for Week ${selectedWeekNum}...\n\nWhat's the focus of this week? Any key workouts to highlight? Advice on pacing, recovery, or mindset?`}
             />
           </div>
@@ -508,12 +508,12 @@ export default function ScheduleBuilder({
               onClick={handleSaveWeeklyNote}
               disabled={noteSaving}
               className="px-6 py-3 text-xs uppercase tracking-widest font-medium transition-opacity hover:opacity-80 disabled:opacity-50"
-              style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}
+              style={{ backgroundColor: '#1a1917', color: '#ffffff', borderRadius: '2px' }}
             >
               {noteSaving ? 'Saving...' : 'Save Note'}
             </button>
             {noteSaved && (
-              <p className="text-xs uppercase tracking-widest" style={{ color: '#4ade80' }}>
+              <p className="text-xs uppercase tracking-widest" style={{ color: '#22c55e' }}>
                 Saved
               </p>
             )}
@@ -525,64 +525,64 @@ export default function ScheduleBuilder({
       {workoutModal.open && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center px-4"
-          style={{ backgroundColor: 'rgba(10,9,8,0.85)' }}
+          style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}
           onClick={closeModal}
         >
           <div
             className="w-full max-w-md p-8"
-            style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}
+            style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea', borderRadius: '4px' }}
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-6">
               <p className="text-xl font-semibold uppercase tracking-widest"
-                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
                 {workoutModal.editing ? 'Edit Workout' : 'Add Workout'}
               </p>
               <button onClick={closeModal} className="text-xs uppercase tracking-widest"
-                style={{ color: '#6b6560' }}>Cancel</button>
+                style={{ color: '#9c9895' }}>Cancel</button>
             </div>
 
             <form onSubmit={handleSaveWorkout} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>Date</label>
+                  <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>Date</label>
                   <input type="date" value={workoutForm.scheduledDate}
                     onChange={e => setWorkoutForm(p => ({ ...p, scheduledDate: e.target.value }))}
-                    required className="w-full px-3 py-2.5 text-sm bg-[#141210] outline-none"
-                    style={{ border: '1px solid #2a2521', color: '#f5f2ee' }} />
+                    required className="w-full px-3 py-2.5 text-sm bg-white outline-none"
+                    style={{ border: '1px solid #e0deda', color: '#1a1917' }} />
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>Type</label>
+                  <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>Type</label>
                   <select value={workoutForm.workoutType}
                     onChange={e => setWorkoutForm(p => ({ ...p, workoutType: e.target.value as WorkoutType }))}
-                    className="w-full px-3 py-2.5 text-sm bg-[#141210] outline-none"
-                    style={{ border: '1px solid #2a2521', color: '#f5f2ee' }}>
+                    className="w-full px-3 py-2.5 text-sm bg-white outline-none"
+                    style={{ border: '1px solid #e0deda', color: '#1a1917' }}>
                     {WORKOUT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>Distance (mi)</label>
+                  <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>Distance (mi)</label>
                   <input type="number" step="0.1" value={workoutForm.targetDistanceMiles}
                     onChange={e => setWorkoutForm(p => ({ ...p, targetDistanceMiles: e.target.value }))}
                     className="w-full px-3 py-2.5 text-sm bg-transparent outline-none"
-                    style={{ border: '1px solid #2a2521', color: '#f5f2ee' }} placeholder="5.0" />
+                    style={{ border: '1px solid #e0deda', color: '#1a1917' }} placeholder="5.0" />
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>Pace</label>
+                  <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>Pace</label>
                   <input value={workoutForm.targetPaceDesc}
                     onChange={e => setWorkoutForm(p => ({ ...p, targetPaceDesc: e.target.value }))}
                     className="w-full px-3 py-2.5 text-sm bg-transparent outline-none"
-                    style={{ border: '1px solid #2a2521', color: '#f5f2ee' }} placeholder="7:30/mi" />
+                    style={{ border: '1px solid #e0deda', color: '#1a1917' }} placeholder="7:30/mi" />
                 </div>
               </div>
 
               {/* Notes — bigger textarea */}
               <div>
-                <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#6b6560' }}>Notes</label>
+                <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>Notes</label>
                 <textarea value={workoutForm.description}
                   onChange={e => setWorkoutForm(p => ({ ...p, description: e.target.value }))}
                   rows={7} className="w-full px-3 py-2.5 text-sm bg-transparent outline-none resize-none leading-relaxed"
-                  style={{ border: '1px solid #2a2521', color: '#f5f2ee' }}
+                  style={{ border: '1px solid #e0deda', color: '#1a1917' }}
                   placeholder="Workout notes, instructions, or cues..." />
               </div>
 
@@ -591,14 +591,14 @@ export default function ScheduleBuilder({
               <div className="flex gap-3">
                 <button type="submit" disabled={loading}
                   className="flex-1 py-3 text-xs uppercase tracking-widest font-medium transition-opacity hover:opacity-80 disabled:opacity-50"
-                  style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}>
+                  style={{ backgroundColor: '#1a1917', color: '#ffffff', borderRadius: '2px' }}>
                   {loading ? 'Saving...' : 'Save Workout'}
                 </button>
                 {workoutModal.editing && (
                   <button type="button" onClick={() => handleDeleteWorkout(workoutModal.editing!.id)}
                     disabled={loading}
                     className="px-4 py-3 text-xs uppercase tracking-widest transition-opacity hover:opacity-80 disabled:opacity-50"
-                    style={{ border: '1px solid #2a2521', color: '#fc4c02', borderRadius: '2px' }}>
+                    style={{ border: '1px solid #e0deda', color: '#fc4c02', borderRadius: '2px' }}>
                     Delete
                   </button>
                 )}

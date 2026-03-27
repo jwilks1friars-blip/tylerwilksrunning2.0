@@ -36,11 +36,11 @@ export default async function CoachBlogPage() {
         <div>
           <h2
             className="text-3xl font-semibold uppercase tracking-widest"
-            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
           >
             Blog
           </h2>
-          <p className="text-sm mt-1" style={{ color: '#6b6560' }}>
+          <p className="text-sm mt-1" style={{ color: '#9c9895' }}>
             {allPosts.length} post{allPosts.length !== 1 ? 's' : ''}
           </p>
         </div>
@@ -48,7 +48,7 @@ export default async function CoachBlogPage() {
         <Link
           href="/coach/blog/new"
           className="text-xs uppercase tracking-widest px-4 py-2 transition-opacity hover:opacity-80"
-          style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}
+          style={{ backgroundColor: '#1a1917', color: '#ffffff', borderRadius: '2px' }}
         >
           + New Post
         </Link>
@@ -57,13 +57,13 @@ export default async function CoachBlogPage() {
       {allPosts.length === 0 && (
         <div
           className="p-8 text-center"
-          style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}
+          style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}
         >
-          <p className="text-sm mb-4" style={{ color: '#6b6560' }}>No posts yet.</p>
+          <p className="text-sm mb-4" style={{ color: '#9c9895' }}>No posts yet.</p>
           <Link
             href="/coach/blog/new"
             className="text-xs uppercase tracking-widest underline"
-            style={{ color: '#e8e0d4' }}
+            style={{ color: '#6b6865' }}
           >
             Write your first post →
           </Link>
@@ -76,8 +76,8 @@ export default async function CoachBlogPage() {
           <div
             className="grid text-xs uppercase tracking-widest pb-2 mb-1 px-4"
             style={{
-              color: '#6b6560',
-              borderBottom: '1px solid #1e1b18',
+              color: '#9c9895',
+              borderBottom: '1px solid #ebebea',
               gridTemplateColumns: '1fr 100px 90px 160px',
             }}
           >
@@ -95,13 +95,13 @@ export default async function CoachBlogPage() {
                 style={{ gridTemplateColumns: '1fr 100px 90px 120px' }}
               >
                 <div>
-                  <p className="text-sm" style={{ color: '#f5f2ee' }}>{post.title}</p>
-                  <p className="text-xs mt-0.5" style={{ color: '#2a2521' }}>
+                  <p className="text-sm" style={{ color: '#1a1917' }}>{post.title}</p>
+                  <p className="text-xs mt-0.5" style={{ color: '#9c9895' }}>
                     {format(new Date(post.date), 'MMM d, yyyy')} · /{post.slug}
                   </p>
                 </div>
 
-                <span className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>
+                <span className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>
                   {post.category}
                 </span>
 
@@ -112,16 +112,16 @@ export default async function CoachBlogPage() {
                 <div className="flex justify-end gap-3 items-center">
                   <Link
                     href={`/coach/blog/${post.slug}/edit`}
-                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-                    style={{ color: '#6b6560' }}
+                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#1a1917]"
+                    style={{ color: '#9c9895' }}
                   >
                     Edit
                   </Link>
                   <Link
                     href={`/blog/${post.slug}`}
                     target="_blank"
-                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-                    style={{ color: '#6b6560' }}
+                    className="text-xs uppercase tracking-widest transition-colors hover:text-[#1a1917]"
+                    style={{ color: '#9c9895' }}
                   >
                     View
                   </Link>
