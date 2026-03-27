@@ -6,14 +6,18 @@ import SignOutButton from '@/components/dashboard/SignOutButton'
 import DashboardMobileNav from '@/components/dashboard/DashboardMobileNav'
 import DashboardSidebarNav from '@/components/dashboard/DashboardSidebarNav'
 import { Bell, Search, Settings, Zap } from 'lucide-react'
+import { redirect } from 'next/navigation'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const isCoach = user?.id === process.env.COACH_USER_ID
+
+  if (!user) redirect('/login')
+
+  const isCoach = user.id === process.env.COACH_USER_ID
 
   let unreadCount = 0
-  if (user && !isCoach) {
+  if (!isCoach) {
     const { count } = await supabase
       .from('messages')
       .select('id', { count: 'exact', head: true })
@@ -25,7 +29,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const { data: profile } = await supabase
     .from('profiles')
     .select('full_name')
-    .eq('id', user!.id)
+    .eq('id', user.id)
     .single()
 
   const fullName = profile?.full_name ?? 'Athlete'
