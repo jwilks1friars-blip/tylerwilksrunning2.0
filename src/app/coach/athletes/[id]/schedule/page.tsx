@@ -50,8 +50,8 @@ export default async function AthleteSchedulePage({
     <div className="max-w-4xl">
       <Link
         href={`/coach/athletes/${id}`}
-        className="inline-flex items-center gap-2 text-xs uppercase tracking-widest mb-8 transition-colors hover:text-[#f5f2ee]"
-        style={{ color: '#6b6560' }}
+        className="inline-flex items-center gap-2 text-xs uppercase tracking-widest mb-8 transition-colors hover:text-[#1a1917]"
+        style={{ color: '#9c9895' }}
       >
         ← {profile.full_name ?? 'Athlete'}
       </Link>
@@ -59,11 +59,11 @@ export default async function AthleteSchedulePage({
       <div className="mb-8">
         <h2
           className="text-3xl font-semibold uppercase tracking-widest"
-          style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+          style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
         >
           Schedule
         </h2>
-        <p className="text-sm mt-1" style={{ color: '#6b6560' }}>
+        <p className="text-sm mt-1" style={{ color: '#9c9895' }}>
           {profile.full_name} · {profile.email}
         </p>
       </div>

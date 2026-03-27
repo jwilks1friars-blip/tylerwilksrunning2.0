@@ -53,21 +53,21 @@ export default function NewBlogPostPage() {
   }
 
   const inputStyle = {
-    backgroundColor: '#141210',
-    border: '1px solid #2a2521',
-    color: '#f5f2ee',
+    backgroundColor: '#ffffff',
+    border: '1px solid #e0deda',
+    color: '#1a1917',
     borderRadius: '2px',
   } as const
 
   const labelStyle = {
-    color: '#e8e0d4',
+    color: '#6b6865',
   } as const
 
   return (
     <div className="max-w-2xl">
       <h2
         className="text-3xl font-semibold uppercase tracking-widest mb-8"
-        style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+        style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
       >
         New Post
       </h2>
@@ -93,7 +93,7 @@ export default function NewBlogPostPage() {
         {/* Slug */}
         <div>
           <label className="block text-xs uppercase tracking-widest mb-2" style={labelStyle}>
-            Slug <span style={{ color: '#6b6560' }}>(URL path)</span>
+            Slug <span style={{ color: '#9c9895' }}>(URL path)</span>
           </label>
           <input
             type="text"
@@ -105,7 +105,7 @@ export default function NewBlogPostPage() {
             style={inputStyle}
           />
           {slug && (
-            <p className="text-xs mt-1.5" style={{ color: '#2a2521' }}>
+            <p className="text-xs mt-1.5" style={{ color: '#9c9895' }}>
               tylerwilksrunning.com/blog/{slug}
             </p>
           )}
@@ -145,7 +145,7 @@ export default function NewBlogPostPage() {
         {/* Excerpt */}
         <div>
           <label className="block text-xs uppercase tracking-widest mb-2" style={labelStyle}>
-            Excerpt <span style={{ color: '#6b6560' }}>(shown on blog listing page)</span>
+            Excerpt <span style={{ color: '#9c9895' }}>(shown on blog listing page)</span>
           </label>
           <textarea
             value={excerpt}
@@ -162,8 +162,8 @@ export default function NewBlogPostPage() {
           <label className="block text-xs uppercase tracking-widest mb-2" style={labelStyle}>
             Body
           </label>
-          <p className="text-xs mb-3" style={{ color: '#6b6560' }}>
-            Write your post below. Start a new section with <code style={{ color: '#e8e0d4' }}>## Section Heading</code> on its own line.
+          <p className="text-xs mb-3" style={{ color: '#9c9895' }}>
+            Write your post below. Start a new section with <code style={{ color: '#6b6865' }}>## Section Heading</code> on its own line.
           </p>
           <textarea
             required
@@ -183,7 +183,7 @@ Body text for the second section.`}
         </div>
 
         {error && (
-          <p className="text-xs py-2" style={{ color: '#e8a0a0' }}>{error}</p>
+          <p className="text-xs py-2" style={{ color: '#e85555' }}>{error}</p>
         )}
 
         <div className="flex items-center gap-4 pt-2">
@@ -191,15 +191,15 @@ Body text for the second section.`}
             type="submit"
             disabled={saving}
             className="px-6 py-2.5 text-xs uppercase tracking-widest font-medium transition-opacity disabled:opacity-50"
-            style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}
+            style={{ backgroundColor: '#1a1917', color: '#ffffff', borderRadius: '2px' }}
           >
             {saving ? 'Publishing…' : 'Publish Post'}
           </button>
           <button
             type="button"
             onClick={() => router.push('/coach/blog')}
-            className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-            style={{ color: '#6b6560' }}
+            className="text-xs uppercase tracking-widest transition-colors hover:text-[#1a1917]"
+            style={{ color: '#9c9895' }}
           >
             Cancel
           </button>

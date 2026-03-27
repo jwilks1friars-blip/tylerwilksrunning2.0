@@ -39,17 +39,17 @@ export default function InsightEditor({ insight, athleteId }: Props) {
   return (
     <div
       className="p-5"
-      style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}
+      style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}
     >
       <div className="flex items-center justify-between mb-4">
         <div>
-          <p className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>
+          <p className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>
             Week of {new Date(insight.week_start).toLocaleDateString('en-US', {
               month: 'long', day: 'numeric', year: 'numeric',
             })}
           </p>
           {saved && (
-            <p className="text-xs mt-1 uppercase tracking-widest" style={{ color: '#7fbf7f' }}>
+            <p className="text-xs mt-1 uppercase tracking-widest" style={{ color: '#22c55e' }}>
               ✓ Approved
             </p>
           )}
@@ -60,7 +60,7 @@ export default function InsightEditor({ insight, athleteId }: Props) {
             onClick={handleApprove}
             disabled={saving || !content.trim()}
             className="px-4 py-2 text-xs uppercase tracking-widest font-medium transition-opacity disabled:opacity-40"
-            style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}
+            style={{ backgroundColor: '#1a1917', color: '#ffffff', borderRadius: '2px' }}
           >
             {saving ? 'Saving…' : 'Approve & Send'}
           </button>
@@ -75,7 +75,7 @@ export default function InsightEditor({ insight, athleteId }: Props) {
         className="w-full text-sm leading-7 outline-none resize-none disabled:opacity-70"
         style={{
           backgroundColor: 'transparent',
-          color: '#e8e0d4',
+          color: '#1a1917',
           fontFamily: 'inherit',
         }}
       />

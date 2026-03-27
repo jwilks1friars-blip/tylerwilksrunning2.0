@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Users, MessageSquare, BookOpen, LayoutDashboard, Zap } from 'lucide-react'
 import CoachMessagesLink from '@/app/coach/messages/CoachMessagesLink'
 import SignOutButton from '@/components/dashboard/SignOutButton'
 
@@ -11,35 +11,26 @@ export default function CoachMobileNav() {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
 
-  // Close drawer when route changes
   useEffect(() => { setOpen(false) }, [pathname])
 
   return (
     <>
       {/* Mobile top bar */}
       <div
-        className="md:hidden flex items-center justify-between px-5 py-4"
-        style={{ borderBottom: '1px solid #1e1b18', backgroundColor: '#0a0908' }}
+        className="md:hidden flex items-center justify-between px-5 h-14"
+        style={{ borderBottom: '1px solid #e8e7e5', backgroundColor: '#ffffff' }}
       >
-        <div>
+        <div className="flex items-center gap-2.5">
+          <div className="w-6 h-6 flex items-center justify-center rounded-md" style={{ backgroundColor: '#fc4c02' }}>
+            <Zap size={12} color="white" strokeWidth={2.5} />
+          </div>
           <Link href="/coach">
-            <h1
-              className="text-base font-semibold uppercase tracking-widest leading-tight"
-              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
-            >
+            <span className="text-sm font-semibold uppercase tracking-widest" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
               Tyler Wilks Running
-            </h1>
+            </span>
           </Link>
-          <p className="text-xs uppercase tracking-widest mt-0.5" style={{ color: '#fc4c02' }}>
-            Coach
-          </p>
         </div>
-        <button
-          onClick={() => setOpen(true)}
-          className="p-1"
-          style={{ color: '#6b6560' }}
-          aria-label="Open menu"
-        >
+        <button onClick={() => setOpen(true)} className="p-1" style={{ color: '#9c9895' }} aria-label="Open menu">
           <Menu size={22} />
         </button>
       </div>
@@ -48,65 +39,56 @@ export default function CoachMobileNav() {
       {open && (
         <div
           className="md:hidden fixed inset-0 z-40"
-          style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+          style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}
           onClick={() => setOpen(false)}
         />
       )}
 
-      {/* Slide-in drawer */}
+      {/* Drawer */}
       <div
-        className={`md:hidden fixed top-0 left-0 h-full z-50 w-64 flex flex-col px-6 py-8 transition-transform duration-200 ${open ? 'translate-x-0' : '-translate-x-full'}`}
-        style={{ backgroundColor: '#0a0908', borderRight: '1px solid #1e1b18' }}
+        className={`md:hidden fixed top-0 left-0 h-full z-50 w-64 flex flex-col transition-transform duration-200 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{ backgroundColor: '#ffffff', borderRight: '1px solid #e8e7e5' }}
       >
-        <div className="flex items-start justify-between mb-10">
-          <Link href="/coach" onClick={() => setOpen(false)}>
-            <h1
-              className="text-lg font-semibold uppercase tracking-widest leading-tight"
-              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
-            >
-              Tyler Wilks<br />Running
-            </h1>
-          </Link>
-          <button
-            onClick={() => setOpen(false)}
-            className="p-1"
-            style={{ color: '#6b6560' }}
-            aria-label="Close menu"
-          >
+        <div className="flex items-center justify-between px-5 h-14 shrink-0" style={{ borderBottom: '1px solid #e8e7e5' }}>
+          <div className="flex items-center gap-2.5">
+            <div className="w-6 h-6 flex items-center justify-center rounded-md" style={{ backgroundColor: '#fc4c02' }}>
+              <Zap size={12} color="white" strokeWidth={2.5} />
+            </div>
+            <Link href="/coach" onClick={() => setOpen(false)}>
+              <span className="text-sm font-semibold uppercase tracking-widest" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
+                Tyler Wilks Running
+              </span>
+            </Link>
+          </div>
+          <button onClick={() => setOpen(false)} className="p-1" style={{ color: '#9c9895' }} aria-label="Close menu">
             <X size={20} />
           </button>
         </div>
 
-        <p className="text-xs uppercase tracking-widest -mt-8 mb-8 px-3" style={{ color: '#fc4c02' }}>
-          Coach
-        </p>
-
-        <nav className="space-y-1 flex-1">
-          <Link
-            href="/coach"
-            className="block py-2 px-3 text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-            style={{ color: '#6b6560' }}
-          >
-            Athletes
-          </Link>
-          <CoachMessagesLink />
-          <Link
-            href="/coach/blog"
-            className="block py-2 px-3 text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-            style={{ color: '#6b6560' }}
-          >
-            Blog
-          </Link>
-          <Link
-            href="/dashboard"
-            className="block py-2 px-3 text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-            style={{ color: '#6b6560' }}
-          >
-            My Dashboard
-          </Link>
+        <nav className="flex-1 px-3 py-5 space-y-6 overflow-y-auto">
+          <div>
+            <p className="text-xs px-3 mb-1.5 font-semibold tracking-widest" style={{ color: '#c8c4c0' }}>COACH</p>
+            <div className="space-y-0.5">
+              <Link href="/coach" className="flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors hover:bg-[#f0eeec]" style={{ color: '#6b6865' }}>
+                <Users size={16} strokeWidth={1.5} /><span>Athletes</span>
+              </Link>
+              <CoachMessagesLink />
+              <Link href="/coach/blog" className="flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors hover:bg-[#f0eeec]" style={{ color: '#6b6865' }}>
+                <BookOpen size={16} strokeWidth={1.5} /><span>Blog</span>
+              </Link>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs px-3 mb-1.5 font-semibold tracking-widest" style={{ color: '#c8c4c0' }}>ATHLETE</p>
+            <div className="space-y-0.5">
+              <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors hover:bg-[#f0eeec]" style={{ color: '#6b6865' }}>
+                <LayoutDashboard size={16} strokeWidth={1.5} /><span>My Dashboard</span>
+              </Link>
+            </div>
+          </div>
         </nav>
 
-        <div className="pt-6" style={{ borderTop: '1px solid #1e1b18' }}>
+        <div className="px-4 py-4 shrink-0" style={{ borderTop: '1px solid #e8e7e5' }}>
           <SignOutButton />
         </div>
       </div>

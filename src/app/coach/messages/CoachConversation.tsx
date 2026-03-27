@@ -122,23 +122,23 @@ export default function CoachConversation({
       {/* Left: Athlete list */}
       <div
         className="w-72 shrink-0 flex flex-col overflow-hidden"
-        style={{ borderRight: '1px solid #1e1b18' }}
+        style={{ borderRight: '1px solid #ebebea' }}
       >
-        <div className="px-5 py-4" style={{ borderBottom: '1px solid #1e1b18' }}>
+        <div className="px-5 py-4" style={{ borderBottom: '1px solid #ebebea' }}>
           <h2
             className="text-xl font-semibold uppercase tracking-widest"
-            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
           >
             Messages
           </h2>
-          <p className="text-xs uppercase tracking-widest mt-1" style={{ color: '#6b6560' }}>
+          <p className="text-xs uppercase tracking-widest mt-1" style={{ color: '#9c9895' }}>
             {athletes.length} {athletes.length === 1 ? 'athlete' : 'athletes'}
           </p>
         </div>
 
         <div className="flex-1 overflow-y-auto">
           {athletes.length === 0 ? (
-            <p className="p-5 text-sm" style={{ color: '#6b6560' }}>No athletes yet.</p>
+            <p className="p-5 text-sm" style={{ color: '#9c9895' }}>No athletes yet.</p>
           ) : (
             athletes.map(athlete => {
               const unreadCount = unread.bySender[athlete.id] ?? 0
@@ -150,18 +150,18 @@ export default function CoachConversation({
                   onClick={() => selectAthlete(athlete.id)}
                   className="w-full text-left px-5 py-4 transition-colors flex items-center justify-between gap-2"
                   style={{
-                    backgroundColor: isSelected ? '#141210' : 'transparent',
-                    borderBottom: '1px solid #1e1b18',
+                    backgroundColor: isSelected ? '#f5f4f2' : 'transparent',
+                    borderBottom: '1px solid #ebebea',
                   }}
                 >
                   <div className="min-w-0">
                     <p
                       className="text-sm truncate"
-                      style={{ color: unreadCount > 0 ? '#f5f2ee' : '#e8e0d4' }}
+                      style={{ color: unreadCount > 0 ? '#1a1917' : '#6b6865' }}
                     >
                       {athlete.full_name ?? athlete.email ?? 'Unnamed'}
                     </p>
-                    <p className="text-xs truncate mt-0.5" style={{ color: '#6b6560' }}>
+                    <p className="text-xs truncate mt-0.5" style={{ color: '#9c9895' }}>
                       {athlete.plan_tier}
                     </p>
                   </div>
@@ -183,7 +183,7 @@ export default function CoachConversation({
       {/* Right: Conversation */}
       {!selectedAthlete ? (
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-sm" style={{ color: '#6b6560' }}>
+          <p className="text-sm" style={{ color: '#9c9895' }}>
             Select an athlete to start a conversation.
           </p>
         </div>
@@ -192,13 +192,13 @@ export default function CoachConversation({
           {/* Header */}
           <div
             className="px-6 py-4 shrink-0 flex items-center gap-4"
-            style={{ borderBottom: '1px solid #1e1b18' }}
+            style={{ borderBottom: '1px solid #ebebea' }}
           >
             <div>
-              <p className="text-sm font-medium" style={{ color: '#f5f2ee' }}>
+              <p className="text-sm font-medium" style={{ color: '#1a1917' }}>
                 {selectedAthlete.full_name ?? selectedAthlete.email}
               </p>
-              <p className="text-xs mt-0.5" style={{ color: '#6b6560' }}>
+              <p className="text-xs mt-0.5" style={{ color: '#9c9895' }}>
                 {selectedAthlete.email}
               </p>
             </div>
@@ -207,7 +207,7 @@ export default function CoachConversation({
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
             {messages.length === 0 && (
-              <p className="text-sm text-center py-8" style={{ color: '#6b6560' }}>
+              <p className="text-sm text-center py-8" style={{ color: '#9c9895' }}>
                 No messages yet. Say something!
               </p>
             )}
@@ -221,8 +221,8 @@ export default function CoachConversation({
                   <div
                     className="max-w-[70%] px-4 py-2.5 text-sm leading-relaxed"
                     style={{
-                      backgroundColor: isCoach ? '#fc4c02' : '#1e1b18',
-                      color: isCoach ? '#fff' : '#e8e0d4',
+                      backgroundColor: isCoach ? '#fc4c02' : '#f0eeec',
+                      color: isCoach ? '#fff' : '#1a1917',
                       borderRadius: '4px',
                     }}
                   >
@@ -241,14 +241,14 @@ export default function CoachConversation({
           </div>
 
           {/* Input */}
-          <div className="px-6 py-4 shrink-0" style={{ borderTop: '1px solid #1e1b18' }}>
+          <div className="px-6 py-4 shrink-0" style={{ borderTop: '1px solid #ebebea' }}>
             <div className="flex gap-3 items-end">
               <textarea
                 className="flex-1 resize-none text-sm px-4 py-3 outline-none"
                 style={{
-                  backgroundColor: '#141210',
-                  border: '1px solid #2a2521',
-                  color: '#f5f2ee',
+                  backgroundColor: '#f9f8f7',
+                  border: '1px solid #e0deda',
+                  color: '#1a1917',
                   borderRadius: '2px',
                   minHeight: '48px',
                   maxHeight: '120px',
@@ -276,7 +276,7 @@ export default function CoachConversation({
               </button>
             </div>
             <div className="flex items-center justify-between mt-2">
-              <p className="text-xs" style={{ color: '#6b6560' }}>
+              <p className="text-xs" style={{ color: '#9c9895' }}>
                 Enter to send · Shift+Enter for new line
               </p>
               <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -286,7 +286,7 @@ export default function CoachConversation({
                   onChange={e => setSendEmail(e.target.checked)}
                   style={{ accentColor: '#fc4c02', width: '14px', height: '14px' }}
                 />
-                <span className="text-xs uppercase tracking-widest" style={{ color: sendEmail ? '#e8e0d4' : '#6b6560' }}>
+                <span className="text-xs uppercase tracking-widest" style={{ color: sendEmail ? '#1a1917' : '#9c9895' }}>
                   Also send via email
                 </span>
               </label>

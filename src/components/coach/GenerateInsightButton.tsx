@@ -41,7 +41,7 @@ export default function GenerateInsightButton({ athleteId }: { athleteId: string
       {/* Coach notes — expands when toggled */}
       {showNotes && (
         <div>
-          <label className="block text-xs uppercase tracking-widest mb-2" style={{ color: '#6b6560' }}>
+          <label className="block text-xs uppercase tracking-widest mb-2" style={{ color: '#9c9895' }}>
             Your Notes for Claude
           </label>
           <textarea
@@ -49,7 +49,7 @@ export default function GenerateInsightButton({ athleteId }: { athleteId: string
             onChange={e => setCoachNotes(e.target.value)}
             rows={4}
             className="w-full px-3 py-2.5 text-sm bg-transparent outline-none resize-none leading-relaxed"
-            style={{ border: '1px solid #2a2521', color: '#f5f2ee' }}
+            style={{ border: '1px solid #e0deda', color: '#1a1917' }}
             placeholder={
               'Add context you want woven into the note — e.g.\n' +
               '"She mentioned knee tightness on Thursday, worth addressing"\n' +
@@ -57,7 +57,7 @@ export default function GenerateInsightButton({ athleteId }: { athleteId: string
             }
             autoFocus
           />
-          <p className="text-xs mt-1" style={{ color: '#3a3633' }}>
+          <p className="text-xs mt-1" style={{ color: '#c8c4c0' }}>
             Claude will incorporate this into the generated note naturally.
           </p>
         </div>
@@ -68,15 +68,15 @@ export default function GenerateInsightButton({ athleteId }: { athleteId: string
           onClick={handleGenerate}
           disabled={loading}
           className="px-4 py-2 text-xs uppercase tracking-widest font-medium transition-opacity hover:opacity-80 disabled:opacity-40"
-          style={{ backgroundColor: '#e8e0d4', color: '#0a0908', borderRadius: '2px' }}
+          style={{ backgroundColor: '#1a1917', color: '#ffffff', borderRadius: '2px' }}
         >
           {loading ? 'Generating…' : 'Generate Insight'}
         </button>
 
         <button
           onClick={() => setShowNotes(s => !s)}
-          className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-          style={{ color: coachNotes.trim() ? '#e8e0d4' : '#6b6560' }}
+          className="text-xs uppercase tracking-widest transition-colors hover:text-[#1a1917]"
+          style={{ color: coachNotes.trim() ? '#6b6865' : '#9c9895' }}
         >
           {showNotes
             ? 'Hide Notes'
@@ -87,7 +87,7 @@ export default function GenerateInsightButton({ athleteId }: { athleteId: string
       </div>
 
       {error && (
-        <p className="text-xs" style={{ color: '#e8a0a0' }}>{error}</p>
+        <p className="text-xs" style={{ color: '#e85555' }}>{error}</p>
       )}
     </div>
   )
