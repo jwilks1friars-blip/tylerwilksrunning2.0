@@ -26,7 +26,7 @@ const TYPE_CONFIG: Record<string, { color: string; label: string }> = {
   tempo:     { color: '#e8a050', label: 'Tempo' },
   intervals: { color: '#e87070', label: 'Intervals' },
   recovery:  { color: '#a0c4a0', label: 'Recovery' },
-  rest:      { color: '#2a2521', label: 'Rest' },
+  rest:      { color: '#c8c4c0', label: 'Rest' },
   race:      { color: '#e8d070', label: 'Race' },
 }
 
@@ -69,18 +69,18 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => setWeekStart(w => subWeeks(w, 1))}
-          className="text-xs uppercase tracking-widest px-3 py-1.5 transition-colors hover:text-[#f5f2ee]"
-          style={{ color: '#6b6560', border: '1px solid #1e1b18', borderRadius: '2px' }}
+          className="text-xs uppercase tracking-widest px-3 py-1.5 transition-colors hover:text-[#1a1917]"
+          style={{ color: '#9c9895', border: '1px solid #ebebea', borderRadius: '2px' }}
         >
           ← Prev
         </button>
 
         <div className="text-center">
-          <p className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>
+          <p className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>
             {format(weekStart, 'MMM d')} — {format(addDays(weekStart, 6), 'MMM d, yyyy')}
           </p>
           {weekNumber >= 1 && weekNumber <= totalWeeks && (
-            <p className="text-xs mt-1" style={{ color: '#2a2521' }}>
+            <p className="text-xs mt-1" style={{ color: '#c8c4c0' }}>
               Week {weekNumber} of {totalWeeks}
             </p>
           )}
@@ -88,8 +88,8 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
 
         <button
           onClick={() => setWeekStart(w => addWeeks(w, 1))}
-          className="text-xs uppercase tracking-widest px-3 py-1.5 transition-colors hover:text-[#f5f2ee]"
-          style={{ color: '#6b6560', border: '1px solid #1e1b18', borderRadius: '2px' }}
+          className="text-xs uppercase tracking-widest px-3 py-1.5 transition-colors hover:text-[#1a1917]"
+          style={{ color: '#9c9895', border: '1px solid #ebebea', borderRadius: '2px' }}
         >
           Next →
         </button>
@@ -108,18 +108,18 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
               key={dayStr}
               className="flex flex-col min-h-32 p-3"
               style={{
-                backgroundColor: '#141210',
-                border: isToday(day) ? '1px solid #e8e0d4' : '1px solid #1e1b18',
-                borderTop: config ? `3px solid ${config.color}` : '1px solid #1e1b18',
+                backgroundColor: '#ffffff',
+                border: isToday(day) ? '1px solid #1a1917' : '1px solid #ebebea',
+                borderTop: config ? `3px solid ${config.color}` : isToday(day) ? '3px solid #1a1917' : '1px solid #ebebea',
                 opacity: past && !workout ? 0.4 : 1,
               }}
             >
               {/* Day header */}
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs uppercase tracking-widest" style={{ color: isToday(day) ? '#f5f2ee' : '#6b6560' }}>
+                <p className="text-xs uppercase tracking-widest" style={{ color: isToday(day) ? '#1a1917' : '#9c9895' }}>
                   {DAYS[i]}
                 </p>
-                <p className="text-xs tabular-nums" style={{ color: '#2a2521' }}>
+                <p className="text-xs tabular-nums" style={{ color: '#c8c4c0' }}>
                   {format(day, 'd')}
                 </p>
               </div>
@@ -132,12 +132,12 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
                       {config.label}
                     </p>
                     {workout.target_distance_miles && (
-                      <p className="text-xs tabular-nums mb-1" style={{ color: '#f5f2ee' }}>
+                      <p className="text-xs tabular-nums mb-1" style={{ color: '#1a1917' }}>
                         {workout.target_distance_miles} mi
                       </p>
                     )}
                     {workout.description && (
-                      <p className="text-xs leading-4 line-clamp-3" style={{ color: '#6b6560' }}>
+                      <p className="text-xs leading-4 line-clamp-3" style={{ color: '#9c9895' }}>
                         {workout.description}
                       </p>
                     )}
@@ -150,21 +150,21 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
                       disabled={toggling === workout.id}
                       className="mt-3 self-start flex items-center gap-1.5 text-xs uppercase tracking-widest transition-opacity disabled:opacity-40"
                       style={{
-                        color: workout.completed ? '#7fbf7f' : '#3a3633',
+                        color: workout.completed ? '#22c55e' : '#9c9895',
                         opacity: toggling === workout.id ? 0.4 : 1,
                       }}
                     >
                       <span
                         className="flex items-center justify-center w-4 h-4 shrink-0"
                         style={{
-                          border: `1px solid ${workout.completed ? '#7fbf7f' : '#3a3633'}`,
+                          border: `1px solid ${workout.completed ? '#22c55e' : '#c8c4c0'}`,
                           borderRadius: '2px',
-                          backgroundColor: workout.completed ? '#7fbf7f22' : 'transparent',
+                          backgroundColor: workout.completed ? '#22c55e22' : 'transparent',
                         }}
                       >
                         {workout.completed && (
                           <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                            <path d="M1 3.5L3.5 6L8 1" stroke="#7fbf7f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M1 3.5L3.5 6L8 1" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                         )}
                       </span>
@@ -176,7 +176,7 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
 
               {/* Rest day */}
               {(!workout || workout.workout_type === 'rest') && (
-                <p className="text-xs" style={{ color: '#2a2521' }}>Rest</p>
+                <p className="text-xs" style={{ color: '#c8c4c0' }}>Rest</p>
               )}
             </div>
           )
@@ -188,7 +188,7 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
         {Object.entries(TYPE_CONFIG).filter(([k]) => k !== 'rest').map(([key, val]) => (
           <div key={key} className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: val.color }} />
-            <span className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>
+            <span className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>
               {val.label}
             </span>
           </div>

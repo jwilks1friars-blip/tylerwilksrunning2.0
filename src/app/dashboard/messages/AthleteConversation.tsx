@@ -73,8 +73,8 @@ export default function AthleteConversation({
     <div
       className="flex flex-col"
       style={{
-        backgroundColor: '#141210',
-        border: '1px solid #1e1b18',
+        backgroundColor: '#ffffff',
+        border: '1px solid #ebebea',
         height: 'calc(100vh - 220px)',
         minHeight: '400px',
       }}
@@ -82,7 +82,7 @@ export default function AthleteConversation({
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
         {messages.length === 0 && (
-          <p className="text-sm text-center py-8" style={{ color: '#6b6560' }}>
+          <p className="text-sm text-center py-8" style={{ color: '#9c9895' }}>
             No messages yet. Send your coach a message!
           </p>
         )}
@@ -96,8 +96,8 @@ export default function AthleteConversation({
               <div
                 className="max-w-[70%] px-4 py-2.5 text-sm leading-relaxed"
                 style={{
-                  backgroundColor: isMe ? '#fc4c02' : '#1e1b18',
-                  color: isMe ? '#fff' : '#e8e0d4',
+                  backgroundColor: isMe ? '#fc4c02' : '#f0eeec',
+                  color: isMe ? '#fff' : '#1a1917',
                   borderRadius: '4px',
                 }}
               >
@@ -119,14 +119,14 @@ export default function AthleteConversation({
       </div>
 
       {/* Input */}
-      <div className="px-6 py-4 shrink-0" style={{ borderTop: '1px solid #1e1b18' }}>
+      <div className="px-6 py-4 shrink-0" style={{ borderTop: '1px solid #ebebea' }}>
         <div className="flex gap-3 items-end">
           <textarea
             className="flex-1 resize-none text-sm px-4 py-3 outline-none"
             style={{
-              backgroundColor: '#0a0908',
-              border: '1px solid #2a2521',
-              color: '#f5f2ee',
+              backgroundColor: '#f9f8f7',
+              border: '1px solid #e0deda',
+              color: '#1a1917',
               borderRadius: '2px',
               minHeight: '48px',
               maxHeight: '120px',
@@ -153,7 +153,7 @@ export default function AthleteConversation({
             Send
           </button>
         </div>
-        <p className="text-xs mt-2" style={{ color: '#6b6560' }}>
+        <p className="text-xs mt-2" style={{ color: '#9c9895' }}>
           Enter to send · Shift+Enter for new line
         </p>
       </div>

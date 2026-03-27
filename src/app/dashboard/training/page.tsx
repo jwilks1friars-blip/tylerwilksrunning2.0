@@ -73,12 +73,12 @@ export default async function TrainingPage() {
       <div className="mb-6">
         <h2
           className="text-3xl font-semibold uppercase tracking-widest"
-          style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+          style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
         >
           Training Plan
         </h2>
         {plan && (
-          <p className="text-sm mt-1" style={{ color: '#6b6560' }}>
+          <p className="text-sm mt-1" style={{ color: '#9c9895' }}>
             {plan.goal_race}
             {plan.goal_time && ` — ${plan.goal_time}`}
             {plan.race_date && ` · ${format(new Date(plan.race_date), 'MMM d, yyyy')}`}
@@ -88,14 +88,14 @@ export default async function TrainingPage() {
 
       {!plan && (
         <div className="max-w-lg">
-          <div className="p-8 mb-8" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
+          <div className="p-8 mb-8" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
             <p
               className="text-xl font-semibold uppercase tracking-widest mb-3"
-              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
             >
               No active plan yet
             </p>
-            <p className="text-sm leading-7" style={{ color: '#6b6560' }}>
+            <p className="text-sm leading-7" style={{ color: '#9c9895' }}>
               Your coach will set up your training plan. Check back soon.
             </p>
           </div>
@@ -105,61 +105,61 @@ export default async function TrainingPage() {
       {plan && (
         <>
           {/* Plan Progress */}
-          <div className="p-5 mb-4" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
+          <div className="p-5 mb-4" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-6">
                 <div>
-                  <p className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>Workouts Done</p>
-                  <p className="text-2xl font-semibold mt-0.5" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
+                  <p className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>Workouts Done</p>
+                  <p className="text-2xl font-semibold mt-0.5" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
                     {completedWorkouts}
-                    <span className="text-base font-normal" style={{ color: '#6b6560' }}>/{totalWorkouts}</span>
+                    <span className="text-base font-normal" style={{ color: '#9c9895' }}>/{totalWorkouts}</span>
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>Weeks Left</p>
-                  <p className="text-2xl font-semibold mt-0.5" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
+                  <p className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>Weeks Left</p>
+                  <p className="text-2xl font-semibold mt-0.5" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
                     {weeksToRace ?? '—'}
                   </p>
                 </div>
                 {daysToRace != null && daysToRace <= 14 && (
                   <div>
-                    <p className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>Race Day</p>
+                    <p className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>Race Day</p>
                     <p className="text-2xl font-semibold mt-0.5" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#fc4c02' }}>
                       {daysToRace}d
                     </p>
                   </div>
                 )}
               </div>
-              <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
-                {planProgress}<span className="text-lg font-normal" style={{ color: '#6b6560' }}>%</span>
+              <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
+                {planProgress}<span className="text-lg font-normal" style={{ color: '#9c9895' }}>%</span>
               </p>
             </div>
-            <div className="h-0.5 rounded-full" style={{ backgroundColor: '#1e1b18' }}>
+            <div className="h-0.5 rounded-full" style={{ backgroundColor: '#ebebea' }}>
               <div
                 className="h-0.5 rounded-full"
-                style={{ width: `${planProgress}%`, backgroundColor: '#e8e0d4' }}
+                style={{ width: `${planProgress}%`, backgroundColor: '#1a1917' }}
               />
             </div>
           </div>
 
           {/* This Week Focus */}
           {(thisWeekWorkouts.length > 0 || insight) && (
-            <div className="p-5 mb-6" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-              <p className="text-xs uppercase tracking-widest mb-3" style={{ color: '#6b6560' }}>This Week</p>
+            <div className="p-5 mb-6" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+              <p className="text-xs uppercase tracking-widest mb-3" style={{ color: '#9c9895' }}>This Week</p>
               <div className="flex items-start justify-between gap-4">
                 <div>
                   {thisWeekPlannedMiles > 0 && (
-                    <p className="text-sm mb-1" style={{ color: '#f5f2ee' }}>
+                    <p className="text-sm mb-1" style={{ color: '#1a1917' }}>
                       <span className="font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.1rem' }}>
                         {thisWeekPlannedMiles.toFixed(0)} mi
                       </span>
-                      <span style={{ color: '#6b6560' }}> planned</span>
+                      <span style={{ color: '#9c9895' }}> planned</span>
                     </p>
                   )}
                   {keyWorkout && (
-                    <p className="text-xs mt-1" style={{ color: '#6b6560' }}>
+                    <p className="text-xs mt-1" style={{ color: '#9c9895' }}>
                       Key session:{' '}
-                      <span style={{ color: '#e8e0d4' }}>
+                      <span style={{ color: '#6b6865' }}>
                         {keyWorkout.workout_type.charAt(0).toUpperCase() + keyWorkout.workout_type.slice(1)} run
                         {keyWorkout.target_distance_miles ? ` · ${keyWorkout.target_distance_miles} mi` : ''}
                         {' · '}{format(parseISO(keyWorkout.scheduled_date), 'EEEE')}
@@ -167,14 +167,14 @@ export default async function TrainingPage() {
                     </p>
                   )}
                   {thisWeekWorkouts.length === 0 && (
-                    <p className="text-sm" style={{ color: '#3a3633' }}>No workouts scheduled this week</p>
+                    <p className="text-sm" style={{ color: '#c8c4c0' }}>No workouts scheduled this week</p>
                   )}
                 </div>
                 {insight && (
                   <Link
                     href="/dashboard"
-                    className="text-xs uppercase tracking-widest shrink-0 transition-colors hover:text-[#f5f2ee]"
-                    style={{ color: '#3a3633' }}
+                    className="text-xs uppercase tracking-widest shrink-0 transition-colors hover:text-[#1a1917]"
+                    style={{ color: '#9c9895' }}
                   >
                     Coach note →
                   </Link>
@@ -183,7 +183,7 @@ export default async function TrainingPage() {
               {insight && (
                 <p
                   className="text-xs mt-3 pt-3 leading-5 line-clamp-2"
-                  style={{ color: '#6b6560', borderTop: '1px solid #1e1b18' }}
+                  style={{ color: '#9c9895', borderTop: '1px solid #ebebea' }}
                 >
                   &ldquo;{insight.content}&rdquo;
                 </p>
