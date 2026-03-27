@@ -3,24 +3,39 @@ export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/server'
 import { metersToMiles, mpsToMinPerMile } from '@/lib/strava'
 import { subDays, format, differenceInCalendarDays, startOfWeek, addDays } from 'date-fns'
-import MileageChart from '@/components/dashboard/MileageChart'
+import MileageLineChart from '@/components/dashboard/MileageLineChart'
+import ActivityTypeChart from '@/components/dashboard/ActivityTypeChart'
 import Link from 'next/link'
+import {
+  Route,
+  TrendingUp,
+  Flame,
+  Target,
+  Timer,
+  Activity,
+  ArrowUpRight,
+  ArrowDownRight,
+  Plus,
+  Sparkles,
+  ChevronRight,
+} from 'lucide-react'
 
-const ACTIVITY_TYPE_COLORS: Record<string, string> = {
-  Run: '#7fbf7f',
-  VirtualRun: '#7fbf7f',
-  TrailRun: '#a0c4a0',
+const ACTIVITY_COLORS: Record<string, string> = {
+  Run: '#7090e8',
+  VirtualRun: '#7090e8',
+  TrailRun: '#7fbf7f',
   Walk: '#6b6560',
-  Hike: '#6b6560',
-  Ride: '#7090e8',
+  Hike: '#a0c4a0',
+  Ride: '#e8a050',
 }
+
+const CHART_COLORS = ['#7090e8', '#7fbf7f', '#e8a050', '#e87070', '#a070e8', '#70c8e8', '#6b6560']
 
 function calcStreak(activities: Array<{ started_at: string }>): number {
   if (!activities.length) return 0
   const activeDays = new Set(activities.map(a => format(new Date(a.started_at), 'yyyy-MM-dd')))
   const today = new Date()
   const todayStr = format(today, 'yyyy-MM-dd')
-  // If ran today, start streak from today; otherwise start from yesterday
   let i = activeDays.has(todayStr) ? 0 : 1
   let streak = 0
   while (i <= 365) {
@@ -31,17 +46,28 @@ function calcStreak(activities: Array<{ started_at: string }>): number {
   return streak
 }
 
+function trendLabel(current: number, previous: number): { pct: string; up: boolean; neutral: boolean } {
+  if (previous === 0 && current === 0) return { pct: '0%', up: true, neutral: true }
+  if (previous === 0) return { pct: '+100%', up: true, neutral: false }
+  const diff = ((current - previous) / previous) * 100
+  const up = diff >= 0
+  return {
+    pct: `${up ? '+' : ''}${diff.toFixed(1)}%`,
+    up,
+    neutral: Math.abs(diff) < 0.5,
+  }
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   const now = new Date()
   const ytdStart = new Date(now.getFullYear(), 0, 1)
-  const sevenDaysAgo = subDays(now, 6)
   const currentWeekMonday = startOfWeek(now, { weekStartsOn: 1 })
-  const eightWeeksAgoMonday = subDays(currentWeekMonday, 7 * 7)
-  // Fetch from the earlier of ytdStart or 8 weeks ago to cover all needed data
-  const fetchSince = eightWeeksAgoMonday < ytdStart ? eightWeeksAgoMonday : ytdStart
+  const lastWeekMonday = subDays(currentWeekMonday, 7)
+  const twelveWeeksAgoMonday = subDays(currentWeekMonday, 7 * 11)
+  const fetchSince = twelveWeeksAgoMonday < ytdStart ? twelveWeeksAgoMonday : ytdStart
 
   const [
     { data: activities },
@@ -66,31 +92,50 @@ export default async function DashboardPage() {
 
   const acts = activities ?? []
 
-  // YTD = activities since Jan 1 of this year
+  // YTD activities
   const ytdActs = acts.filter(a => new Date(a.started_at) >= ytdStart)
   const ytdMiles = ytdActs.reduce((sum, a) => sum + metersToMiles(a.distance), 0)
 
-  // This week
-  const thisWeekActs = acts.filter(a => new Date(a.started_at) >= sevenDaysAgo)
+  // This week (Mon–now)
+  const thisWeekActs = acts.filter(a => new Date(a.started_at) >= currentWeekMonday)
   const milesThisWeek = thisWeekActs.reduce((sum, a) => sum + metersToMiles(a.distance), 0)
+
+  // Last week (Mon–Sun)
+  const lastWeekActs = acts.filter(a => {
+    const d = new Date(a.started_at)
+    return d >= lastWeekMonday && d < currentWeekMonday
+  })
+  const milesLastWeek = lastWeekActs.reduce((sum, a) => sum + metersToMiles(a.distance), 0)
+
   const weeklyGoal = profile?.weekly_miles ?? 0
   const weekProgress = weeklyGoal > 0 ? Math.min(100, Math.round((milesThisWeek / weeklyGoal) * 100)) : 0
 
-  // Streak (using YTD activities)
+  // Streak
   const streak = calcStreak(ytdActs)
 
   // Plan progress
   const completedWorkouts = workouts?.filter(w => w.completed && w.workout_type !== 'rest').length ?? 0
   const totalWorkouts = workouts?.filter(w => w.workout_type !== 'rest').length ?? 0
+  const planPct = totalWorkouts > 0 ? Math.round((completedWorkouts / totalWorkouts) * 100) : null
+
+  // Avg pace this week vs last week
+  const thisWeekPacedRuns = thisWeekActs.filter(a => a.avg_pace && metersToMiles(a.distance) >= 0.5)
+  const lastWeekPacedRuns = lastWeekActs.filter(a => a.avg_pace && metersToMiles(a.distance) >= 0.5)
+  const avgPaceThisWeek = thisWeekPacedRuns.length > 0
+    ? thisWeekPacedRuns.reduce((sum, a) => sum + (1 / a.avg_pace!), 0) / thisWeekPacedRuns.length
+    : null
+  const avgPaceLastWeek = lastWeekPacedRuns.length > 0
+    ? lastWeekPacedRuns.reduce((sum, a) => sum + (1 / a.avg_pace!), 0) / lastWeekPacedRuns.length
+    : null
 
   // Race countdown
   const daysToRace = plan?.race_date
     ? Math.max(0, differenceInCalendarDays(new Date(plan.race_date), now))
     : null
 
-  // 8-week mileage chart
-  const weeklyChartData = Array.from({ length: 8 }, (_, i) => {
-    const weekStart = addDays(eightWeeksAgoMonday, i * 7)
+  // 12-week mileage line chart
+  const weeklyChartData = Array.from({ length: 12 }, (_, i) => {
+    const weekStart = addDays(twelveWeeksAgoMonday, i * 7)
     const weekEnd = addDays(weekStart, 7)
     const weekMiles = acts
       .filter(a => {
@@ -98,238 +143,375 @@ export default async function DashboardPage() {
         return d >= weekStart && d < weekEnd
       })
       .reduce((sum, a) => sum + metersToMiles(a.distance), 0)
+    const isCurrentWeek = i === 11
     return {
-      day: i === 7 ? 'Now' : `Wk ${i + 1}`,
+      week: isCurrentWeek ? 'Now' : `Wk ${i + 1}`,
       miles: Math.round(weekMiles * 10) / 10,
+      ...(weeklyGoal > 0 ? { goal: weeklyGoal } : {}),
     }
   })
 
-  // Recent 3 runs
-  const recentRuns = acts.slice(0, 3)
+  // Activity type bar chart (YTD)
+  const typeTotals: Record<string, number> = {}
+  ytdActs.forEach(a => {
+    const t = a.activity_type === 'VirtualRun' ? 'Run' : a.activity_type
+    typeTotals[t] = (typeTotals[t] ?? 0) + metersToMiles(a.distance)
+  })
+  const activityChartData = Object.entries(typeTotals)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 7)
+    .map(([type, miles], i) => ({
+      type,
+      miles: Math.round(miles * 10) / 10,
+      color: ACTIVITY_COLORS[type] ?? CHART_COLORS[i % CHART_COLORS.length],
+    }))
+
+  // Trend data
+  const weekTrend = trendLabel(milesThisWeek, milesLastWeek)
+  const runsTrend = trendLabel(thisWeekActs.length, lastWeekActs.length)
 
   const firstName = profile?.full_name?.split(' ')[0] ?? null
+  const recentRuns = acts.slice(0, 3)
 
   return (
     <div>
-      {/* Race Countdown Hero */}
-      {plan && daysToRace !== null && (
-        <div
-          className="flex items-center justify-between p-6 mb-6"
-          style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}
-        >
-          <div>
-            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#6b6560' }}>
-              {firstName ? `Hey ${firstName} · ` : ''}Goal Race
-            </p>
-            <p
-              className="text-3xl font-semibold uppercase tracking-widest"
-              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
-            >
-              {plan.goal_race ?? 'Race Day'}
-            </p>
-            {plan.goal_time && (
-              <p className="text-sm mt-1" style={{ color: '#6b6560' }}>
-                Goal: {plan.goal_time} · {format(new Date(plan.race_date), 'MMM d, yyyy')}
-              </p>
-            )}
-          </div>
-          <div className="text-right shrink-0 ml-6">
-            <p
-              className="text-7xl font-semibold tabular-nums leading-none"
-              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
-            >
-              {daysToRace}
-            </p>
-            <p className="text-xs uppercase tracking-widest mt-1" style={{ color: '#6b6560' }}>
-              {daysToRace === 1 ? 'day' : 'days'} to go
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Greeting (no plan) */}
-      {!plan && (
-        <div className="mb-6">
-          <h2
-            className="text-3xl font-semibold uppercase tracking-widest"
-            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+      {/* Page header */}
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h1
+            className="text-3xl font-semibold uppercase tracking-widest leading-tight"
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
           >
-            {firstName ? `Hey, ${firstName}` : 'Overview'}
-          </h2>
-          {profile?.goal_race && (
-            <p className="text-sm mt-1" style={{ color: '#6b6560' }}>
-              Training for {profile.goal_race}{profile.goal_time && ` — goal: ${profile.goal_time}`}
-            </p>
-          )}
-        </div>
-      )}
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-
-        {/* This Week */}
-        <div className="p-5" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#6b6560' }}>This Week</p>
-          <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
-            {milesThisWeek.toFixed(1)}
-            <span className="text-base font-normal ml-1" style={{ color: '#6b6560' }}>mi</span>
+            {firstName ? `${firstName}'s Dashboard` : 'Dashboard'}
+          </h1>
+          <p className="text-sm mt-1" style={{ color: '#6b6865' }}>
+            {plan?.goal_race
+              ? `Training for ${plan.goal_race}${plan.goal_time ? ` · Goal: ${plan.goal_time}` : ''}${daysToRace !== null ? ` · ${daysToRace} days to go` : ''}`
+              : profile?.goal_race
+              ? `Training for ${profile.goal_race}${profile.goal_time ? ` · Goal: ${profile.goal_time}` : ''}`
+              : 'Your personal running overview'}
           </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 ml-6">
+          <Link href="/dashboard/training">
+            <button
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded-md transition-colors hover:opacity-90"
+              style={{ backgroundColor: '#f0eeec', color: '#3a3733', border: '1px solid #e8e7e5' }}
+            >
+              <Plus size={13} />
+              Log Run
+            </button>
+          </Link>
+          <Link href="/dashboard/training">
+            <button
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded-md transition-colors hover:opacity-90"
+              style={{ backgroundColor: '#1a1917', color: '#ffffff' }}
+            >
+              <Sparkles size={13} />
+              Generate Plan
+            </button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Stats Grid — 6 cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
+
+        {/* This Week Miles */}
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+          <div className="flex items-start justify-between mb-3">
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
+              <Route size={14} style={{ color: '#3a3733' }} />
+            </div>
+            <span
+              className="flex items-center gap-0.5 text-xs font-medium"
+              style={{ color: weekTrend.neutral ? '#9c9895' : weekTrend.up ? '#7fbf7f' : '#e87070' }}
+            >
+              {weekTrend.neutral ? null : weekTrend.up
+                ? <ArrowUpRight size={12} />
+                : <ArrowDownRight size={12} />}
+              {weekTrend.pct}
+            </span>
+          </div>
+          <p
+            className="text-2xl font-semibold tabular-nums leading-none mb-1"
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
+          >
+            {milesThisWeek.toFixed(1)}
+          </p>
+          <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>This Week</p>
           {weeklyGoal > 0 ? (
             <>
-              <div className="mt-2.5 h-0.5 rounded-full" style={{ backgroundColor: '#1e1b18' }}>
-                <div
-                  className="h-0.5 rounded-full"
-                  style={{ width: `${weekProgress}%`, backgroundColor: '#e8e0d4' }}
-                />
+              <div className="mt-2 h-0.5 rounded-full" style={{ backgroundColor: '#f0eeec' }}>
+                <div className="h-0.5 rounded-full" style={{ width: `${weekProgress}%`, backgroundColor: '#7090e8' }} />
               </div>
-              <p className="text-xs mt-1" style={{ color: '#3a3633' }}>of {weeklyGoal} mi goal</p>
+              <p className="text-xs mt-1" style={{ color: '#9c9895' }}>{weekProgress}% of {weeklyGoal} mi</p>
             </>
           ) : (
-            <p className="text-xs mt-2" style={{ color: '#3a3633' }}>this week</p>
+            <p className="text-xs" style={{ color: '#9c9895' }}>miles this week</p>
           )}
         </div>
 
-        {/* YTD */}
-        <div className="p-5" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#6b6560' }}>Year to Date</p>
-          <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
+        {/* YTD Miles */}
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+          <div className="flex items-start justify-between mb-3">
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
+              <TrendingUp size={14} style={{ color: '#3a3733' }} />
+            </div>
+          </div>
+          <p
+            className="text-2xl font-semibold tabular-nums leading-none mb-1"
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
+          >
             {Math.round(ytdMiles)}
-            <span className="text-base font-normal ml-1" style={{ color: '#6b6560' }}>mi</span>
           </p>
-          <p className="text-xs mt-2" style={{ color: '#3a3633' }}>{now.getFullYear()} total</p>
+          <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Year to Date</p>
+          <p className="text-xs" style={{ color: '#9c9895' }}>{now.getFullYear()} total miles</p>
+        </div>
+
+        {/* Total Runs */}
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+          <div className="flex items-start justify-between mb-3">
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
+              <Activity size={14} style={{ color: '#3a3733' }} />
+            </div>
+            <span
+              className="flex items-center gap-0.5 text-xs font-medium"
+              style={{ color: runsTrend.neutral ? '#9c9895' : runsTrend.up ? '#7fbf7f' : '#e87070' }}
+            >
+              {!runsTrend.neutral && (runsTrend.up
+                ? <ArrowUpRight size={12} />
+                : <ArrowDownRight size={12} />)}
+              {runsTrend.pct}
+            </span>
+          </div>
+          <p
+            className="text-2xl font-semibold tabular-nums leading-none mb-1"
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
+          >
+            {ytdActs.length}
+          </p>
+          <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Total Runs</p>
+          <p className="text-xs" style={{ color: '#9c9895' }}>activities this year</p>
         </div>
 
         {/* Streak */}
-        <div className="p-5" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#6b6560' }}>Streak</p>
-          <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+          <div className="flex items-start justify-between mb-3">
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
+              <Flame size={14} style={{ color: '#fc4c02' }} />
+            </div>
+          </div>
+          <p
+            className="text-2xl font-semibold tabular-nums leading-none mb-1"
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
+          >
             {streak}
-            <span className="text-base font-normal ml-1" style={{ color: '#6b6560' }}>
-              {streak === 1 ? 'day' : 'days'}
-            </span>
           </p>
-          <p className="text-xs mt-2" style={{ color: '#3a3633' }}>consecutive</p>
+          <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Day Streak</p>
+          <p className="text-xs" style={{ color: '#9c9895' }}>consecutive days</p>
         </div>
 
         {/* Plan Progress */}
-        <div className="p-5" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#6b6560' }}>Plan Progress</p>
-          {totalWorkouts > 0 ? (
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+          <div className="flex items-start justify-between mb-3">
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
+              <Target size={14} style={{ color: '#3a3733' }} />
+            </div>
+          </div>
+          {planPct !== null ? (
             <>
-              <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
-                {Math.round((completedWorkouts / totalWorkouts) * 100)}
-                <span className="text-base font-normal" style={{ color: '#6b6560' }}>%</span>
+              <p
+                className="text-2xl font-semibold tabular-nums leading-none mb-1"
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
+              >
+                {planPct}<span className="text-base font-normal" style={{ color: '#6b6865' }}>%</span>
               </p>
-              <p className="text-xs mt-2" style={{ color: '#3a3633' }}>{completedWorkouts}/{totalWorkouts} done</p>
+              <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Plan Progress</p>
+              <p className="text-xs" style={{ color: '#9c9895' }}>{completedWorkouts}/{totalWorkouts} workouts</p>
             </>
           ) : (
             <>
-              <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#3a3633' }}>—</p>
-              <p className="text-xs mt-2" style={{ color: '#3a3633' }}>no plan yet</p>
+              <p
+                className="text-2xl font-semibold leading-none mb-1"
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#9c9895' }}
+              >
+                —
+              </p>
+              <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Plan Progress</p>
+              <p className="text-xs" style={{ color: '#9c9895' }}>no active plan</p>
+            </>
+          )}
+        </div>
+
+        {/* Avg Pace */}
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+          <div className="flex items-start justify-between mb-3">
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
+              <Timer size={14} style={{ color: '#3a3733' }} />
+            </div>
+            {avgPaceThisWeek && avgPaceLastWeek && (() => {
+              // Lower pace (faster) is better — invert trend logic
+              const t = trendLabel(avgPaceLastWeek, avgPaceThisWeek)
+              return (
+                <span
+                  className="flex items-center gap-0.5 text-xs font-medium"
+                  style={{ color: t.neutral ? '#9c9895' : t.up ? '#7fbf7f' : '#e87070' }}
+                >
+                  {!t.neutral && (t.up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />)}
+                  {t.pct}
+                </span>
+              )
+            })()}
+          </div>
+          {avgPaceThisWeek ? (
+            <>
+              <p
+                className="text-2xl font-semibold tabular-nums leading-none mb-1"
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
+              >
+                {mpsToMinPerMile(avgPaceThisWeek)}
+              </p>
+              <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Avg Pace</p>
+              <p className="text-xs" style={{ color: '#9c9895' }}>min/mi this week</p>
+            </>
+          ) : (
+            <>
+              <p
+                className="text-2xl font-semibold leading-none mb-1"
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#9c9895' }}
+              >
+                —
+              </p>
+              <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Avg Pace</p>
+              <p className="text-xs" style={{ color: '#9c9895' }}>no runs this week</p>
             </>
           )}
         </div>
       </div>
 
-      {/* Coach's Weekly Note — prominent */}
-      <div className="mb-6 p-6" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-        <div className="flex items-baseline justify-between mb-4">
-          <p className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>
-            From Your Coach
-          </p>
-          {insight && (
-            <p className="text-xs" style={{ color: '#3a3633' }}>
-              Week of {format(new Date(insight.week_start), 'MMM d, yyyy')}
+      {/* Charts row */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
+
+        {/* Mileage line chart (wider) */}
+        <div className="lg:col-span-3 p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+          <div className="flex items-center justify-between mb-5">
+            <p className="text-sm font-semibold" style={{ color: '#3a3733' }}>
+              Mileage Performance
+            </p>
+            <span className="text-xs" style={{ color: '#9c9895' }}>Last 12 weeks</span>
+          </div>
+          <MileageLineChart data={weeklyChartData} />
+        </div>
+
+        {/* Activity type bar chart (narrower) */}
+        <div className="lg:col-span-2 p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+          <div className="flex items-center justify-between mb-5">
+            <p className="text-sm font-semibold" style={{ color: '#3a3733' }}>
+              Miles by Type
+            </p>
+            <span className="text-xs" style={{ color: '#9c9895' }}>This year</span>
+          </div>
+          {activityChartData.length > 0 ? (
+            <ActivityTypeChart data={activityChartData} />
+          ) : (
+            <div className="flex items-center justify-center h-48">
+              <p className="text-xs" style={{ color: '#9c9895' }}>No activities yet</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom row: coach note + recent runs */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+
+        {/* Coach's weekly note */}
+        <div className="lg:col-span-2 p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+          <div className="flex items-baseline justify-between mb-4">
+            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6b6865' }}>
+              From Your Coach
+            </p>
+            {insight && (
+              <p className="text-xs" style={{ color: '#9c9895' }}>
+                {format(new Date(insight.week_start), 'MMM d')}
+              </p>
+            )}
+          </div>
+          {insight ? (
+            <p className="text-sm leading-7" style={{ color: '#3a3733', fontStyle: 'italic' }}>
+              &ldquo;{insight.content}&rdquo;
+            </p>
+          ) : (
+            <p className="text-sm" style={{ color: '#9c9895' }}>
+              No note yet this week — check back soon.
             </p>
           )}
         </div>
-        {insight ? (
-          <p className="text-sm leading-8" style={{ color: '#e8e0d4', fontStyle: 'italic' }}>
-            &ldquo;{insight.content}&rdquo;
-          </p>
-        ) : (
-          <p className="text-sm leading-7" style={{ color: '#3a3633' }}>
-            No note yet this week — check back soon.
-          </p>
-        )}
-      </div>
 
-      {/* 8-Week Mileage Chart */}
-      <div className="p-5 mb-6" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-        <p className="text-xs uppercase tracking-widest mb-5" style={{ color: '#6b6560' }}>
-          Mileage — Last 8 Weeks
-        </p>
-        <MileageChart data={weeklyChartData} />
-      </div>
-
-      {/* Recent Runs */}
-      {recentRuns.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-widest" style={{ color: '#6b6560' }}>Recent Runs</p>
+        {/* Recent Runs */}
+        <div className="lg:col-span-3 p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6b6865' }}>
+              Recent Runs
+            </p>
             <Link
               href="/dashboard/runs"
-              className="text-xs uppercase tracking-widest transition-colors hover:text-[#f5f2ee]"
-              style={{ color: '#3a3633' }}
+              className="flex items-center gap-0.5 text-xs transition-colors hover:text-[#1a1917]"
+              style={{ color: '#9c9895' }}
             >
-              All runs →
+              All runs <ChevronRight size={12} />
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {recentRuns.map(run => {
-              const miles = metersToMiles(run.distance)
-              const pace = run.avg_pace ? mpsToMinPerMile(1 / run.avg_pace) : null
-              const typeColor = ACTIVITY_TYPE_COLORS[run.activity_type] ?? '#e8e0d4'
-              const typeLabel = run.activity_type === 'VirtualRun' ? 'Run' : run.activity_type
-
-              return (
-                <div
-                  key={run.id}
-                  className="p-4"
-                  style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span
-                      className="text-xs uppercase tracking-widest px-2 py-0.5"
-                      style={{ backgroundColor: '#0a0908', color: typeColor, borderRadius: '2px', border: '1px solid #1e1b18' }}
-                    >
-                      {typeLabel}
-                    </span>
-                    <span className="text-xs" style={{ color: '#6b6560' }}>
-                      {format(new Date(run.started_at), 'MMM d')}
-                    </span>
-                  </div>
-                  <p className="text-sm mb-2 truncate" style={{ color: '#f5f2ee' }}>{run.name}</p>
-                  <div className="flex items-baseline gap-4">
-                    <span className="text-xl font-semibold tabular-nums" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
-                      {miles} <span className="text-xs font-normal" style={{ color: '#6b6560' }}>mi</span>
-                    </span>
-                    {pace && (
-                      <span className="text-sm tabular-nums" style={{ color: '#6b6560' }}>
-                        {pace}<span className="text-xs">/mi</span>
+          {recentRuns.length > 0 ? (
+            <div className="space-y-2">
+              {recentRuns.map(run => {
+                const miles = metersToMiles(run.distance)
+                const pace = run.avg_pace ? mpsToMinPerMile(1 / run.avg_pace) : null
+                const typeColor = ACTIVITY_COLORS[run.activity_type] ?? '#e8e0d4'
+                const typeLabel = run.activity_type === 'VirtualRun' ? 'Run' : run.activity_type
+                return (
+                  <div
+                    key={run.id}
+                    className="flex items-center justify-between py-2.5 px-3 rounded-md"
+                    style={{ backgroundColor: '#f5f4f2', border: '1px solid #ebebea' }}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: typeColor }} />
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium truncate" style={{ color: '#3a3733' }}>{run.name}</p>
+                        <p className="text-xs" style={{ color: '#9c9895' }}>{typeLabel} · {format(new Date(run.started_at), 'MMM d')}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-3 shrink-0 ml-4">
+                      <span
+                        className="text-sm font-semibold tabular-nums"
+                        style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
+                      >
+                        {miles} <span className="text-xs font-normal" style={{ color: '#6b6865' }}>mi</span>
                       </span>
-                    )}
+                      {pace && (
+                        <span className="text-xs tabular-nums" style={{ color: '#6b6865' }}>
+                          {pace}<span style={{ fontSize: '10px' }}>/mi</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )
-            })}
-          </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-8">
+              <p className="text-sm mb-1" style={{ color: '#6b6865' }}>No runs synced yet</p>
+              <p className="text-xs" style={{ color: '#9c9895' }}>
+                Connect Strava in{' '}
+                <Link href="/dashboard/settings" className="underline" style={{ color: '#6b6865' }}>
+                  Settings
+                </Link>
+              </p>
+            </div>
+          )}
         </div>
-      )}
-
-      {/* Empty state — no activities yet */}
-      {recentRuns.length === 0 && (
-        <div className="p-6 text-center" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-          <p className="text-sm mb-1" style={{ color: '#6b6560' }}>No runs synced yet</p>
-          <p className="text-xs" style={{ color: '#3a3633' }}>
-            Connect Strava in{' '}
-            <Link href="/dashboard/settings" className="underline" style={{ color: '#6b6560' }}>
-              Settings
-            </Link>{' '}
-            to start tracking your training.
-          </p>
-        </div>
-      )}
+      </div>
     </div>
   )
 }

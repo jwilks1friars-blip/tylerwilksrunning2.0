@@ -1,8 +1,6 @@
 import { Resend } from 'resend'
 import { NextRequest, NextResponse } from 'next/server'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 async function postToSlack(webhookUrl: string, text: string) {
   await fetch(webhookUrl, {
     method: 'POST',
@@ -12,6 +10,7 @@ async function postToSlack(webhookUrl: string, text: string) {
 }
 
 export async function POST(req: NextRequest) {
+  const resend = new Resend(process.env.RESEND_API_KEY)
   const { name, email, goalRace, goalTime, experience, weeklyMiles } = await req.json()
 
   await resend.emails.send({
