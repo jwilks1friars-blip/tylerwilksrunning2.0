@@ -180,11 +180,11 @@ export default async function DashboardPage() {
         <div>
           <h1
             className="text-3xl font-semibold uppercase tracking-widest leading-tight"
-            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
           >
             {firstName ? `${firstName}'s Dashboard` : 'Dashboard'}
           </h1>
-          <p className="text-sm mt-1" style={{ color: '#6b6560' }}>
+          <p className="text-sm mt-1" style={{ color: '#6b6865' }}>
             {plan?.goal_race
               ? `Training for ${plan.goal_race}${plan.goal_time ? ` · Goal: ${plan.goal_time}` : ''}${daysToRace !== null ? ` · ${daysToRace} days to go` : ''}`
               : profile?.goal_race
@@ -196,7 +196,7 @@ export default async function DashboardPage() {
           <Link href="/dashboard/training">
             <button
               className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded-md transition-colors hover:opacity-90"
-              style={{ backgroundColor: '#1e1b18', color: '#e8e0d4', border: '1px solid #2a2521' }}
+              style={{ backgroundColor: '#f0eeec', color: '#3a3733', border: '1px solid #e8e7e5' }}
             >
               <Plus size={13} />
               Log Run
@@ -205,7 +205,7 @@ export default async function DashboardPage() {
           <Link href="/dashboard/training">
             <button
               className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded-md transition-colors hover:opacity-90"
-              style={{ backgroundColor: '#f5f2ee', color: '#0a0908' }}
+              style={{ backgroundColor: '#1a1917', color: '#ffffff' }}
             >
               <Sparkles size={13} />
               Generate Plan
@@ -218,14 +218,14 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
 
         {/* This Week Miles */}
-        <div className="p-5 rounded-lg" style={{ backgroundColor: '#111009', border: '1px solid #1e1b18' }}>
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
           <div className="flex items-start justify-between mb-3">
-            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#1e1b18' }}>
-              <Route size={14} style={{ color: '#e8e0d4' }} />
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
+              <Route size={14} style={{ color: '#3a3733' }} />
             </div>
             <span
               className="flex items-center gap-0.5 text-xs font-medium"
-              style={{ color: weekTrend.neutral ? '#6b6560' : weekTrend.up ? '#7fbf7f' : '#e87070' }}
+              style={{ color: weekTrend.neutral ? '#9c9895' : weekTrend.up ? '#7fbf7f' : '#e87070' }}
             >
               {weekTrend.neutral ? null : weekTrend.up
                 ? <ArrowUpRight size={12} />
@@ -235,49 +235,49 @@ export default async function DashboardPage() {
           </div>
           <p
             className="text-2xl font-semibold tabular-nums leading-none mb-1"
-            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
           >
             {milesThisWeek.toFixed(1)}
           </p>
-          <p className="text-xs font-medium mb-0.5" style={{ color: '#e8e0d4' }}>This Week</p>
+          <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>This Week</p>
           {weeklyGoal > 0 ? (
             <>
-              <div className="mt-2 h-0.5 rounded-full" style={{ backgroundColor: '#1e1b18' }}>
+              <div className="mt-2 h-0.5 rounded-full" style={{ backgroundColor: '#f0eeec' }}>
                 <div className="h-0.5 rounded-full" style={{ width: `${weekProgress}%`, backgroundColor: '#7090e8' }} />
               </div>
-              <p className="text-xs mt-1" style={{ color: '#3a3633' }}>{weekProgress}% of {weeklyGoal} mi</p>
+              <p className="text-xs mt-1" style={{ color: '#9c9895' }}>{weekProgress}% of {weeklyGoal} mi</p>
             </>
           ) : (
-            <p className="text-xs" style={{ color: '#3a3633' }}>miles this week</p>
+            <p className="text-xs" style={{ color: '#9c9895' }}>miles this week</p>
           )}
         </div>
 
         {/* YTD Miles */}
-        <div className="p-5 rounded-lg" style={{ backgroundColor: '#111009', border: '1px solid #1e1b18' }}>
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
           <div className="flex items-start justify-between mb-3">
-            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#1e1b18' }}>
-              <TrendingUp size={14} style={{ color: '#e8e0d4' }} />
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
+              <TrendingUp size={14} style={{ color: '#3a3733' }} />
             </div>
           </div>
           <p
             className="text-2xl font-semibold tabular-nums leading-none mb-1"
-            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
           >
             {Math.round(ytdMiles)}
           </p>
-          <p className="text-xs font-medium mb-0.5" style={{ color: '#e8e0d4' }}>Year to Date</p>
-          <p className="text-xs" style={{ color: '#3a3633' }}>{now.getFullYear()} total miles</p>
+          <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Year to Date</p>
+          <p className="text-xs" style={{ color: '#9c9895' }}>{now.getFullYear()} total miles</p>
         </div>
 
         {/* Total Runs */}
-        <div className="p-5 rounded-lg" style={{ backgroundColor: '#111009', border: '1px solid #1e1b18' }}>
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
           <div className="flex items-start justify-between mb-3">
-            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#1e1b18' }}>
-              <Activity size={14} style={{ color: '#e8e0d4' }} />
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
+              <Activity size={14} style={{ color: '#3a3733' }} />
             </div>
             <span
               className="flex items-center gap-0.5 text-xs font-medium"
-              style={{ color: runsTrend.neutral ? '#6b6560' : runsTrend.up ? '#7fbf7f' : '#e87070' }}
+              style={{ color: runsTrend.neutral ? '#9c9895' : runsTrend.up ? '#7fbf7f' : '#e87070' }}
             >
               {!runsTrend.neutral && (runsTrend.up
                 ? <ArrowUpRight size={12} />
@@ -287,68 +287,68 @@ export default async function DashboardPage() {
           </div>
           <p
             className="text-2xl font-semibold tabular-nums leading-none mb-1"
-            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
           >
             {ytdActs.length}
           </p>
-          <p className="text-xs font-medium mb-0.5" style={{ color: '#e8e0d4' }}>Total Runs</p>
-          <p className="text-xs" style={{ color: '#3a3633' }}>activities this year</p>
+          <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Total Runs</p>
+          <p className="text-xs" style={{ color: '#9c9895' }}>activities this year</p>
         </div>
 
         {/* Streak */}
-        <div className="p-5 rounded-lg" style={{ backgroundColor: '#111009', border: '1px solid #1e1b18' }}>
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
           <div className="flex items-start justify-between mb-3">
-            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#1e1b18' }}>
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
               <Flame size={14} style={{ color: '#fc4c02' }} />
             </div>
           </div>
           <p
             className="text-2xl font-semibold tabular-nums leading-none mb-1"
-            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
           >
             {streak}
           </p>
-          <p className="text-xs font-medium mb-0.5" style={{ color: '#e8e0d4' }}>Day Streak</p>
-          <p className="text-xs" style={{ color: '#3a3633' }}>consecutive days</p>
+          <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Day Streak</p>
+          <p className="text-xs" style={{ color: '#9c9895' }}>consecutive days</p>
         </div>
 
         {/* Plan Progress */}
-        <div className="p-5 rounded-lg" style={{ backgroundColor: '#111009', border: '1px solid #1e1b18' }}>
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
           <div className="flex items-start justify-between mb-3">
-            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#1e1b18' }}>
-              <Target size={14} style={{ color: '#e8e0d4' }} />
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
+              <Target size={14} style={{ color: '#3a3733' }} />
             </div>
           </div>
           {planPct !== null ? (
             <>
               <p
                 className="text-2xl font-semibold tabular-nums leading-none mb-1"
-                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
               >
-                {planPct}<span className="text-base font-normal" style={{ color: '#6b6560' }}>%</span>
+                {planPct}<span className="text-base font-normal" style={{ color: '#6b6865' }}>%</span>
               </p>
-              <p className="text-xs font-medium mb-0.5" style={{ color: '#e8e0d4' }}>Plan Progress</p>
-              <p className="text-xs" style={{ color: '#3a3633' }}>{completedWorkouts}/{totalWorkouts} workouts</p>
+              <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Plan Progress</p>
+              <p className="text-xs" style={{ color: '#9c9895' }}>{completedWorkouts}/{totalWorkouts} workouts</p>
             </>
           ) : (
             <>
               <p
                 className="text-2xl font-semibold leading-none mb-1"
-                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#3a3633' }}
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#9c9895' }}
               >
                 —
               </p>
-              <p className="text-xs font-medium mb-0.5" style={{ color: '#e8e0d4' }}>Plan Progress</p>
-              <p className="text-xs" style={{ color: '#3a3633' }}>no active plan</p>
+              <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Plan Progress</p>
+              <p className="text-xs" style={{ color: '#9c9895' }}>no active plan</p>
             </>
           )}
         </div>
 
         {/* Avg Pace */}
-        <div className="p-5 rounded-lg" style={{ backgroundColor: '#111009', border: '1px solid #1e1b18' }}>
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
           <div className="flex items-start justify-between mb-3">
-            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#1e1b18' }}>
-              <Timer size={14} style={{ color: '#e8e0d4' }} />
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
+              <Timer size={14} style={{ color: '#3a3733' }} />
             </div>
             {avgPaceThisWeek && avgPaceLastWeek && (() => {
               // Lower pace (faster) is better — invert trend logic
@@ -356,7 +356,7 @@ export default async function DashboardPage() {
               return (
                 <span
                   className="flex items-center gap-0.5 text-xs font-medium"
-                  style={{ color: t.neutral ? '#6b6560' : t.up ? '#7fbf7f' : '#e87070' }}
+                  style={{ color: t.neutral ? '#9c9895' : t.up ? '#7fbf7f' : '#e87070' }}
                 >
                   {!t.neutral && (t.up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />)}
                   {t.pct}
@@ -368,23 +368,23 @@ export default async function DashboardPage() {
             <>
               <p
                 className="text-2xl font-semibold tabular-nums leading-none mb-1"
-                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
               >
                 {mpsToMinPerMile(avgPaceThisWeek)}
               </p>
-              <p className="text-xs font-medium mb-0.5" style={{ color: '#e8e0d4' }}>Avg Pace</p>
-              <p className="text-xs" style={{ color: '#3a3633' }}>min/mi this week</p>
+              <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Avg Pace</p>
+              <p className="text-xs" style={{ color: '#9c9895' }}>min/mi this week</p>
             </>
           ) : (
             <>
               <p
                 className="text-2xl font-semibold leading-none mb-1"
-                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#3a3633' }}
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#9c9895' }}
               >
                 —
               </p>
-              <p className="text-xs font-medium mb-0.5" style={{ color: '#e8e0d4' }}>Avg Pace</p>
-              <p className="text-xs" style={{ color: '#3a3633' }}>no runs this week</p>
+              <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Avg Pace</p>
+              <p className="text-xs" style={{ color: '#9c9895' }}>no runs this week</p>
             </>
           )}
         </div>
@@ -394,29 +394,29 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
 
         {/* Mileage line chart (wider) */}
-        <div className="lg:col-span-3 p-5 rounded-lg" style={{ backgroundColor: '#111009', border: '1px solid #1e1b18' }}>
+        <div className="lg:col-span-3 p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
           <div className="flex items-center justify-between mb-5">
-            <p className="text-sm font-semibold" style={{ color: '#e8e0d4' }}>
+            <p className="text-sm font-semibold" style={{ color: '#3a3733' }}>
               Mileage Performance
             </p>
-            <span className="text-xs" style={{ color: '#3a3633' }}>Last 12 weeks</span>
+            <span className="text-xs" style={{ color: '#9c9895' }}>Last 12 weeks</span>
           </div>
           <MileageLineChart data={weeklyChartData} />
         </div>
 
         {/* Activity type bar chart (narrower) */}
-        <div className="lg:col-span-2 p-5 rounded-lg" style={{ backgroundColor: '#111009', border: '1px solid #1e1b18' }}>
+        <div className="lg:col-span-2 p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
           <div className="flex items-center justify-between mb-5">
-            <p className="text-sm font-semibold" style={{ color: '#e8e0d4' }}>
+            <p className="text-sm font-semibold" style={{ color: '#3a3733' }}>
               Miles by Type
             </p>
-            <span className="text-xs" style={{ color: '#3a3633' }}>This year</span>
+            <span className="text-xs" style={{ color: '#9c9895' }}>This year</span>
           </div>
           {activityChartData.length > 0 ? (
             <ActivityTypeChart data={activityChartData} />
           ) : (
             <div className="flex items-center justify-center h-48">
-              <p className="text-xs" style={{ color: '#3a3633' }}>No activities yet</p>
+              <p className="text-xs" style={{ color: '#9c9895' }}>No activities yet</p>
             </div>
           )}
         </div>
@@ -426,38 +426,38 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
 
         {/* Coach's weekly note */}
-        <div className="lg:col-span-2 p-5 rounded-lg" style={{ backgroundColor: '#111009', border: '1px solid #1e1b18' }}>
+        <div className="lg:col-span-2 p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
           <div className="flex items-baseline justify-between mb-4">
-            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6b6560' }}>
+            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6b6865' }}>
               From Your Coach
             </p>
             {insight && (
-              <p className="text-xs" style={{ color: '#3a3633' }}>
+              <p className="text-xs" style={{ color: '#9c9895' }}>
                 {format(new Date(insight.week_start), 'MMM d')}
               </p>
             )}
           </div>
           {insight ? (
-            <p className="text-sm leading-7" style={{ color: '#e8e0d4', fontStyle: 'italic' }}>
+            <p className="text-sm leading-7" style={{ color: '#3a3733', fontStyle: 'italic' }}>
               &ldquo;{insight.content}&rdquo;
             </p>
           ) : (
-            <p className="text-sm" style={{ color: '#3a3633' }}>
+            <p className="text-sm" style={{ color: '#9c9895' }}>
               No note yet this week — check back soon.
             </p>
           )}
         </div>
 
         {/* Recent Runs */}
-        <div className="lg:col-span-3 p-5 rounded-lg" style={{ backgroundColor: '#111009', border: '1px solid #1e1b18' }}>
+        <div className="lg:col-span-3 p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6b6560' }}>
+            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6b6865' }}>
               Recent Runs
             </p>
             <Link
               href="/dashboard/runs"
-              className="flex items-center gap-0.5 text-xs transition-colors hover:text-[#f5f2ee]"
-              style={{ color: '#3a3633' }}
+              className="flex items-center gap-0.5 text-xs transition-colors hover:text-[#1a1917]"
+              style={{ color: '#9c9895' }}
             >
               All runs <ChevronRight size={12} />
             </Link>
@@ -473,24 +473,24 @@ export default async function DashboardPage() {
                   <div
                     key={run.id}
                     className="flex items-center justify-between py-2.5 px-3 rounded-md"
-                    style={{ backgroundColor: '#0a0908', border: '1px solid #1e1b18' }}
+                    style={{ backgroundColor: '#f5f4f2', border: '1px solid #ebebea' }}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: typeColor }} />
                       <div className="min-w-0">
-                        <p className="text-xs font-medium truncate" style={{ color: '#e8e0d4' }}>{run.name}</p>
-                        <p className="text-xs" style={{ color: '#3a3633' }}>{typeLabel} · {format(new Date(run.started_at), 'MMM d')}</p>
+                        <p className="text-xs font-medium truncate" style={{ color: '#3a3733' }}>{run.name}</p>
+                        <p className="text-xs" style={{ color: '#9c9895' }}>{typeLabel} · {format(new Date(run.started_at), 'MMM d')}</p>
                       </div>
                     </div>
                     <div className="flex items-baseline gap-3 shrink-0 ml-4">
                       <span
                         className="text-sm font-semibold tabular-nums"
-                        style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+                        style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
                       >
-                        {miles} <span className="text-xs font-normal" style={{ color: '#6b6560' }}>mi</span>
+                        {miles} <span className="text-xs font-normal" style={{ color: '#6b6865' }}>mi</span>
                       </span>
                       {pace && (
-                        <span className="text-xs tabular-nums" style={{ color: '#6b6560' }}>
+                        <span className="text-xs tabular-nums" style={{ color: '#6b6865' }}>
                           {pace}<span style={{ fontSize: '10px' }}>/mi</span>
                         </span>
                       )}
@@ -501,10 +501,10 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-8">
-              <p className="text-sm mb-1" style={{ color: '#6b6560' }}>No runs synced yet</p>
-              <p className="text-xs" style={{ color: '#3a3633' }}>
+              <p className="text-sm mb-1" style={{ color: '#6b6865' }}>No runs synced yet</p>
+              <p className="text-xs" style={{ color: '#9c9895' }}>
                 Connect Strava in{' '}
-                <Link href="/dashboard/settings" className="underline" style={{ color: '#6b6560' }}>
+                <Link href="/dashboard/settings" className="underline" style={{ color: '#6b6865' }}>
                   Settings
                 </Link>
               </p>

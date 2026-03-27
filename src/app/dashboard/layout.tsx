@@ -37,7 +37,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .slice(0, 2)
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: '#0a0908' }}>
+    <div className="min-h-screen flex" style={{ backgroundColor: '#f5f4f2' }}>
 
       {/* Mobile nav */}
       <DashboardMobileNav initialUnread={unreadCount} isCoach={isCoach} />
@@ -45,12 +45,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
       {/* Sidebar — desktop only */}
       <aside
         className="hidden md:flex w-60 shrink-0 min-h-screen flex-col"
-        style={{ borderRight: '1px solid #1e1b18', backgroundColor: '#0a0908' }}
+        style={{ borderRight: '1px solid #e8e7e5', backgroundColor: '#ffffff' }}
       >
         {/* Logo */}
         <div
           className="flex items-center gap-3 px-5 h-14 shrink-0"
-          style={{ borderBottom: '1px solid #1e1b18' }}
+          style={{ borderBottom: '1px solid #e8e7e5' }}
         >
           <div
             className="w-7 h-7 flex items-center justify-center rounded-md shrink-0"
@@ -61,7 +61,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <Link href="/dashboard">
             <span
               className="text-sm font-semibold uppercase tracking-widest leading-tight"
-              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
             >
               Tyler Wilks<br />Running
             </span>
@@ -74,18 +74,18 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {/* User footer */}
         <div
           className="px-4 py-4 shrink-0"
-          style={{ borderTop: '1px solid #1e1b18' }}
+          style={{ borderTop: '1px solid #e8e7e5' }}
         >
           <div className="flex items-center gap-3 mb-3">
             <div
               className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0"
-              style={{ backgroundColor: '#1e1b18', color: '#e8e0d4' }}
+              style={{ backgroundColor: '#f0eeec', color: '#1a1917' }}
             >
               {initials}
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-medium truncate" style={{ color: '#e8e0d4' }}>{fullName}</p>
-              <p className="text-xs" style={{ color: '#6b6560' }}>Athlete</p>
+              <p className="text-xs font-medium truncate" style={{ color: '#1a1917' }}>{fullName}</p>
+              <p className="text-xs" style={{ color: '#9c9895' }}>Athlete</p>
             </div>
           </div>
           <SignOutButton />
@@ -98,11 +98,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {/* Top header bar — desktop only */}
         <header
           className="hidden md:flex items-center justify-between px-8 h-14 shrink-0 sticky top-0 z-10"
-          style={{ borderBottom: '1px solid #1e1b18', backgroundColor: '#0a0908' }}
+          style={{ borderBottom: '1px solid #e8e7e5', backgroundColor: '#ffffff' }}
         >
           {/* Breadcrumb */}
-          <div className="flex items-center gap-1.5 text-xs" style={{ color: '#6b6560' }}>
-            <Link href="/dashboard" className="hover:text-[#f5f2ee] transition-colors">
+          <div className="flex items-center gap-1.5 text-xs" style={{ color: '#9c9895' }}>
+            <Link href="/dashboard" className="hover:text-[#1a1917] transition-colors">
               Dashboard
             </Link>
           </div>
@@ -110,7 +110,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {/* Search */}
           <div
             className="flex items-center gap-2 px-3 py-1.5 rounded-md text-xs"
-            style={{ backgroundColor: '#0f0d0b', border: '1px solid #1e1b18', color: '#6b6560', width: '220px' }}
+            style={{ backgroundColor: '#f5f4f2', border: '1px solid #e8e7e5', color: '#9c9895', width: '220px' }}
           >
             <Search size={13} />
             <span>Search...</span>
@@ -119,8 +119,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {/* Right actions */}
           <div className="flex items-center gap-4">
             <button
-              className="relative transition-colors hover:text-[#e8e0d4]"
-              style={{ color: '#6b6560' }}
+              className="relative transition-colors hover:text-[#1a1917]"
+              style={{ color: '#9c9895' }}
             >
               <Bell size={17} />
               {unreadCount > 0 && (
@@ -134,8 +134,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </button>
             <Link href="/dashboard/settings">
               <button
-                className="transition-colors hover:text-[#e8e0d4]"
-                style={{ color: '#6b6560' }}
+                className="transition-colors hover:text-[#1a1917]"
+                style={{ color: '#9c9895' }}
               >
                 <Settings size={17} />
               </button>
@@ -143,13 +143,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <div className="flex items-center gap-2.5">
               <div
                 className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0"
-                style={{ backgroundColor: '#1e1b18', color: '#e8e0d4' }}
+                style={{ backgroundColor: '#f0eeec', color: '#1a1917' }}
               >
                 {initials}
               </div>
               <div>
-                <p className="text-xs font-medium leading-tight" style={{ color: '#e8e0d4' }}>{fullName}</p>
-                <p className="text-xs leading-tight" style={{ color: '#6b6560' }}>Athlete</p>
+                <p className="text-xs font-medium leading-tight" style={{ color: '#1a1917' }}>{fullName}</p>
+                <p className="text-xs leading-tight" style={{ color: '#9c9895' }}>Athlete</p>
               </div>
             </div>
           </div>

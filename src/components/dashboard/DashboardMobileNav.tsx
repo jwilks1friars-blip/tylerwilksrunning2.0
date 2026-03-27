@@ -63,7 +63,7 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
       {/* Mobile top bar */}
       <div
         className="md:hidden flex items-center justify-between px-5 h-14"
-        style={{ borderBottom: '1px solid #1e1b18', backgroundColor: '#0a0908' }}
+        style={{ borderBottom: '1px solid #e8e7e5', backgroundColor: '#ffffff' }}
       >
         <div className="flex items-center gap-2.5">
           <div
@@ -75,7 +75,7 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
           <Link href="/dashboard">
             <span
               className="text-sm font-semibold uppercase tracking-widest"
-              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+              style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
             >
               Tyler Wilks Running
             </span>
@@ -84,7 +84,7 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
         <button
           onClick={() => setOpen(true)}
           className="p-1"
-          style={{ color: '#6b6560' }}
+          style={{ color: '#9c9895' }}
           aria-label="Open menu"
         >
           <Menu size={22} />
@@ -95,7 +95,7 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
       {open && (
         <div
           className="md:hidden fixed inset-0 z-40"
-          style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+          style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}
           onClick={() => setOpen(false)}
         />
       )}
@@ -103,12 +103,12 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
       {/* Slide-in drawer */}
       <div
         className={`md:hidden fixed top-0 left-0 h-full z-50 w-64 flex flex-col transition-transform duration-200 ${open ? 'translate-x-0' : '-translate-x-full'}`}
-        style={{ backgroundColor: '#0a0908', borderRight: '1px solid #1e1b18' }}
+        style={{ backgroundColor: '#ffffff', borderRight: '1px solid #e8e7e5' }}
       >
         {/* Drawer header */}
         <div
           className="flex items-center justify-between px-5 h-14 shrink-0"
-          style={{ borderBottom: '1px solid #1e1b18' }}
+          style={{ borderBottom: '1px solid #e8e7e5' }}
         >
           <div className="flex items-center gap-2.5">
             <div
@@ -120,7 +120,7 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
             <Link href="/dashboard" onClick={() => setOpen(false)}>
               <span
                 className="text-sm font-semibold uppercase tracking-widest"
-                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
               >
                 Tyler Wilks Running
               </span>
@@ -129,7 +129,7 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
           <button
             onClick={() => setOpen(false)}
             className="p-1"
-            style={{ color: '#6b6560' }}
+            style={{ color: '#9c9895' }}
             aria-label="Close menu"
           >
             <X size={20} />
@@ -142,7 +142,7 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
             <div key={section.label}>
               <p
                 className="text-xs px-3 mb-1.5 font-semibold tracking-widest"
-                style={{ color: '#3a3633' }}
+                style={{ color: '#c8c4c0' }}
               >
                 {section.label}
               </p>
@@ -156,8 +156,9 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
                       href={link.href}
                       className="flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors"
                       style={{
-                        color: active ? '#f5f2ee' : '#6b6560',
-                        backgroundColor: active ? '#1e1b18' : 'transparent',
+                        color: active ? '#1a1917' : '#6b6865',
+                        backgroundColor: active ? '#f0eeec' : 'transparent',
+                        fontWeight: active ? 500 : 400,
                       }}
                     >
                       <Icon size={16} strokeWidth={active ? 2 : 1.5} />
@@ -174,7 +175,7 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
             <div>
               <p
                 className="text-xs px-3 mb-1.5 font-semibold tracking-widest"
-                style={{ color: '#3a3633' }}
+                style={{ color: '#c8c4c0' }}
               >
                 COACH
               </p>
@@ -182,8 +183,9 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
                 href="/dashboard/messages"
                 className="flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors"
                 style={{
-                  color: pathname.startsWith('/dashboard/messages') ? '#f5f2ee' : '#6b6560',
-                  backgroundColor: pathname.startsWith('/dashboard/messages') ? '#1e1b18' : 'transparent',
+                  color: pathname.startsWith('/dashboard/messages') ? '#1a1917' : '#6b6865',
+                  backgroundColor: pathname.startsWith('/dashboard/messages') ? '#f0eeec' : 'transparent',
+                  fontWeight: pathname.startsWith('/dashboard/messages') ? 500 : 400,
                 }}
               >
                 <div className="flex items-center gap-3">
@@ -207,14 +209,14 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
             <div>
               <p
                 className="text-xs px-3 mb-1.5 font-semibold tracking-widest"
-                style={{ color: '#3a3633' }}
+                style={{ color: '#c8c4c0' }}
               >
                 COACH
               </p>
               <Link
                 href="/coach"
                 className="flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors"
-                style={{ color: '#6b6560' }}
+                style={{ color: '#6b6865' }}
               >
                 <UserCheck size={16} strokeWidth={1.5} />
                 <span>Coach Dashboard</span>
@@ -224,7 +226,7 @@ export default function DashboardMobileNav({ initialUnread, isCoach }: Props) {
         </nav>
 
         {/* Footer */}
-        <div className="px-4 py-4 shrink-0" style={{ borderTop: '1px solid #1e1b18' }}>
+        <div className="px-4 py-4 shrink-0" style={{ borderTop: '1px solid #e8e7e5' }}>
           <SignOutButton />
         </div>
       </div>

@@ -15,8 +15,8 @@ interface Props {
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null
   return (
-    <div className="px-3 py-2 text-xs" style={{ backgroundColor: '#1e1b18', border: '1px solid #2a2521', color: '#f5f2ee', borderRadius: '4px' }}>
-      <p className="uppercase tracking-widest mb-1" style={{ color: '#6b6560' }}>{label}</p>
+    <div className="px-3 py-2 text-xs" style={{ backgroundColor: '#ffffff', border: '1px solid #e8e7e5', color: '#1a1917', borderRadius: '4px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
+      <p className="uppercase tracking-widest mb-1" style={{ color: '#9c9895' }}>{label}</p>
       <p>{payload[0].value} mi</p>
     </div>
   )
@@ -28,16 +28,16 @@ export default function ActivityTypeChart({ data }: Props) {
       <BarChart data={data} barSize={28} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
         <XAxis
           dataKey="type"
-          tick={{ fill: '#6b6560', fontSize: 11 }}
+          tick={{ fill: '#9c9895', fontSize: 11 }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fill: '#6b6560', fontSize: 11 }}
+          tick={{ fill: '#9c9895', fontSize: 11 }}
           axisLine={false}
           tickLine={false}
         />
-        <Tooltip content={<CustomTooltip />} cursor={{ fill: '#1a1714' }} />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f5f4f2' }} />
         <Bar dataKey="miles" radius={[3, 3, 0, 0]}>
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={entry.color} />

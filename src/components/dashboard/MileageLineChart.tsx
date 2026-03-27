@@ -24,8 +24,8 @@ interface Props {
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null
   return (
-    <div className="px-3 py-2 text-xs" style={{ backgroundColor: '#1e1b18', border: '1px solid #2a2521', color: '#f5f2ee', borderRadius: '4px' }}>
-      <p className="uppercase tracking-widest mb-1" style={{ color: '#6b6560' }}>{label}</p>
+    <div className="px-3 py-2 text-xs" style={{ backgroundColor: '#ffffff', border: '1px solid #e8e7e5', color: '#1a1917', borderRadius: '4px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
+      <p className="uppercase tracking-widest mb-1" style={{ color: '#9c9895' }}>{label}</p>
       {payload.map((p: any) => (
         <p key={p.dataKey} style={{ color: p.color }}>
           {p.dataKey === 'miles' ? 'Miles' : 'Goal'}: {p.value} mi
@@ -40,11 +40,11 @@ function CustomLegend() {
     <div className="flex items-center gap-4 justify-end pr-2 mb-2">
       <div className="flex items-center gap-1.5">
         <div className="w-6 h-0.5 rounded" style={{ backgroundColor: '#7090e8' }} />
-        <span className="text-xs" style={{ color: '#6b6560' }}>Miles</span>
+        <span className="text-xs" style={{ color: '#9c9895' }}>Miles</span>
       </div>
       <div className="flex items-center gap-1.5">
-        <div className="w-6 h-0.5 rounded" style={{ backgroundColor: '#3a3633', borderTop: '2px dashed #3a3633' }} />
-        <span className="text-xs" style={{ color: '#6b6560' }}>Goal</span>
+        <div className="w-6 h-0.5 rounded" style={{ backgroundColor: '#d0ccc8', borderTop: '2px dashed #d0ccc8' }} />
+        <span className="text-xs" style={{ color: '#9c9895' }}>Goal</span>
       </div>
     </div>
   )
@@ -57,19 +57,19 @@ export default function MileageLineChart({ data }: Props) {
       <CustomLegend />
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={data} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-          <CartesianGrid stroke="#1e1b18" strokeDasharray="3 3" vertical={false} />
+          <CartesianGrid stroke="#ebebea" strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey="week"
-            tick={{ fill: '#6b6560', fontSize: 11 }}
+            tick={{ fill: '#9c9895', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fill: '#6b6560', fontSize: 11 }}
+            tick={{ fill: '#9c9895', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#2a2521', strokeWidth: 1 }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#e8e7e5', strokeWidth: 1 }} />
           <Line
             type="monotone"
             dataKey="miles"
@@ -82,7 +82,7 @@ export default function MileageLineChart({ data }: Props) {
             <Line
               type="monotone"
               dataKey="goal"
-              stroke="#3a3633"
+              stroke="#d0ccc8"
               strokeWidth={1.5}
               strokeDasharray="4 3"
               dot={false}
