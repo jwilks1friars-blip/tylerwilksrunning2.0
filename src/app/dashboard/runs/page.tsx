@@ -14,12 +14,12 @@ function formatDuration(seconds: number): string {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  Run: '#7fbf7f',
-  VirtualRun: '#7fbf7f',
-  TrailRun: '#a0c4a0',
-  Walk: '#6b6560',
-  Hike: '#6b6560',
-  Ride: '#7090e8',
+  Run: '#7090e8',
+  VirtualRun: '#7090e8',
+  TrailRun: '#7fbf7f',
+  Walk: '#9c9895',
+  Hike: '#9c9895',
+  Ride: '#e8a050',
 }
 
 const RUNNING_TYPES = new Set(['Run', 'VirtualRun', 'TrailRun'])
@@ -29,7 +29,6 @@ export default async function RunsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Fetch all activities — needed for all-time PRs and monthly chart
   const { data: activities } = await supabase
     .from('activities')
     .select('*')
@@ -38,7 +37,6 @@ export default async function RunsPage() {
 
   const acts = activities ?? []
 
-  // --- Personal Records ---
   const runningActs = acts.filter(a => RUNNING_TYPES.has(a.activity_type))
   const longRunningActs = runningActs.filter(a => a.distance > THREE_MILES_IN_METERS && a.avg_pace)
 
@@ -52,7 +50,6 @@ export default async function RunsPage() {
 
   const allTimeMiles = acts.reduce((sum, a) => sum + metersToMiles(a.distance), 0)
 
-  // --- 6-Month Chart ---
   const now = new Date()
   const monthlyData = Array.from({ length: 6 }, (_, i) => {
     const offset = 5 - i
@@ -70,7 +67,6 @@ export default async function RunsPage() {
     }
   })
 
-  // Display first 100 in the table
   const displayActivities = acts.slice(0, 100)
 
   return (
@@ -79,11 +75,11 @@ export default async function RunsPage() {
       <div className="mb-8">
         <h2
           className="text-3xl font-semibold uppercase tracking-widest"
-          style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}
+          style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
         >
           Runs
         </h2>
-        <p className="text-sm mt-1" style={{ color: '#6b6560' }}>
+        <p className="text-sm mt-1" style={{ color: '#6b6865' }}>
           {acts.length} activities synced
         </p>
       </div>
@@ -91,42 +87,40 @@ export default async function RunsPage() {
       {/* Personal Records */}
       {runningActs.length > 0 && (
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="p-5" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#6b6560' }}>Longest Run</p>
-            <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
+          <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#9c9895' }}>Longest Run</p>
+            <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
               {metersToMiles(longestRunMeters)}
-              <span className="text-base font-normal ml-1" style={{ color: '#6b6560' }}>mi</span>
+              <span className="text-base font-normal ml-1" style={{ color: '#9c9895' }}>mi</span>
             </p>
-            <p className="text-xs mt-2" style={{ color: '#3a3633' }}>all time</p>
+            <p className="text-xs mt-2" style={{ color: '#c8c4c0' }}>all time</p>
           </div>
 
-          <div className="p-5" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#6b6560' }}>Best Pace</p>
-            <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
-              {fastestPaceAct
-                ? mpsToMinPerMile(1 / fastestPaceAct.avg_pace)
-                : '—'}
+          <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#9c9895' }}>Best Pace</p>
+            <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
+              {fastestPaceAct ? mpsToMinPerMile(1 / fastestPaceAct.avg_pace) : '—'}
               {fastestPaceAct && (
-                <span className="text-base font-normal ml-1" style={{ color: '#6b6560' }}>/mi</span>
+                <span className="text-base font-normal ml-1" style={{ color: '#9c9895' }}>/mi</span>
               )}
             </p>
-            <p className="text-xs mt-2" style={{ color: '#3a3633' }}>runs over 3 mi</p>
+            <p className="text-xs mt-2" style={{ color: '#c8c4c0' }}>runs over 3 mi</p>
           </div>
 
-          <div className="p-5" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#6b6560' }}>All-Time Miles</p>
-            <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#f5f2ee' }}>
+          <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#9c9895' }}>All-Time Miles</p>
+            <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
               {Math.round(allTimeMiles).toLocaleString()}
-              <span className="text-base font-normal ml-1" style={{ color: '#6b6560' }}>mi</span>
+              <span className="text-base font-normal ml-1" style={{ color: '#9c9895' }}>mi</span>
             </p>
-            <p className="text-xs mt-2" style={{ color: '#3a3633' }}>total logged</p>
+            <p className="text-xs mt-2" style={{ color: '#c8c4c0' }}>total logged</p>
           </div>
         </div>
       )}
 
       {/* 6-Month Chart */}
-      <div className="p-5 mb-6" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-        <p className="text-xs uppercase tracking-widest mb-5" style={{ color: '#6b6560' }}>
+      <div className="p-5 mb-6 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+        <p className="text-sm font-semibold mb-5" style={{ color: '#1a1917' }}>
           Mileage — Last 6 Months
         </p>
         <MileageChart data={monthlyData} />
@@ -134,9 +128,9 @@ export default async function RunsPage() {
 
       {/* Empty state */}
       {!acts.length && (
-        <div className="p-8 text-center" style={{ backgroundColor: '#141210', border: '1px solid #1e1b18' }}>
-          <p className="text-sm mb-1" style={{ color: '#e8e0d4' }}>No runs yet</p>
-          <p className="text-xs" style={{ color: '#6b6560' }}>
+        <div className="p-8 text-center rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+          <p className="text-sm mb-1" style={{ color: '#3a3733' }}>No runs yet</p>
+          <p className="text-xs" style={{ color: '#9c9895' }}>
             Connect Strava in Settings to start syncing your activities.
           </p>
         </div>
@@ -146,77 +140,78 @@ export default async function RunsPage() {
       {!!displayActivities.length && (
         <div className="overflow-x-auto -mx-5 md:mx-0">
           <div className="min-w-[500px] px-5 md:px-0">
-          <div
-            className="grid text-xs uppercase tracking-widest pb-2 mb-1 px-4"
-            style={{
-              color: '#6b6560',
-              borderBottom: '1px solid #1e1b18',
-              gridTemplateColumns: '1fr 80px 80px 70px 60px 60px',
-            }}
-          >
-            <span>Activity</span>
-            <span className="text-right">Distance</span>
-            <span className="text-right">Pace</span>
-            <span className="text-right">Time</span>
-            <span className="text-right">HR</span>
-            <span className="text-right">Elev</span>
-          </div>
+            <div
+              className="grid text-xs uppercase tracking-widest pb-2 mb-1 px-4"
+              style={{
+                color: '#9c9895',
+                borderBottom: '1px solid #ebebea',
+                gridTemplateColumns: '1fr 80px 80px 70px 60px 60px',
+              }}
+            >
+              <span>Activity</span>
+              <span className="text-right">Distance</span>
+              <span className="text-right">Pace</span>
+              <span className="text-right">Time</span>
+              <span className="text-right">HR</span>
+              <span className="text-right">Elev</span>
+            </div>
 
-          <div className="space-y-px">
-            {displayActivities.map(activity => {
-              const miles = metersToMiles(activity.distance)
-              const pace = activity.avg_pace ? mpsToMinPerMile(1 / activity.avg_pace) : '—'
-              const typeColor = TYPE_COLORS[activity.activity_type] ?? '#6b6560'
+            <div className="space-y-px">
+              {displayActivities.map(activity => {
+                const miles = metersToMiles(activity.distance)
+                const pace = activity.avg_pace ? mpsToMinPerMile(1 / activity.avg_pace) : '—'
+                const typeColor = TYPE_COLORS[activity.activity_type] ?? '#9c9895'
 
-              return (
-                <div
-                  key={activity.id}
-                  className="grid items-center px-4 py-3.5 transition-colors hover:bg-[#141210] group"
-                  style={{
-                    gridTemplateColumns: '1fr 80px 80px 70px 60px 60px',
-                    borderLeft: `2px solid ${typeColor}40`,
-                  }}
-                >
-                  <div className="min-w-0 pr-4">
-                    <p className="text-sm truncate" style={{ color: typeColor }}>
-                      {activity.name}
+                return (
+                  <div
+                    key={activity.id}
+                    className="grid items-center px-4 py-3.5 rounded transition-colors hover:bg-[#f5f4f2] group"
+                    style={{
+                      gridTemplateColumns: '1fr 80px 80px 70px 60px 60px',
+                      borderLeft: `2px solid ${typeColor}60`,
+                    }}
+                  >
+                    <div className="min-w-0 pr-4">
+                      <p className="text-sm truncate font-medium" style={{ color: '#1a1917' }}>
+                        {activity.name}
+                      </p>
+                      <p className="text-xs mt-0.5" style={{ color: '#9c9895' }}>
+                        {format(new Date(activity.started_at), 'EEE, MMM d')}
+                      </p>
+                    </div>
+
+                    <p className="text-sm text-right tabular-nums" style={{ color: '#1a1917' }}>
+                      {miles} <span className="text-xs" style={{ color: '#9c9895' }}>mi</span>
                     </p>
-                    <p className="text-xs mt-0.5" style={{ color: '#6b6560' }}>
-                      {format(new Date(activity.started_at), 'EEE, MMM d')}
+
+                    <p className="text-sm text-right tabular-nums" style={{ color: '#1a1917' }}>
+                      {pace}
+                      {pace !== '—' && <span className="text-xs" style={{ color: '#9c9895' }}>/mi</span>}
+                    </p>
+
+                    <p className="text-sm text-right tabular-nums" style={{ color: '#1a1917' }}>
+                      {activity.moving_time ? formatDuration(activity.moving_time) : '—'}
+                    </p>
+
+                    <p className="text-sm text-right tabular-nums" style={{ color: '#1a1917' }}>
+                      {activity.avg_hr ?? '—'}
+                    </p>
+
+                    <p className="text-sm text-right tabular-nums" style={{ color: '#1a1917' }}>
+                      {activity.elevation_gain != null
+                        ? `${Math.round(activity.elevation_gain * 3.281)}′`
+                        : '—'}
                     </p>
                   </div>
+                )
+              })}
+            </div>
 
-                  <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
-                    {miles} <span className="text-xs" style={{ color: '#6b6560' }}>mi</span>
-                  </p>
-
-                  <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
-                    {pace}
-                    {pace !== '—' && <span className="text-xs" style={{ color: '#6b6560' }}>/mi</span>}
-                  </p>
-
-                  <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
-                    {activity.moving_time ? formatDuration(activity.moving_time) : '—'}
-                  </p>
-
-                  <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
-                    {activity.avg_hr ?? '—'}
-                  </p>
-
-                  <p className="text-sm text-right tabular-nums" style={{ color: '#f5f2ee' }}>
-                    {activity.elevation_gain != null
-                      ? `${Math.round(activity.elevation_gain * 3.281)}′`
-                      : '—'}
-                  </p>
-                </div>
-              )
-            })}
-          </div>
-          {acts.length > 100 && (
-            <p className="text-xs text-center mt-4" style={{ color: '#3a3633' }}>
-              Showing 100 of {acts.length} activities
-            </p>
-          )}
+            {acts.length > 100 && (
+              <p className="text-xs text-center mt-4" style={{ color: '#c8c4c0' }}>
+                Showing 100 of {acts.length} activities
+              </p>
+            )}
           </div>
         </div>
       )}
