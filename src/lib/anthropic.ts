@@ -73,41 +73,17 @@ interface PlanGenerationParams {
 }
 
 export async function generateTrainingPlan(params: PlanGenerationParams) {
-  const prompt = `You are an elite running coach. Generate a structured training plan as JSON.
+  const prompt = `You are an elite running coach. Generate a training plan as compact JSON.
 
-ATHLETE DETAILS:
-- Name: ${params.athleteName}
-- Goal Race: ${params.goalRace} on ${params.raceDate}
-- Goal Time: ${params.goalTime}
-- Current Weekly Mileage: ${params.currentWeeklyMiles} miles/week
-- Experience: ${params.experience}
-- Available Days: ${params.availableDays.join(', ')}
+ATHLETE: ${params.athleteName}, Goal: ${params.goalRace} on ${params.raceDate} in ${params.goalTime}, Current mileage: ${params.currentWeeklyMiles} mi/wk, Experience: ${params.experience}
 
-Generate a week-by-week training plan. Return ONLY valid JSON with no extra text, no markdown, no code fences. Keep descriptions under 12 words each.
+Return ONLY raw JSON — no markdown, no code fences, no extra text. Use short paceTarget values (6 words max). Include rest days as type "rest" with distanceMiles 0.
 
-{
-  "totalWeeks": 16,
-  "weeks": [
-    {
-      "weekNumber": 1,
-      "focus": "Base Building",
-      "targetMiles": 35,
-      "workouts": [
-        {
-          "dayOfWeek": "Monday",
-          "type": "easy",
-          "distanceMiles": 6,
-          "paceTarget": "easy, conversational",
-          "description": "Easy aerobic run, HR below 140."
-        }
-      ]
-    }
-  ]
-}`
+{"totalWeeks":8,"weeks":[{"weekNumber":1,"targetMiles":30,"workouts":[{"dayOfWeek":"Monday","type":"easy","distanceMiles":6,"paceTarget":"easy pace"},{"dayOfWeek":"Tuesday","type":"rest","distanceMiles":0,"paceTarget":""},{"dayOfWeek":"Wednesday","type":"tempo","distanceMiles":7,"paceTarget":"goal half pace"},{"dayOfWeek":"Thursday","type":"rest","distanceMiles":0,"paceTarget":""},{"dayOfWeek":"Friday","type":"easy","distanceMiles":5,"paceTarget":"easy pace"},{"dayOfWeek":"Saturday","type":"long","distanceMiles":12,"paceTarget":"60-90s slower than goal pace"},{"dayOfWeek":"Sunday","type":"rest","distanceMiles":0,"paceTarget":""}]}]}`
 
   const message = await getClient().messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 16000,
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 7000,
     messages: [{ role: 'user', content: prompt }],
   })
 
