@@ -28,9 +28,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name')
+    .select('full_name, goal_race, experience')
     .eq('id', user.id)
     .single()
+
+  // Redirect new athletes to onboarding if they haven't set up their profile
+  if (!isCoach && !profile?.goal_race && !profile?.experience) {
+    redirect('/onboarding')
+  }
 
   const fullName = profile?.full_name ?? 'Athlete'
   const initials = fullName

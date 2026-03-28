@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { autoCompleteWorkout } from '@/lib/autoCompleteWorkout'
 
 export async function logRun(formData: FormData) {
   const supabase = await createClient()
@@ -18,7 +19,6 @@ export async function logRun(formData: FormData) {
     return { error: 'Please fill in all required fields.' }
   }
 
-  // Parse HH:MM:SS or MM:SS
   const parts = durationStr.split(':').map(Number)
   let movingTime: number
   if (parts.length === 3 && parts.every(p => !isNaN(p))) {
@@ -32,14 +32,14 @@ export async function logRun(formData: FormData) {
   if (movingTime <= 0) return { error: 'Duration must be greater than 0.' }
 
   const distanceMeters = distanceMiles * 1609.34
-  // avg_pace stored as s/m (pace), used via mpsToMinPerMile(1 / avg_pace)
   const avgPace = movingTime / distanceMeters
+  const startedAt = new Date(date).toISOString()
 
   const { error } = await supabase.from('activities').insert({
     user_id: user.id,
     name: name || 'Manual Run',
     distance: Math.round(distanceMeters),
-    started_at: new Date(date).toISOString(),
+    started_at: startedAt,
     moving_time: movingTime,
     avg_pace: avgPace,
     activity_type: activityType,
@@ -47,7 +47,11 @@ export async function logRun(formData: FormData) {
 
   if (error) return { error: error.message }
 
+  // Auto-complete matching scheduled workout
+  await autoCompleteWorkout(user.id, startedAt, supabase)
+
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/runs')
+  revalidatePath('/dashboard/training')
   return { success: true }
 }

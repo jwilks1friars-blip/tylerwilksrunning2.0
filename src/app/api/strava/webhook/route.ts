@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getStravaActivity, metersToMiles, mpsToMinPerMile } from '@/lib/strava'
 import { postToSlack } from '@/lib/slack'
+import { autoCompleteWorkout } from '@/lib/autoCompleteWorkout'
 
 // Strava calls GET to verify the webhook endpoint
 export async function GET(request: NextRequest) {
@@ -84,6 +85,9 @@ export async function POST(request: NextRequest) {
       // Slack failure shouldn't block the webhook response
     }
   }
+
+  // Auto-complete matching scheduled workout
+  await autoCompleteWorkout(connection.user_id, activity.start_date, supabase)
 
   return NextResponse.json({ received: true })
 }

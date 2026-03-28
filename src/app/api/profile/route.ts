@@ -6,14 +6,16 @@ export async function PATCH(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { goal_race, goal_time, weekly_miles } = await req.json()
+  const { goal_race, goal_time, weekly_miles, experience, full_name } = await req.json()
 
   const { error } = await supabase
     .from('profiles')
     .update({
+      ...(full_name !== undefined ? { full_name: full_name || null } : {}),
       goal_race: goal_race || null,
       goal_time: goal_time || null,
       weekly_miles: weekly_miles ? Number(weekly_miles) : null,
+      ...(experience !== undefined ? { experience: experience || null } : {}),
     })
     .eq('id', user.id)
 
