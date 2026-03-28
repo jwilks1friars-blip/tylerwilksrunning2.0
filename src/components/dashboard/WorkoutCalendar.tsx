@@ -18,7 +18,6 @@ interface Props {
   planStartDate: string
   planEndDate: string
   totalWeeks: number
-  showNav?: boolean
 }
 
 const TYPE_CONFIG: Record<string, { color: string; label: string }> = {
@@ -33,12 +32,15 @@ const TYPE_CONFIG: Record<string, { color: string; label: string }> = {
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
-export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, totalWeeks, showNav = false }: Props) {
+export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, totalWeeks }: Props) {
   const [weekStart, setWeekStart] = useState(() =>
     startOfWeek(new Date(), { weekStartsOn: 1 })
   )
   const [localWorkouts, setLocalWorkouts] = useState(workouts)
   const [toggling, setToggling] = useState<string | null>(null)
+
+  const currentWeekMonday = startOfWeek(new Date(), { weekStartsOn: 1 })
+  const isFutureWeekBlocked = weekStart >= currentWeekMonday
 
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
 
@@ -68,15 +70,13 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
     <div>
       {/* Week header */}
       <div className="flex items-center justify-between mb-6">
-        {showNav ? (
-          <button
-            onClick={() => setWeekStart(w => subWeeks(w, 1))}
-            className="text-xs uppercase tracking-widest px-3 py-1.5 transition-colors hover:text-[#1a1917]"
-            style={{ color: '#9c9895', border: '1px solid #ebebea', borderRadius: '2px' }}
-          >
-            ← Prev
-          </button>
-        ) : <div />}
+        <button
+          onClick={() => setWeekStart(w => subWeeks(w, 1))}
+          className="text-xs uppercase tracking-widest px-3 py-1.5 transition-colors hover:text-[#1a1917]"
+          style={{ color: '#9c9895', border: '1px solid #ebebea', borderRadius: '2px' }}
+        >
+          ← Prev
+        </button>
 
         <div className="text-center">
           <p className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>
@@ -89,7 +89,9 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
           )}
         </div>
 
-        {showNav ? (
+        {isFutureWeekBlocked ? (
+          <div style={{ width: '60px' }} />
+        ) : (
           <button
             onClick={() => setWeekStart(w => addWeeks(w, 1))}
             className="text-xs uppercase tracking-widest px-3 py-1.5 transition-colors hover:text-[#1a1917]"
@@ -97,7 +99,7 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
           >
             Next →
           </button>
-        ) : <div />}
+        )}
       </div>
 
       {/* Calendar grid */}
