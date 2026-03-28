@@ -177,7 +177,7 @@ export default async function DashboardPage() {
   return (
     <div>
       {/* Page header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-8">
         <div>
           <h1
             className="text-3xl font-semibold uppercase tracking-widest leading-tight"
@@ -193,7 +193,7 @@ export default async function DashboardPage() {
               : 'Your personal running overview'}
           </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0 ml-6">
+        <div className="flex items-center gap-2 shrink-0">
           <LogRunModal />
         </div>
       </div>

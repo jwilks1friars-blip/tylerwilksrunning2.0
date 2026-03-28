@@ -41,7 +41,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .slice(0, 2)
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: '#f5f4f2' }}>
+    <div className="min-h-screen flex flex-col md:flex-row" style={{ backgroundColor: '#f5f4f2' }}>
 
       {/* Mobile nav */}
       <DashboardMobileNav initialUnread={unreadCount} isCoach={isCoach} />

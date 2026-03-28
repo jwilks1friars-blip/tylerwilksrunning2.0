@@ -6,7 +6,7 @@ import CoachMobileNav from '@/components/coach/CoachMobileNav'
 
 export default function CoachLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: '#f5f4f2' }}>
+    <div className="min-h-screen flex flex-col md:flex-row" style={{ backgroundColor: '#f5f4f2' }}>
 
       {/* Mobile nav */}
       <CoachMobileNav />

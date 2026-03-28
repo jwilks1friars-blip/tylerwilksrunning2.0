@@ -115,17 +115,17 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
               key={dayStr}
               className="flex items-start gap-4 p-3"
               style={{
-                backgroundColor: '#141210',
-                border: isToday(day) ? '1px solid #e8e0d4' : '1px solid #1e1b18',
-                borderLeft: config ? `3px solid ${config.color}` : '3px solid #1e1b18',
+                backgroundColor: '#ffffff',
+                border: isToday(day) ? '1px solid #1a1917' : '1px solid #ebebea',
+                borderLeft: config ? `3px solid ${config.color}` : '3px solid #ebebea',
                 opacity: past && !workout ? 0.4 : 1,
               }}
             >
               <div className="shrink-0 w-10">
-                <p className="text-xs uppercase tracking-widest" style={{ color: isToday(day) ? '#f5f2ee' : '#6b6560' }}>
+                <p className="text-xs uppercase tracking-widest" style={{ color: isToday(day) ? '#1a1917' : '#9c9895' }}>
                   {DAYS[i]}
                 </p>
-                <p className="text-xs tabular-nums" style={{ color: '#2a2521' }}>
+                <p className="text-xs tabular-nums" style={{ color: '#c8c4c0' }}>
                   {format(day, 'd')}
                 </p>
               </div>
@@ -134,12 +134,12 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
                   <>
                     <p className="text-xs font-medium" style={{ color: config.color }}>{config.label}</p>
                     {workout.target_distance_miles && (
-                      <p className="text-xs tabular-nums" style={{ color: '#f5f2ee' }}>
+                      <p className="text-xs tabular-nums" style={{ color: '#1a1917' }}>
                         {workout.target_distance_miles} mi
                       </p>
                     )}
                     {workout.description && (
-                      <p className="text-xs mt-0.5 leading-4" style={{ color: '#6b6560' }}>
+                      <p className="text-xs mt-0.5 leading-4" style={{ color: '#9c9895' }}>
                         {workout.description}
                       </p>
                     )}
@@ -149,21 +149,21 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
                         disabled={toggling === workout.id}
                         className="mt-2 flex items-center gap-1.5 text-xs uppercase tracking-widest transition-opacity disabled:opacity-40"
                         style={{
-                          color: workout.completed ? '#7fbf7f' : '#3a3633',
+                          color: workout.completed ? '#22c55e' : '#9c9895',
                           opacity: toggling === workout.id ? 0.4 : 1,
                         }}
                       >
                         <span
                           className="flex items-center justify-center w-4 h-4 shrink-0"
                           style={{
-                            border: `1px solid ${workout.completed ? '#7fbf7f' : '#3a3633'}`,
+                            border: `1px solid ${workout.completed ? '#22c55e' : '#c8c4c0'}`,
                             borderRadius: '2px',
-                            backgroundColor: workout.completed ? '#7fbf7f22' : 'transparent',
+                            backgroundColor: workout.completed ? '#22c55e22' : 'transparent',
                           }}
                         >
                           {workout.completed && (
                             <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                              <path d="M1 3.5L3.5 6L8 1" stroke="#7fbf7f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M1 3.5L3.5 6L8 1" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                           )}
                         </span>
@@ -172,7 +172,7 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
                     )}
                   </>
                 ) : (
-                  <p className="text-xs" style={{ color: '#2a2521' }}>Rest</p>
+                  <p className="text-xs" style={{ color: '#c8c4c0' }}>Rest</p>
                 )}
               </div>
             </div>

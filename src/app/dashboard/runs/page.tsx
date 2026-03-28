@@ -73,7 +73,7 @@ export default async function RunsPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-8">
         <div>
           <h2
             className="text-3xl font-semibold uppercase tracking-widest"
@@ -90,7 +90,7 @@ export default async function RunsPage() {
 
       {/* Personal Records */}
       {runningActs.length > 0 && (
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
           <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
             <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#9c9895' }}>Longest Run</p>
             <p className="text-3xl font-semibold" style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
