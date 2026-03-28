@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { format, addDays, parseISO, differenceInCalendarWeeks } from 'date-fns'
+import { format, addDays, parseISO, differenceInCalendarWeeks, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addMonths, subMonths, isSameMonth, isSameDay } from 'date-fns'
 
 const WORKOUT_TYPES = ['easy', 'tempo', 'intervals', 'long', 'recovery', 'rest', 'race'] as const
 type WorkoutType = typeof WORKOUT_TYPES[number]
@@ -81,7 +81,13 @@ export default function ScheduleBuilder({
   const [error, setError] = useState('')
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<'schedule' | 'weekly-note'>('schedule')
+  const [activeTab, setActiveTab] = useState<'schedule' | 'calendar' | 'weekly-note'>('schedule')
+
+  // Calendar view
+  const [calendarMonth, setCalendarMonth] = useState<Date>(() => {
+    if (initialPlan) return parseISO(initialPlan.start_date)
+    return new Date()
+  })
 
   // Weekly notes
   const [weeklyNotes, setWeeklyNotes] = useState<Record<number, string>>(initialWeeklyNotes)
@@ -122,6 +128,7 @@ export default function ScheduleBuilder({
       setLoading(false)
       if (!res.ok) { setError(data.error ?? `Server error (${res.status})`); return }
       setPlan(data.plan)
+      if (data.plan?.start_date) setCalendarMonth(parseISO(data.plan.start_date))
       window.location.reload()
     } catch (err: any) {
       setLoading(false)
@@ -160,6 +167,7 @@ export default function ScheduleBuilder({
     setLoading(false)
     if (!res.ok) { setError(data.error); return }
     setPlan(data.plan)
+    if (data.plan?.start_date) setCalendarMonth(parseISO(data.plan.start_date))
     setWorkouts([])
   }
 
@@ -379,7 +387,7 @@ export default function ScheduleBuilder({
 
       {/* Tabs */}
       <div className="flex gap-0 mb-6" style={{ borderBottom: '1px solid #ebebea' }}>
-        {(['schedule', 'weekly-note'] as const).map(tab => (
+        {(['schedule', 'calendar', 'weekly-note'] as const).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -390,7 +398,7 @@ export default function ScheduleBuilder({
               marginBottom: '-1px',
             }}
           >
-            {tab === 'schedule' ? 'Schedule' : 'Weekly Note'}
+            {tab === 'schedule' ? 'Schedule' : tab === 'calendar' ? 'Calendar' : 'Weekly Note'}
           </button>
         ))}
       </div>
@@ -532,6 +540,127 @@ export default function ScheduleBuilder({
           })}
         </div>
       )}
+
+      {/* ── CALENDAR TAB ── */}
+      {activeTab === 'calendar' && (() => {
+        const monthStart = startOfMonth(calendarMonth)
+        const monthEnd = endOfMonth(calendarMonth)
+        const calStart = startOfWeek(monthStart, { weekStartsOn: 1 })
+        const calEnd = endOfWeek(monthEnd, { weekStartsOn: 1 })
+
+        // Build grid of days
+        const calDays: Date[] = []
+        let d = calStart
+        while (d <= calEnd) { calDays.push(d); d = addDays(d, 1) }
+
+        const planStart = parseISO(plan.start_date)
+        const planEnd = parseISO(plan.race_date)
+
+        const canGoPrev = subMonths(calendarMonth, 1).getTime() >= startOfMonth(planStart).getTime()
+        const canGoNext = addMonths(calendarMonth, 1).getTime() <= startOfMonth(planEnd).getTime()
+
+        return (
+          <div>
+            {/* Month nav */}
+            <div className="flex items-center justify-between mb-4">
+              <button
+                onClick={() => setCalendarMonth(m => subMonths(m, 1))}
+                disabled={!canGoPrev}
+                className="w-8 h-8 flex items-center justify-center text-sm transition-colors hover:text-[#1a1917] disabled:opacity-30"
+                style={{ color: '#9c9895', border: '1px solid #ebebea' }}
+              >
+                ←
+              </button>
+              <p className="text-sm font-semibold uppercase tracking-widest"
+                style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}>
+                {format(calendarMonth, 'MMMM yyyy')}
+              </p>
+              <button
+                onClick={() => setCalendarMonth(m => addMonths(m, 1))}
+                disabled={!canGoNext}
+                className="w-8 h-8 flex items-center justify-center text-sm transition-colors hover:text-[#1a1917] disabled:opacity-30"
+                style={{ color: '#9c9895', border: '1px solid #ebebea' }}
+              >
+                →
+              </button>
+            </div>
+
+            {/* Day headers */}
+            <div className="grid grid-cols-7 mb-1">
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+                <div key={day} className="text-center py-1.5 text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            {/* Calendar grid */}
+            <div className="grid grid-cols-7" style={{ border: '1px solid #ebebea' }}>
+              {calDays.map((day, idx) => {
+                const dateStr = format(day, 'yyyy-MM-dd')
+                const dayWorkouts = workouts.filter(w => w.scheduled_date === dateStr)
+                const inMonth = isSameMonth(day, calendarMonth)
+                const inPlan = day.getTime() >= planStart.getTime() && day.getTime() <= planEnd.getTime()
+                const isToday = isSameDay(day, new Date())
+
+                return (
+                  <div
+                    key={dateStr}
+                    onClick={() => inPlan && openAdd(dateStr)}
+                    className="min-h-[90px] p-1.5 relative transition-colors"
+                    style={{
+                      borderTop: idx < 7 ? 'none' : '1px solid #ebebea',
+                      borderLeft: idx % 7 === 0 ? 'none' : '1px solid #ebebea',
+                      backgroundColor: !inMonth ? '#fafaf9' : '#ffffff',
+                      cursor: inPlan ? 'pointer' : 'default',
+                    }}
+                  >
+                    {/* Day number */}
+                    <div className="flex items-center justify-between mb-1">
+                      <span
+                        className="text-xs w-5 h-5 flex items-center justify-center"
+                        style={{
+                          color: !inMonth ? '#c8c4c0' : isToday ? '#ffffff' : '#1a1917',
+                          backgroundColor: isToday ? '#1a1917' : 'transparent',
+                          borderRadius: '50%',
+                          fontSize: '11px',
+                        }}
+                      >
+                        {format(day, 'd')}
+                      </span>
+                      {inPlan && inMonth && dayWorkouts.length === 0 && (
+                        <span className="text-xs opacity-0 group-hover:opacity-100" style={{ color: '#c8c4c0' }}>+</span>
+                      )}
+                    </div>
+
+                    {/* Workouts */}
+                    <div className="space-y-0.5">
+                      {dayWorkouts.map(workout => (
+                        <div
+                          key={workout.id}
+                          onClick={e => { e.stopPropagation(); openEdit(workout) }}
+                          className="flex items-center gap-1 px-1 py-0.5 cursor-pointer hover:opacity-80 transition-opacity"
+                          style={{
+                            backgroundColor: TYPE_COLORS[workout.workout_type],
+                            borderRadius: '2px',
+                          }}
+                        >
+                          <span
+                            className="text-xs font-medium uppercase tracking-wide truncate"
+                            style={{ color: TYPE_TEXT[workout.workout_type], fontSize: '10px' }}
+                          >
+                            {workout.workout_type === 'rest' ? 'rest' : `${workout.target_distance_miles ?? ''}mi ${workout.workout_type}`}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ── WEEKLY NOTE TAB ── */}
       {activeTab === 'weekly-note' && (
