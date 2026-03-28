@@ -5,6 +5,7 @@ import { metersToMiles, mpsToMinPerMile } from '@/lib/strava'
 import { subDays, format, differenceInCalendarDays, startOfWeek, addDays } from 'date-fns'
 import MileageLineChart from '@/components/dashboard/MileageLineChart'
 import ActivityTypeChart from '@/components/dashboard/ActivityTypeChart'
+import LogRunModal from '@/components/dashboard/LogRunModal'
 import Link from 'next/link'
 import {
   Route,
@@ -15,7 +16,6 @@ import {
   Activity,
   ArrowUpRight,
   ArrowDownRight,
-  Plus,
   ChevronRight,
 } from 'lucide-react'
 
@@ -192,15 +192,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0 ml-6">
-          <Link href="/dashboard/training">
-            <button
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded-md transition-colors hover:opacity-90"
-              style={{ backgroundColor: '#f0eeec', color: '#3a3733', border: '1px solid #e8e7e5' }}
-            >
-              <Plus size={13} />
-              Log Run
-            </button>
-          </Link>
+          <LogRunModal />
         </div>
       </div>
 
