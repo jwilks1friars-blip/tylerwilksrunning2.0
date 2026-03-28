@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         start_date: resolvedStartDate,
         race_date: resolvedRaceDate,
         total_weeks: plan.totalWeeks,
-        status: 'active',
+        status: 'draft',
       })
       .select()
       .single()

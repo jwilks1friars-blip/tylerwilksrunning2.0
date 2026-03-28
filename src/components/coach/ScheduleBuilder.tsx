@@ -43,6 +43,7 @@ type Plan = {
   start_date: string
   race_date: string
   total_weeks: number
+  status: string
 }
 
 type Profile = {
@@ -76,6 +77,7 @@ export default function ScheduleBuilder({
   const [plan, setPlan] = useState<Plan | null>(initialPlan)
   const [workouts, setWorkouts] = useState<Workout[]>(initialWorkouts)
   const [loading, setLoading] = useState(false)
+  const [publishing, setPublishing] = useState(false)
   const [error, setError] = useState('')
 
   // Tabs
@@ -124,6 +126,25 @@ export default function ScheduleBuilder({
       setLoading(false)
       setError(err?.message ?? 'Network error. Please try again.')
     }
+  }
+
+  async function handlePublishPlan() {
+    if (!plan) return
+    setPublishing(true)
+    setError('')
+    try {
+      const res = await fetch('/api/coach/schedule/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId: plan.id, athleteId }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error ?? 'Failed to publish'); setPublishing(false); return }
+      setPlan(data.plan)
+    } catch (err: any) {
+      setError(err?.message ?? 'Network error')
+    }
+    setPublishing(false)
   }
 
   async function handleCreateEmptyPlan() {
@@ -313,6 +334,31 @@ export default function ScheduleBuilder({
   // --- Active plan ---
   return (
     <div>
+      {/* Draft banner */}
+      {plan.status === 'draft' && (
+        <div
+          className="flex items-center justify-between px-5 py-4 mb-6 rounded-lg"
+          style={{ backgroundColor: '#fff8f0', border: '1px solid #fcd9b0' }}
+        >
+          <div>
+            <p className="text-sm font-semibold" style={{ color: '#92400e' }}>
+              Draft — not visible to athlete
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: '#b45309' }}>
+              Review the plan below, make any edits, then publish when ready.
+            </p>
+          </div>
+          <button
+            onClick={handlePublishPlan}
+            disabled={publishing}
+            className="ml-6 shrink-0 px-5 py-2.5 text-xs font-semibold uppercase tracking-widest rounded transition-opacity hover:opacity-80 disabled:opacity-50"
+            style={{ backgroundColor: '#1a1917', color: '#ffffff' }}
+          >
+            {publishing ? 'Publishing…' : 'Publish to Athlete'}
+          </button>
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="flex gap-0 mb-6" style={{ borderBottom: '1px solid #ebebea' }}>
         {(['schedule', 'weekly-note'] as const).map(tab => (

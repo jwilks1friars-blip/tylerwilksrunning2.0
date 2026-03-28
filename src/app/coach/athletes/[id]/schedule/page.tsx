@@ -25,7 +25,7 @@ export default async function AthleteSchedulePage({
 
   const [{ data: profile }, { data: plan }] = await Promise.all([
     admin.from('profiles').select('full_name, email, goal_race, goal_time').eq('id', id).single(),
-    admin.from('training_plans').select('*').eq('user_id', id).eq('status', 'active')
+    admin.from('training_plans').select('*').eq('user_id', id).in('status', ['active', 'draft'])
       .order('created_at', { ascending: false }).limit(1).maybeSingle(),
   ])
 
