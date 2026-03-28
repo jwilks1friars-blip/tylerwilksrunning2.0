@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { metersToMiles, mpsToMinPerMile } from '@/lib/strava'
-import { subDays, format } from 'date-fns'
+import { subDays, format, differenceInCalendarWeeks } from 'date-fns'
 import Link from 'next/link'
 import InsightEditor from '@/components/coach/InsightEditor'
 import GenerateInsightButton from '@/components/coach/GenerateInsightButton'
@@ -30,6 +30,7 @@ export default async function AthletePage({
     { data: activities },
     { data: insights },
     { data: stravaConnection },
+    { data: activePlan },
   ] = await Promise.all([
     serviceSupabase
       .from('profiles')
@@ -53,6 +54,14 @@ export default async function AthletePage({
       .select('strava_athlete_id, connected_at')
       .eq('user_id', id)
       .maybeSingle(),
+    serviceSupabase
+      .from('training_plans')
+      .select('race_date, status')
+      .eq('user_id', id)
+      .in('status', ['active', 'draft'])
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ])
 
   if (!profile) notFound()
@@ -60,6 +69,11 @@ export default async function AthletePage({
   const weeklyMiles = activities
     ?.filter(a => new Date(a.started_at) >= subDays(new Date(), 7))
     .reduce((sum, a) => sum + metersToMiles(a.distance), 0) ?? 0
+
+  const raceDate = activePlan?.race_date ?? null
+  const weeksUntilRace = raceDate
+    ? Math.max(0, differenceInCalendarWeeks(new Date(raceDate), new Date(), { weekStartsOn: 1 }))
+    : null
 
   const pendingInsights = insights?.filter(i => !i.approved) ?? []
   const approvedInsights = insights?.filter(i => i.approved) ?? []
@@ -113,11 +127,17 @@ export default async function AthletePage({
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
         {[
           { label: 'Mi This Week', value: weeklyMiles.toFixed(1) },
           { label: 'Goal Race', value: profile.goal_race ?? '—' },
           { label: 'Goal Time', value: profile.goal_time ?? '—' },
+          {
+            label: 'Weeks to Race',
+            value: weeksUntilRace !== null ? String(weeksUntilRace) : '—',
+            sub: raceDate ? format(new Date(raceDate), 'MMM d, yyyy') : undefined,
+            highlight: weeksUntilRace !== null && weeksUntilRace <= 3,
+          },
           { label: 'Strava', value: stravaConnection ? 'Connected' : 'Not connected' },
         ].map(stat => (
           <div
@@ -128,7 +148,18 @@ export default async function AthletePage({
             <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#9c9895' }}>
               {stat.label}
             </p>
-            <p className="text-sm" style={{ color: '#1a1917' }}>{stat.value}</p>
+            <p
+              className="text-sm font-medium"
+              style={{ color: (stat as any).highlight ? '#fc4c02' : '#1a1917' }}
+            >
+              {stat.value}
+              {stat.label === 'Weeks to Race' && weeksUntilRace !== null && (
+                <span className="font-normal" style={{ color: '#9c9895' }}> wks</span>
+              )}
+            </p>
+            {(stat as any).sub && (
+              <p className="text-xs mt-0.5" style={{ color: '#c8c4c0' }}>{(stat as any).sub}</p>
+            )}
           </div>
         ))}
       </div>
