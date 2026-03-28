@@ -18,6 +18,7 @@ interface Props {
   planStartDate: string
   planEndDate: string
   totalWeeks: number
+  showNav?: boolean
 }
 
 const TYPE_CONFIG: Record<string, { color: string; label: string }> = {
@@ -32,7 +33,7 @@ const TYPE_CONFIG: Record<string, { color: string; label: string }> = {
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
-export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, totalWeeks }: Props) {
+export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, totalWeeks, showNav = false }: Props) {
   const [weekStart, setWeekStart] = useState(() =>
     startOfWeek(new Date(), { weekStartsOn: 1 })
   )
@@ -65,15 +66,17 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
 
   return (
     <div>
-      {/* Week navigation */}
+      {/* Week header */}
       <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => setWeekStart(w => subWeeks(w, 1))}
-          className="text-xs uppercase tracking-widest px-3 py-1.5 transition-colors hover:text-[#1a1917]"
-          style={{ color: '#9c9895', border: '1px solid #ebebea', borderRadius: '2px' }}
-        >
-          ← Prev
-        </button>
+        {showNav ? (
+          <button
+            onClick={() => setWeekStart(w => subWeeks(w, 1))}
+            className="text-xs uppercase tracking-widest px-3 py-1.5 transition-colors hover:text-[#1a1917]"
+            style={{ color: '#9c9895', border: '1px solid #ebebea', borderRadius: '2px' }}
+          >
+            ← Prev
+          </button>
+        ) : <div />}
 
         <div className="text-center">
           <p className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>
@@ -86,13 +89,15 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
           )}
         </div>
 
-        <button
-          onClick={() => setWeekStart(w => addWeeks(w, 1))}
-          className="text-xs uppercase tracking-widest px-3 py-1.5 transition-colors hover:text-[#1a1917]"
-          style={{ color: '#9c9895', border: '1px solid #ebebea', borderRadius: '2px' }}
-        >
-          Next →
-        </button>
+        {showNav ? (
+          <button
+            onClick={() => setWeekStart(w => addWeeks(w, 1))}
+            className="text-xs uppercase tracking-widest px-3 py-1.5 transition-colors hover:text-[#1a1917]"
+            style={{ color: '#9c9895', border: '1px solid #ebebea', borderRadius: '2px' }}
+          >
+            Next →
+          </button>
+        ) : <div />}
       </div>
 
       {/* Calendar grid */}
