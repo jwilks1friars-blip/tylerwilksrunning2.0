@@ -97,16 +97,23 @@ INSTRUCTIONS:
 - workout "type" must be one of: easy, tempo, intervals, long, recovery, rest, race
 - "distanceMiles" must be a number (use 0 for rest days)
 - "paceTarget" should be specific, e.g. "9:30/mi easy" or "7:45/mi tempo" based on goal time
+- "description" must be 1-2 sentences of specific coaching instruction the athlete can act on. Examples:
+  - easy: "Keep effort conversational — if you can't hold a sentence, slow down. Focus on cadence over pace today."
+  - tempo: "Run the middle 3 miles at goal half-marathon pace. Start conservatively; the effort should feel controlled-hard, not maximal."
+  - intervals: "8 x 400m at 5K effort with 90-second jog recoveries. Full recovery between reps — these should feel fast but repeatable."
+  - long: "Run the first half easy, the second half at marathon effort. Practice your race-day nutrition every 45 minutes."
+  - recovery: "Truly easy — HR below 130. This run exists to flush fatigue, not add fitness. Shorter is fine if you feel flat."
+  - rest: "Full rest or gentle walking only. Prioritize sleep and hydration today."
 - Start mileage near ${params.currentWeeklyMiles} mi/wk and peak at an appropriate level for the goal race
 
 Output ONLY valid JSON. No markdown. No explanation. Start your response with the opening brace.
 
 Format:
-{"totalWeeks":${totalWeeks},"weeks":[{"weekNumber":1,"targetMiles":NUMBER,"workouts":[{"dayOfWeek":"Monday","type":"TYPE","distanceMiles":NUMBER,"paceTarget":"STRING"},{"dayOfWeek":"Tuesday",...},{"dayOfWeek":"Wednesday",...},{"dayOfWeek":"Thursday",...},{"dayOfWeek":"Friday",...},{"dayOfWeek":"Saturday",...},{"dayOfWeek":"Sunday",...}]},...]}`
+{"totalWeeks":${totalWeeks},"weeks":[{"weekNumber":1,"targetMiles":NUMBER,"workouts":[{"dayOfWeek":"Monday","type":"TYPE","distanceMiles":NUMBER,"paceTarget":"STRING","description":"STRING"},{"dayOfWeek":"Tuesday",...},{"dayOfWeek":"Wednesday",...},{"dayOfWeek":"Thursday",...},{"dayOfWeek":"Friday",...},{"dayOfWeek":"Saturday",...},{"dayOfWeek":"Sunday",...}]},...]}`
 
   const message = await getClient().messages.create({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 7500,
+    max_tokens: 8000,
     messages: [
       { role: 'user', content: prompt },
       { role: 'assistant', content: '{"totalWeeks":' },
