@@ -419,7 +419,13 @@ export default function ScheduleBuilder({
       {/* ── SCHEDULE TAB ── */}
       {activeTab === 'schedule' && (
         <div className="space-y-6">
-          {weeks.map(({ weekNum, weekStart, days }) => (
+          {weeks.map(({ weekNum, weekStart, days }) => {
+            const weekMiles = days
+              .flatMap(d => d.dayWorkouts)
+              .filter(w => w.workout_type !== 'rest')
+              .reduce((sum, w) => sum + (w.target_distance_miles ?? 0), 0)
+
+            return (
             <div key={weekNum}>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>
@@ -510,8 +516,20 @@ export default function ScheduleBuilder({
                   </div>
                 ))}
               </div>
+
+              {/* Weekly mileage total */}
+              <div className="flex justify-end mt-1.5 px-1">
+                <p className="text-xs tabular-nums" style={{ color: '#9c9895' }}>
+                  {weekMiles > 0 ? (
+                    <><span style={{ color: '#1a1917', fontWeight: 600 }}>{weekMiles.toFixed(1)}</span> mi total</>
+                  ) : (
+                    <span style={{ color: '#c8c4c0' }}>0 mi</span>
+                  )}
+                </p>
+              </div>
             </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
