@@ -55,7 +55,7 @@ const labelStyle: React.CSSProperties = {
   marginBottom: '5px',
 }
 
-export default function LogRunModal() {
+export default function LogRunModal({ onClose }: { onClose?: () => void }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
