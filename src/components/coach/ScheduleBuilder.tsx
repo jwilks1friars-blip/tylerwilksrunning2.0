@@ -108,16 +108,22 @@ export default function ScheduleBuilder({
   async function handleGeneratePlan() {
     if (!planForm.raceDate) { setError('Race date is required'); return }
     setLoading(true); setError('')
-    const res = await fetch('/api/coach/schedule/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ athleteId, ...planForm }),
-    })
-    const data = await res.json()
-    setLoading(false)
-    if (!res.ok) { setError(data.error); return }
-    setPlan(data.plan)
-    window.location.reload()
+    try {
+      const res = await fetch('/api/coach/schedule/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ athleteId, ...planForm }),
+      })
+      let data: any = {}
+      try { data = await res.json() } catch { /* non-JSON body */ }
+      setLoading(false)
+      if (!res.ok) { setError(data.error ?? `Server error (${res.status})`); return }
+      setPlan(data.plan)
+      window.location.reload()
+    } catch (err: any) {
+      setLoading(false)
+      setError(err?.message ?? 'Network error. Please try again.')
+    }
   }
 
   async function handleCreateEmptyPlan() {
