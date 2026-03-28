@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getStravaActivity, metersToMiles, mpsToMinPerMile } from '@/lib/strava'
+import { postToSlack } from '@/lib/slack'
 
 // Strava calls GET to verify the webhook endpoint
 export async function GET(request: NextRequest) {
@@ -56,6 +57,33 @@ export async function POST(request: NextRequest) {
     started_at: activity.start_date,
     raw_data: activity,
   })
+
+  // Notify coach via Slack for run activities
+  const runTypes = ['Run', 'TrailRun', 'VirtualRun']
+  if (process.env.SLACK_WEBHOOK_COACH && runTypes.includes(activity.type)) {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .eq('id', connection.user_id)
+        .single()
+
+      const miles = metersToMiles(activity.distance).toFixed(1)
+      const pace = activity.average_speed ? mpsToMinPerMile(activity.average_speed) : null
+      const paceStr = pace ? ` @ ${pace}/mi` : ''
+      const athleteId = profile?.id ?? connection.user_id
+
+      await postToSlack(
+        process.env.SLACK_WEBHOOK_COACH,
+        [
+          `🏃 *${profile?.full_name ?? 'Athlete'}* — ${miles} mi${paceStr}`,
+          `<https://tylerwilksrunning.vercel.app/coach/athletes/${athleteId}|View athlete>`,
+        ].join('\n')
+      )
+    } catch {
+      // Slack failure shouldn't block the webhook response
+    }
+  }
 
   return NextResponse.json({ received: true })
 }

@@ -102,8 +102,86 @@ export default function WorkoutCalendar({ workouts, planStartDate, planEndDate, 
         )}
       </div>
 
-      {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-2">
+      {/* Mobile: vertical day list */}
+      <div className="md:hidden space-y-2">
+        {days.map((day, i) => {
+          const dayStr = format(day, 'yyyy-MM-dd')
+          const workout = localWorkouts.find(w => w.scheduled_date === dayStr)
+          const config = workout ? (TYPE_CONFIG[workout.workout_type] ?? TYPE_CONFIG.easy) : null
+          const past = isPast(day) && !isToday(day)
+
+          return (
+            <div
+              key={dayStr}
+              className="flex items-start gap-4 p-3"
+              style={{
+                backgroundColor: '#141210',
+                border: isToday(day) ? '1px solid #e8e0d4' : '1px solid #1e1b18',
+                borderLeft: config ? `3px solid ${config.color}` : '3px solid #1e1b18',
+                opacity: past && !workout ? 0.4 : 1,
+              }}
+            >
+              <div className="shrink-0 w-10">
+                <p className="text-xs uppercase tracking-widest" style={{ color: isToday(day) ? '#f5f2ee' : '#6b6560' }}>
+                  {DAYS[i]}
+                </p>
+                <p className="text-xs tabular-nums" style={{ color: '#2a2521' }}>
+                  {format(day, 'd')}
+                </p>
+              </div>
+              <div className="flex-1 min-w-0">
+                {workout && config ? (
+                  <>
+                    <p className="text-xs font-medium" style={{ color: config.color }}>{config.label}</p>
+                    {workout.target_distance_miles && (
+                      <p className="text-xs tabular-nums" style={{ color: '#f5f2ee' }}>
+                        {workout.target_distance_miles} mi
+                      </p>
+                    )}
+                    {workout.description && (
+                      <p className="text-xs mt-0.5 leading-4" style={{ color: '#6b6560' }}>
+                        {workout.description}
+                      </p>
+                    )}
+                    {workout.workout_type !== 'rest' && (
+                      <button
+                        onClick={() => toggleComplete(workout)}
+                        disabled={toggling === workout.id}
+                        className="mt-2 flex items-center gap-1.5 text-xs uppercase tracking-widest transition-opacity disabled:opacity-40"
+                        style={{
+                          color: workout.completed ? '#7fbf7f' : '#3a3633',
+                          opacity: toggling === workout.id ? 0.4 : 1,
+                        }}
+                      >
+                        <span
+                          className="flex items-center justify-center w-4 h-4 shrink-0"
+                          style={{
+                            border: `1px solid ${workout.completed ? '#7fbf7f' : '#3a3633'}`,
+                            borderRadius: '2px',
+                            backgroundColor: workout.completed ? '#7fbf7f22' : 'transparent',
+                          }}
+                        >
+                          {workout.completed && (
+                            <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                              <path d="M1 3.5L3.5 6L8 1" stroke="#7fbf7f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </span>
+                        {workout.completed ? 'Done' : 'Mark done'}
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-xs" style={{ color: '#2a2521' }}>Rest</p>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Desktop: 7-column grid */}
+      <div className="hidden md:grid grid-cols-7 gap-2">
         {days.map((day, i) => {
           const dayStr = format(day, 'yyyy-MM-dd')
           const workout = localWorkouts.find(w => w.scheduled_date === dayStr)

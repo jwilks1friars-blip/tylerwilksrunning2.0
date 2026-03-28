@@ -109,12 +109,14 @@ export default async function DashboardPage() {
   const weeklyGoal = profile?.weekly_miles ?? 0
   const weekProgress = weeklyGoal > 0 ? Math.min(100, Math.round((milesThisWeek / weeklyGoal) * 100)) : 0
 
-  // Streak
-  const streak = calcStreak(ytdActs)
+  // Streak — running activities only (not rides/walks/hikes)
+  const RUNNING_TYPES = new Set(['Run', 'VirtualRun', 'TrailRun'])
+  const streak = calcStreak(ytdActs.filter(a => RUNNING_TYPES.has(a.activity_type)))
 
-  // Plan progress
+  // Plan progress — denominator is workouts scheduled on or before today
+  const todayDateStr = format(now, 'yyyy-MM-dd')
   const completedWorkouts = workouts?.filter(w => w.completed && w.workout_type !== 'rest').length ?? 0
-  const totalWorkouts = workouts?.filter(w => w.workout_type !== 'rest').length ?? 0
+  const totalWorkouts = workouts?.filter(w => w.workout_type !== 'rest' && w.scheduled_date <= todayDateStr).length ?? 0
   const planPct = totalWorkouts > 0 ? Math.round((completedWorkouts / totalWorkouts) * 100) : null
 
   // Avg pace this week vs last week
@@ -278,7 +280,11 @@ export default async function DashboardPage() {
         </div>
 
         {/* Streak */}
-        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+        <Link
+          href="/dashboard/runs"
+          className="p-5 rounded-lg block transition-colors hover:border-[#d4d0cc]"
+          style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}
+        >
           <div className="flex items-start justify-between mb-3">
             <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
               <Flame size={14} style={{ color: '#fc4c02' }} />
@@ -292,7 +298,7 @@ export default async function DashboardPage() {
           </p>
           <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Day Streak</p>
           <p className="text-xs" style={{ color: '#9c9895' }}>consecutive days</p>
-        </div>
+        </Link>
 
         {/* Plan Progress */}
         <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>

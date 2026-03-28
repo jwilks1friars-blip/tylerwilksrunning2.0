@@ -1,9 +1,10 @@
 'use client'
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 
 interface Props {
   data: { day: string; miles: number }[]
+  currentIndex?: number
 }
 
 function CustomTooltip({ active, payload, label }: any) {
@@ -16,7 +17,7 @@ function CustomTooltip({ active, payload, label }: any) {
   )
 }
 
-export default function MileageChart({ data }: Props) {
+export default function MileageChart({ data, currentIndex }: Props) {
   return (
     <ResponsiveContainer width="100%" height={180}>
       <BarChart data={data} barSize={24} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
@@ -32,7 +33,14 @@ export default function MileageChart({ data }: Props) {
           tickLine={false}
         />
         <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f5f4f2' }} />
-        <Bar dataKey="miles" fill="#7090e8" radius={[2, 2, 0, 0]} />
+        <Bar dataKey="miles" radius={[2, 2, 0, 0]}>
+          {data.map((_, i) => (
+            <Cell
+              key={i}
+              fill={i === currentIndex ? '#c8c4c0' : '#7090e8'}
+            />
+          ))}
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   )

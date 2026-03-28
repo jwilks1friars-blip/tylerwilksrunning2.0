@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
+import { postToSlack } from '@/lib/slack'
 
 // GET /api/messages?with=<user_id>
 // Fetches full conversation between current user and the specified user,
@@ -78,6 +79,36 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Notify coach via Slack when an athlete sends a message
+  if (!isCoach && process.env.SLACK_WEBHOOK_COACH) {
+    try {
+      const serviceSupabase = createServiceClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      )
+      const { data: sender } = await serviceSupabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single()
+
+      const preview = content.trim().length > 120
+        ? content.trim().slice(0, 120) + '…'
+        : content.trim()
+
+      await postToSlack(
+        process.env.SLACK_WEBHOOK_COACH,
+        [
+          `💬 *${sender?.full_name ?? 'An athlete'}* sent you a message:`,
+          `"${preview}"`,
+          `<https://tylerwilksrunning.vercel.app/coach/messages|Reply in dashboard>`,
+        ].join('\n')
+      )
+    } catch {
+      // Slack failure shouldn't block the message from being saved
+    }
+  }
 
   // Optionally send email — only coach can trigger this
   if (sendEmail && isCoach) {

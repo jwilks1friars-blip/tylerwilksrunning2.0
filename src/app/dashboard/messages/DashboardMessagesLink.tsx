@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
-export default function DashboardMessagesLink({ initialUnread }: { initialUnread: number }) {
+export default function DashboardMessagesLink({ initialUnread, active }: { initialUnread: number; active?: boolean }) {
   const [unreadTotal, setUnreadTotal] = useState(initialUnread)
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function DashboardMessagesLink({ initialUnread }: { initialUnread
     <Link
       href="/dashboard/messages"
       className="flex items-center justify-between py-2 px-3 text-xs uppercase tracking-widest rounded transition-colors hover:text-[#f5f2ee]"
-      style={{ color: '#6b6560' }}
+      style={{ color: active ? '#f5f2ee' : '#6b6560' }}
     >
       <span>Messages</span>
       {unreadTotal > 0 && (

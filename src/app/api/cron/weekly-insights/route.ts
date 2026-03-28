@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { postToSlack } from '@/lib/slack'
 
 export async function GET(request: NextRequest) {
   // Verify this is called by Vercel Cron
@@ -29,5 +30,18 @@ export async function GET(request: NextRequest) {
     })
   }
 
-  return NextResponse.json({ generated: athletes?.length ?? 0 })
+  const count = athletes?.length ?? 0
+
+  if (count > 0 && process.env.SLACK_WEBHOOK_COACH) {
+    await postToSlack(
+      process.env.SLACK_WEBHOOK_COACH,
+      [
+        `📋 *Weekly insights generated* — ${count} athlete${count !== 1 ? 's' : ''}`,
+        `Review and approve before Sunday's plan emails go out.`,
+        `<https://tylerwilksrunning.vercel.app/coach|Open coach dashboard>`,
+      ].join('\n')
+    )
+  }
+
+  return NextResponse.json({ generated: count })
 }

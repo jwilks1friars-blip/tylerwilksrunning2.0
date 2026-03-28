@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { metersToMiles, mpsToMinPerMile } from '@/lib/strava'
 import { format } from 'date-fns'
 import MileageChart from '@/components/dashboard/MileageChart'
+import LogRunModal from '@/components/dashboard/LogRunModal'
 
 function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600)
@@ -72,16 +73,19 @@ export default async function RunsPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8">
-        <h2
-          className="text-3xl font-semibold uppercase tracking-widest"
-          style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
-        >
-          Runs
-        </h2>
-        <p className="text-sm mt-1" style={{ color: '#6b6865' }}>
-          {acts.length} activities synced
-        </p>
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h2
+            className="text-3xl font-semibold uppercase tracking-widest"
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
+          >
+            Runs
+          </h2>
+          <p className="text-sm mt-1" style={{ color: '#6b6865' }}>
+            {acts.length} activities synced
+          </p>
+        </div>
+        <LogRunModal />
       </div>
 
       {/* Personal Records */}
