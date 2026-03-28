@@ -66,29 +66,53 @@ interface PlanGenerationParams {
   athleteName: string
   goalRace: string
   raceDate: string
+  startDate: string
   goalTime: string
   currentWeeklyMiles: number
   experience: string
-  availableDays: string[]
+  coachNotes?: string
 }
 
 export async function generateTrainingPlan(params: PlanGenerationParams) {
-  const prompt = `You are an elite running coach. Generate a training plan as compact JSON.
+  const msPerWeek = 7 * 24 * 60 * 60 * 1000
+  const totalWeeks = Math.max(1, Math.ceil(
+    (new Date(params.raceDate).getTime() - new Date(params.startDate).getTime()) / msPerWeek
+  ))
 
-ATHLETE: ${params.athleteName}, Goal: ${params.goalRace} on ${params.raceDate} in ${params.goalTime}, Current mileage: ${params.currentWeeklyMiles} mi/wk, Experience: ${params.experience}
+  const prompt = `You are an elite running coach building a personalized training plan.
 
-Return ONLY raw JSON — no markdown, no code fences, no extra text. Use short paceTarget values (6 words max). Include rest days as type "rest" with distanceMiles 0.
+ATHLETE: ${params.athleteName}
+GOAL RACE: ${params.goalRace} on ${params.raceDate}
+GOAL TIME: ${params.goalTime}
+PLAN START: ${params.startDate}
+TOTAL WEEKS: ${totalWeeks}
+CURRENT WEEKLY MILEAGE: ${params.currentWeeklyMiles} mi/wk
+EXPERIENCE: ${params.experience}${params.coachNotes ? `\n\nCOACHING NOTES FROM COACH:\n${params.coachNotes}` : ''}
 
-{"totalWeeks":8,"weeks":[{"weekNumber":1,"targetMiles":30,"workouts":[{"dayOfWeek":"Monday","type":"easy","distanceMiles":6,"paceTarget":"easy pace"},{"dayOfWeek":"Tuesday","type":"rest","distanceMiles":0,"paceTarget":""},{"dayOfWeek":"Wednesday","type":"tempo","distanceMiles":7,"paceTarget":"goal half pace"},{"dayOfWeek":"Thursday","type":"rest","distanceMiles":0,"paceTarget":""},{"dayOfWeek":"Friday","type":"easy","distanceMiles":5,"paceTarget":"easy pace"},{"dayOfWeek":"Saturday","type":"long","distanceMiles":12,"paceTarget":"60-90s slower than goal pace"},{"dayOfWeek":"Sunday","type":"rest","distanceMiles":0,"paceTarget":""}]}]}`
+INSTRUCTIONS:
+- Generate exactly ${totalWeeks} weeks, numbered 1 through ${totalWeeks}
+- Each week must have exactly 7 workouts, one per day Monday through Sunday
+- Progressively build mileage over the first ${Math.max(1, totalWeeks - 2)} weeks, then taper weeks ${Math.max(1, totalWeeks - 1)}-${totalWeeks}
+- The final week should end with a "race" type workout on race day
+- workout "type" must be one of: easy, tempo, intervals, long, recovery, rest, race
+- "distanceMiles" must be a number (use 0 for rest days)
+- "paceTarget" should be specific, e.g. "9:30/mi easy" or "7:45/mi tempo" based on goal time
+- Start mileage near ${params.currentWeeklyMiles} mi/wk and peak at an appropriate level for the goal race
+
+Output ONLY valid JSON. No markdown. No explanation. Start your response with the opening brace.
+
+Format:
+{"totalWeeks":${totalWeeks},"weeks":[{"weekNumber":1,"targetMiles":NUMBER,"workouts":[{"dayOfWeek":"Monday","type":"TYPE","distanceMiles":NUMBER,"paceTarget":"STRING"},{"dayOfWeek":"Tuesday",...},{"dayOfWeek":"Wednesday",...},{"dayOfWeek":"Thursday",...},{"dayOfWeek":"Friday",...},{"dayOfWeek":"Saturday",...},{"dayOfWeek":"Sunday",...}]},...]}`
 
   const message = await getClient().messages.create({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 7000,
-    messages: [{ role: 'user', content: prompt }],
+    max_tokens: 7500,
+    messages: [
+      { role: 'user', content: prompt },
+      { role: 'assistant', content: '{"totalWeeks":' },
+    ],
   })
 
-  const text = (message.content[0] as { text: string }).text
-  // Strip markdown code fences if present
-  const json = text.replace(/^```(?:json)?\n?/m, '').replace(/\n?```$/m, '').trim()
-  return JSON.parse(json)
+  const text = '{"totalWeeks":' + (message.content[0] as { text: string }).text
+  return JSON.parse(text)
 }

@@ -20,7 +20,6 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json().catch(() => ({}))
   const raceDate = body.raceDate ?? format(addDays(new Date(), 112), 'yyyy-MM-dd') // default 16 weeks out
-  const availableDays = body.availableDays ?? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
   // Cancel any existing active plans
   await supabase
@@ -30,17 +29,17 @@ export async function POST(request: NextRequest) {
     .eq('status', 'active')
 
   // Generate plan via Claude
+  const startDate = format(nextMonday(new Date()), 'yyyy-MM-dd')
+
   const plan = await generateTrainingPlan({
     athleteName: profile.full_name ?? 'Athlete',
     goalRace: profile.goal_race,
     raceDate,
+    startDate,
     goalTime: profile.goal_time ?? 'finish strong',
     currentWeeklyMiles: profile.weekly_miles ?? 20,
     experience: profile.experience ?? 'intermediate',
-    availableDays,
   })
-
-  const startDate = format(nextMonday(new Date()), 'yyyy-MM-dd')
 
   // Save the plan
   const { data: savedPlan, error: planError } = await supabase

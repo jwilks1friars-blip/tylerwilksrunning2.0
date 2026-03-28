@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { athleteId, raceDate, goalRace, goalTime, startDate } = await request.json()
+    const { athleteId, raceDate, goalRace, goalTime, startDate, coachNotes } = await request.json()
 
     if (!athleteId) return NextResponse.json({ error: 'Missing athleteId' }, { status: 400 })
 
@@ -48,10 +48,11 @@ export async function POST(request: NextRequest) {
         athleteName: profile?.full_name ?? 'Athlete',
         goalRace: resolvedGoalRace,
         raceDate: resolvedRaceDate,
+        startDate: resolvedStartDate,
         goalTime: resolvedGoalTime,
         currentWeeklyMiles: profile?.weekly_miles ?? 20,
         experience: profile?.experience ?? 'intermediate',
-        availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        coachNotes: coachNotes ?? undefined,
       })
     } catch (aiError: any) {
       console.error('AI plan generation failed:', aiError)

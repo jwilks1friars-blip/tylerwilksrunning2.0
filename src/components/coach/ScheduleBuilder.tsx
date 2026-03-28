@@ -95,6 +95,7 @@ export default function ScheduleBuilder({
     goalTime: profile.goal_time ?? '',
     raceDate: '',
     startDate: format(addDays(new Date(), (8 - new Date().getDay()) % 7 || 7), 'yyyy-MM-dd'),
+    coachNotes: '',
   })
 
   // Workout modal
@@ -311,6 +312,23 @@ export default function ScheduleBuilder({
               </div>
             </div>
           </div>
+
+            <div>
+              <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>
+                Coaching Notes
+                <span className="ml-2 normal-case tracking-normal" style={{ color: '#c8c4c0' }}>
+                  — context for the AI (injuries, focus areas, schedule constraints)
+                </span>
+              </label>
+              <textarea
+                value={planForm.coachNotes}
+                onChange={e => setPlanForm(p => ({ ...p, coachNotes: e.target.value }))}
+                rows={4}
+                className="w-full px-3 py-2.5 text-sm bg-transparent outline-none resize-none leading-relaxed"
+                style={{ border: '1px solid #e0deda', color: '#1a1917' }}
+                placeholder="e.g. Athlete had IT band issues in January, cleared to run. Focus on easy aerobic base. Runs 5 days/week max. Tends to go out too fast on long runs."
+              />
+            </div>
 
           {error && <p className="text-xs mt-3" style={{ color: '#fc4c02' }}>{error}</p>}
 
