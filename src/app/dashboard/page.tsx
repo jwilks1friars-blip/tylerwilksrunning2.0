@@ -86,7 +86,7 @@ export default async function DashboardPage() {
   ])
 
   const { data: workouts } = plan
-    ? await supabase.from('workouts').select('id, completed, workout_type').eq('plan_id', plan.id)
+    ? await supabase.from('workouts').select('id, completed, workout_type, scheduled_date').eq('plan_id', plan.id)
     : { data: [] }
 
   const acts = activities ?? []
