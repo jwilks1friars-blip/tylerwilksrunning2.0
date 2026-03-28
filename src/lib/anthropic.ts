@@ -83,7 +83,8 @@ ATHLETE DETAILS:
 - Experience: ${params.experience}
 - Available Days: ${params.availableDays.join(', ')}
 
-Generate a week-by-week training plan. Return ONLY valid JSON in this exact format:
+Generate a week-by-week training plan. Return ONLY valid JSON with no extra text, no markdown, no code fences. Keep descriptions under 12 words each.
+
 {
   "totalWeeks": 16,
   "weeks": [
@@ -97,7 +98,7 @@ Generate a week-by-week training plan. Return ONLY valid JSON in this exact form
           "type": "easy",
           "distanceMiles": 6,
           "paceTarget": "easy, conversational",
-          "description": "Easy aerobic run. Keep HR below 140."
+          "description": "Easy aerobic run, HR below 140."
         }
       ]
     }
@@ -105,8 +106,8 @@ Generate a week-by-week training plan. Return ONLY valid JSON in this exact form
 }`
 
   const message = await getClient().messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 8000,
+    model: 'claude-sonnet-4-6',
+    max_tokens: 16000,
     messages: [{ role: 'user', content: prompt }],
   })
 
