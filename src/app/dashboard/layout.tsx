@@ -5,6 +5,9 @@ import { createClient } from '@/lib/supabase/server'
 import SignOutButton from '@/components/dashboard/SignOutButton'
 import DashboardMobileNav from '@/components/dashboard/DashboardMobileNav'
 import DashboardSidebarNav from '@/components/dashboard/DashboardSidebarNav'
+import DashboardBottomNav from '@/components/dashboard/DashboardBottomNav'
+import LogRunFAB from '@/components/dashboard/LogRunFAB'
+import PullToRefreshWrapper from '@/components/dashboard/PullToRefreshWrapper'
 import { Bell, Search, Settings, Zap } from 'lucide-react'
 import { redirect } from 'next/navigation'
 
@@ -164,11 +167,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </div>
         </header>
 
-        {/* Page content */}
-        <main className="flex-1 p-6 md:p-8 overflow-auto">
+        {/* Page content with pull-to-refresh on mobile */}
+        <PullToRefreshWrapper>
           {children}
-        </main>
+        </PullToRefreshWrapper>
       </div>
+
+      {/* Log Run FAB — mobile only */}
+      <LogRunFAB />
+
+      {/* Bottom tab bar — mobile only */}
+      <DashboardBottomNav initialUnread={unreadCount} isCoach={isCoach} />
     </div>
   )
 }

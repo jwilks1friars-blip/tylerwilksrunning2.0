@@ -85,7 +85,7 @@ export default async function RunsPage() {
             {acts.length} activities synced
           </p>
         </div>
-        <LogRunModal />
+        <div className="hidden md:block"><LogRunModal /></div>
       </div>
 
       {/* Personal Records */}

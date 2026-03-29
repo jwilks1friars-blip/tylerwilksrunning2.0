@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 import { getStravaActivity, metersToMiles, mpsToMinPerMile } from '@/lib/strava'
 import { postToSlack } from '@/lib/slack'
 import { autoCompleteWorkout } from '@/lib/autoCompleteWorkout'
+import { generateActivityInsight } from '@/lib/anthropic'
+import { format } from 'date-fns'
 
 // Strava calls GET to verify the webhook endpoint
 export async function GET(request: NextRequest) {
@@ -58,6 +60,46 @@ export async function POST(request: NextRequest) {
     started_at: activity.start_date,
     raw_data: activity,
   })
+
+  // Auto-generate AI insight for run activities
+  if (runTypes.includes(activity.type)) {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, goal_race, goal_time')
+        .eq('id', connection.user_id)
+        .single()
+
+      const { data: savedActivity } = await supabase
+        .from('activities')
+        .select('id')
+        .eq('strava_id', activity.id)
+        .single()
+
+      if (savedActivity) {
+        const insight = await generateActivityInsight({
+          athleteName: profile?.full_name ?? 'Athlete',
+          activityName: activity.name,
+          activityType: activity.type,
+          distanceMiles: metersToMiles(activity.distance),
+          pacePerMile: activity.average_speed ? mpsToMinPerMile(activity.average_speed) : '—',
+          avgHR: activity.average_heartrate ?? undefined,
+          elevationGain: activity.total_elevation_gain ?? undefined,
+          date: format(new Date(activity.start_date), 'EEEE MMM d'),
+          goalRace: profile?.goal_race ?? undefined,
+          goalTime: profile?.goal_time ?? undefined,
+        })
+
+        await supabase.from('activity_insights').upsert({
+          activity_id: savedActivity.id,
+          user_id: connection.user_id,
+          content: insight,
+        }, { onConflict: 'activity_id' })
+      }
+    } catch {
+      // Non-blocking
+    }
+  }
 
   // Notify coach via Slack for run activities
   const runTypes = ['Run', 'TrailRun', 'VirtualRun']

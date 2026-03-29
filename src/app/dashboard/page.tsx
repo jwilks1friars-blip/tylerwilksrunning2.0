@@ -14,6 +14,7 @@ import {
   Target,
   Timer,
   Activity,
+  Zap,
   ArrowUpRight,
   ArrowDownRight,
   ChevronRight,
@@ -167,6 +168,23 @@ export default async function DashboardPage() {
       color: ACTIVITY_COLORS[type] ?? CHART_COLORS[i % CHART_COLORS.length],
     }))
 
+  // Fitness score: exponentially weighted rolling load over 6 weeks
+  // Simple CTL approximation: weighted average of weekly miles (recent weeks weighted more)
+  const RUNNING_TYPES_SET = new Set(['Run', 'VirtualRun', 'TrailRun'])
+  const fitnessWeeklyMiles = Array.from({ length: 6 }, (_, i) => {
+    const wStart = addDays(currentWeekMonday, -(5 - i) * 7)
+    const wEnd = addDays(wStart, 7)
+    return acts
+      .filter(a => RUNNING_TYPES_SET.has(a.activity_type) && new Date(a.started_at) >= wStart && new Date(a.started_at) < wEnd)
+      .reduce((sum, a) => sum + metersToMiles(a.distance), 0)
+  })
+  // Weighted average: each week gets weight proportional to recency
+  const weights = [1, 2, 3, 4, 5, 6]
+  const totalWeight = weights.reduce((s, w) => s + w, 0)
+  const fitnessScore = Math.round(
+    fitnessWeeklyMiles.reduce((sum, mi, i) => sum + mi * weights[i], 0) / totalWeight * 10
+  ) / 10
+
   // Trend data
   const weekTrend = trendLabel(milesThisWeek, milesLastWeek)
   const runsTrend = trendLabel(thisWeekActs.length, lastWeekActs.length)
@@ -193,13 +211,30 @@ export default async function DashboardPage() {
               : 'Your personal running overview'}
           </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="hidden md:flex items-center gap-2 shrink-0">
           <LogRunModal />
         </div>
       </div>
 
-      {/* Stats Grid — 6 cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
+      {/* From Your Coach */}
+      {insight && (
+        <div className="p-5 rounded-lg mb-6" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea', borderLeft: '3px solid #fc4c02' }}>
+          <div className="flex items-baseline justify-between mb-3">
+            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6b6865' }}>
+              From Your Coach
+            </p>
+            <p className="text-xs" style={{ color: '#9c9895' }}>
+              {format(new Date(insight.week_start), 'MMM d')}
+            </p>
+          </div>
+          <p className="text-sm leading-7" style={{ color: '#3a3733', fontStyle: 'italic' }}>
+            &ldquo;{insight.content}&rdquo;
+          </p>
+        </div>
+      )}
+
+      {/* Stats Grid — 7 cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-3 mb-6">
 
         {/* This Week Miles */}
         <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
@@ -376,6 +411,22 @@ export default async function DashboardPage() {
             </>
           )}
         </div>
+        {/* Fitness Score */}
+        <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+          <div className="flex items-start justify-between mb-3">
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: '#f0eeec' }}>
+              <Zap size={14} style={{ color: '#3a3733' }} />
+            </div>
+          </div>
+          <p
+            className="text-2xl font-semibold tabular-nums leading-none mb-1"
+            style={{ fontFamily: 'var(--font-barlow-condensed)', color: '#1a1917' }}
+          >
+            {fitnessScore > 0 ? fitnessScore : '—'}
+          </p>
+          <p className="text-xs font-medium mb-0.5" style={{ color: '#3a3733' }}>Fitness Score</p>
+          <p className="text-xs" style={{ color: '#9c9895' }}>6-week load</p>
+        </div>
       </div>
 
       {/* Charts row */}
@@ -410,34 +461,8 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Bottom row: coach note + recent runs */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-
-        {/* Coach's weekly note */}
-        <div className="lg:col-span-2 p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
-          <div className="flex items-baseline justify-between mb-4">
-            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6b6865' }}>
-              From Your Coach
-            </p>
-            {insight && (
-              <p className="text-xs" style={{ color: '#9c9895' }}>
-                {format(new Date(insight.week_start), 'MMM d')}
-              </p>
-            )}
-          </div>
-          {insight ? (
-            <p className="text-sm leading-7" style={{ color: '#3a3733', fontStyle: 'italic' }}>
-              &ldquo;{insight.content}&rdquo;
-            </p>
-          ) : (
-            <p className="text-sm" style={{ color: '#9c9895' }}>
-              No note yet this week — check back soon.
-            </p>
-          )}
-        </div>
-
-        {/* Recent Runs */}
-        <div className="lg:col-span-3 p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
+      {/* Recent Runs */}
+      <div className="p-5 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}>
           <div className="flex items-center justify-between mb-4">
             <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6b6865' }}>
               Recent Runs
@@ -499,7 +524,7 @@ export default async function DashboardPage() {
             </div>
           )}
         </div>
-      </div>
     </div>
   )
 }
+

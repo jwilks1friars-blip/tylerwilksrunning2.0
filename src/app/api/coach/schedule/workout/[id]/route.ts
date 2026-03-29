@@ -27,6 +27,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       target_distance_miles: body.targetDistanceMiles || null,
       target_pace_desc: body.targetPaceDesc || null,
       description: body.description || null,
+      target_rpe: body.targetRpe || null,
+      hr_zone_target: body.hrZoneTarget || null,
+      race_prep: body.racePrep ?? false,
     })
     .eq('id', id)
     .select()

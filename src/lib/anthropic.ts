@@ -62,6 +62,43 @@ Write a 150-200 word coaching note. Be specific — reference actual workouts, a
   return (message.content[0] as { text: string }).text
 }
 
+export interface ActivityInsightParams {
+  athleteName: string
+  activityName: string
+  activityType: string
+  distanceMiles: number
+  pacePerMile: string
+  avgHR?: number
+  elevationGain?: number
+  cadence?: number
+  date: string
+  goalRace?: string
+  goalTime?: string
+}
+
+export async function generateActivityInsight(params: ActivityInsightParams): Promise<string> {
+  const hrNote = params.avgHR ? `, avg HR ${params.avgHR} bpm` : ''
+  const elevNote = params.elevationGain ? `, ${Math.round(params.elevationGain)}m elevation gain` : ''
+  const cadenceNote = params.cadence ? `, ${params.cadence} spm cadence` : ''
+  const goalNote = params.goalRace
+    ? `\nAthlete is training for ${params.goalRace}${params.goalTime ? ` with a goal of ${params.goalTime}` : ''}.`
+    : ''
+
+  const prompt = `You are an elite running coach. An athlete just completed a run and you're giving them a quick 2-3 sentence coaching note on this specific workout.
+
+Activity: ${params.activityName} — ${params.distanceMiles} miles @ ${params.pacePerMile}/mi${hrNote}${elevNote}${cadenceNote} on ${params.date}.${goalNote}
+
+Write 2-3 sentences. Be specific about the data. Comment on effort, pacing, HR zones if available (Z1<120, Z2 120-140, Z3 140-160, Z4 160-175, Z5>175). Tone: direct and encouraging. No bullet points. Do not start with "Great job" or generic praise.`
+
+  const message = await getClient().messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 150,
+    messages: [{ role: 'user', content: prompt }],
+  })
+
+  return (message.content[0] as { text: string }).text
+}
+
 interface PlanGenerationParams {
   athleteName: string
   goalRace: string

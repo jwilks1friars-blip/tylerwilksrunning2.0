@@ -7,6 +7,7 @@ import { subDays, format, differenceInCalendarWeeks } from 'date-fns'
 import Link from 'next/link'
 import InsightEditor from '@/components/coach/InsightEditor'
 import GenerateInsightButton from '@/components/coach/GenerateInsightButton'
+import AthleteProfileStats from '@/components/coach/AthleteProfileStats'
 import { notFound } from 'next/navigation'
 
 export default async function AthletePage({
@@ -126,43 +127,16 @@ export default async function AthletePage({
         </div>
       </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
-        {[
-          { label: 'Mi This Week', value: weeklyMiles.toFixed(1) },
-          { label: 'Goal Race', value: profile.goal_race ?? '—' },
-          { label: 'Goal Time', value: profile.goal_time ?? '—' },
-          {
-            label: 'Weeks to Race',
-            value: weeksUntilRace !== null ? String(weeksUntilRace) : '—',
-            sub: raceDate ? format(new Date(raceDate), 'MMM d, yyyy') : undefined,
-            highlight: weeksUntilRace !== null && weeksUntilRace <= 3,
-          },
-          { label: 'Strava', value: stravaConnection ? 'Connected' : 'Not connected' },
-        ].map(stat => (
-          <div
-            key={stat.label}
-            className="p-4"
-            style={{ backgroundColor: '#ffffff', border: '1px solid #ebebea' }}
-          >
-            <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#9c9895' }}>
-              {stat.label}
-            </p>
-            <p
-              className="text-sm font-medium"
-              style={{ color: (stat as any).highlight ? '#fc4c02' : '#1a1917' }}
-            >
-              {stat.value}
-              {stat.label === 'Weeks to Race' && weeksUntilRace !== null && (
-                <span className="font-normal" style={{ color: '#9c9895' }}> wks</span>
-              )}
-            </p>
-            {(stat as any).sub && (
-              <p className="text-xs mt-0.5" style={{ color: '#c8c4c0' }}>{(stat as any).sub}</p>
-            )}
-          </div>
-        ))}
-      </div>
+      {/* Stats row — Goal Race + Goal Time are editable */}
+      <AthleteProfileStats
+        athleteId={id}
+        weeklyMiles={weeklyMiles}
+        goalRace={profile.goal_race ?? null}
+        goalTime={profile.goal_time ?? null}
+        weeksUntilRace={weeksUntilRace}
+        raceDate={raceDate}
+        stravaConnected={!!stravaConnection}
+      />
 
       {/* Pending insights */}
       {pendingInsights.length > 0 && (

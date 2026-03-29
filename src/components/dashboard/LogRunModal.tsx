@@ -55,9 +55,19 @@ const labelStyle: React.CSSProperties = {
   marginBottom: '5px',
 }
 
-export default function LogRunModal({ onClose }: { onClose?: () => void }) {
+interface LogRunModalProps {
+  onClose?: () => void
+  externalOpen?: boolean
+  onExternalClose?: () => void
+}
+
+export default function LogRunModal({ onClose, externalOpen, onExternalClose }: LogRunModalProps) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (externalOpen !== undefined) setOpen(externalOpen)
+  }, [externalOpen])
   const [name, setName] = useState('')
   const [distance, setDistance] = useState('')
   const [pace, setPace] = useState('')
@@ -101,6 +111,8 @@ export default function LogRunModal({ onClose }: { onClose?: () => void }) {
     if (res.ok) {
       router.refresh()
       setOpen(false)
+      onExternalClose?.()
+      onClose?.()
       setName(''); setDistance(''); setPace(''); setStartedAt(defaultDateTimeLocal()); setActivityType('Run')
     } else {
       const data = await res.json()
@@ -123,7 +135,7 @@ export default function LogRunModal({ onClose }: { onClose?: () => void }) {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center"
           style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}
-          onClick={e => { if (e.target === e.currentTarget) setOpen(false) }}
+          onClick={e => { if (e.target === e.currentTarget) { setOpen(false); onExternalClose?.() } }}
         >
           <div
             className="w-full max-w-md mx-4 p-6 rounded-lg"
@@ -137,7 +149,7 @@ export default function LogRunModal({ onClose }: { onClose?: () => void }) {
                 Log a Run
               </h2>
               <button
-                onClick={() => setOpen(false)}
+                onClick={() => { setOpen(false); onExternalClose?.() }}
                 className="p-1 rounded transition-colors hover:bg-[#f5f4f2]"
                 style={{ color: '#9c9895' }}
               >
@@ -218,7 +230,7 @@ export default function LogRunModal({ onClose }: { onClose?: () => void }) {
 
               <div className="flex justify-end gap-2 pt-2">
                 <button
-                  onClick={() => setOpen(false)}
+                  onClick={() => { setOpen(false); onExternalClose?.() }}
                   className="px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded transition-colors hover:bg-[#f5f4f2]"
                   style={{ color: '#6b6865', border: '1px solid #e0deda' }}
                 >

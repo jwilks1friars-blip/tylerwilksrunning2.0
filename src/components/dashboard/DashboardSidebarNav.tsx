@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LayoutDashboard, Activity, CalendarDays, Settings, MessageSquare, UserCheck } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useUnreadCount } from '@/hooks/useUnreadCount'
 
 const NAV_SECTIONS = [
   {
@@ -34,22 +34,7 @@ interface Props {
 
 export default function DashboardSidebarNav({ initialUnread, isCoach }: Props) {
   const pathname = usePathname()
-  const [unreadCount, setUnreadCount] = useState(initialUnread)
-
-  useEffect(() => {
-    if (isCoach) return
-    const fetchUnread = async () => {
-      try {
-        const res = await fetch('/api/messages/unread-counts')
-        if (res.ok) {
-          const data = await res.json()
-          setUnreadCount(data.total ?? 0)
-        }
-      } catch { /* ignore */ }
-    }
-    const interval = setInterval(fetchUnread, 15_000)
-    return () => clearInterval(interval)
-  }, [isCoach])
+  const unreadCount = useUnreadCount(initialUnread, isCoach)
 
   const isActive = (href: string, exact: boolean) =>
     exact ? pathname === href : pathname.startsWith(href)

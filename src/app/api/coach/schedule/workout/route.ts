@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { planId, athleteId, scheduledDate, workoutType, targetDistanceMiles, targetPaceDesc, description } = await request.json()
+  const { planId, athleteId, scheduledDate, workoutType, targetDistanceMiles, targetPaceDesc, description, targetRpe, hrZoneTarget, racePrep } = await request.json()
 
   if (!planId || !athleteId || !scheduledDate || !workoutType) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -31,6 +31,9 @@ export async function POST(request: NextRequest) {
       target_distance_miles: targetDistanceMiles || null,
       target_pace_desc: targetPaceDesc || null,
       description: description || null,
+      target_rpe: targetRpe || null,
+      hr_zone_target: hrZoneTarget || null,
+      race_prep: racePrep ?? false,
       completed: false,
     })
     .select()

@@ -26,6 +26,12 @@ const TYPE_TEXT: Record<WorkoutType, string> = {
   race: '#fff',
 }
 
+const HR_ZONES = ['z1', 'z2', 'z3', 'z4', 'z5'] as const
+const HR_ZONE_LABELS: Record<string, string> = {
+  z1: 'Z1 Recovery (<120)', z2: 'Z2 Aerobic (120–140)', z3: 'Z3 Tempo (140–160)',
+  z4: 'Z4 Threshold (160–175)', z5: 'Z5 Max (175+)',
+}
+
 type Workout = {
   id: string
   scheduled_date: string
@@ -34,6 +40,9 @@ type Workout = {
   target_pace_desc: string | null
   description: string | null
   completed: boolean
+  target_rpe: number | null
+  hr_zone_target: string | null
+  race_prep: boolean | null
 }
 
 type Plan = {
@@ -65,6 +74,9 @@ const emptyWorkoutForm = {
   targetDistanceMiles: '',
   targetPaceDesc: '',
   description: '',
+  targetRpe: '',
+  hrZoneTarget: '',
+  racePrep: false,
 }
 
 export default function ScheduleBuilder({
@@ -185,6 +197,9 @@ export default function ScheduleBuilder({
       targetDistanceMiles: workout.target_distance_miles?.toString() ?? '',
       targetPaceDesc: workout.target_pace_desc ?? '',
       description: workout.description ?? '',
+      targetRpe: workout.target_rpe?.toString() ?? '',
+      hrZoneTarget: workout.hr_zone_target ?? '',
+      racePrep: workout.race_prep ?? false,
     })
     setWorkoutModal({ open: true, editing: workout, defaultDate: workout.scheduled_date })
   }
@@ -207,6 +222,9 @@ export default function ScheduleBuilder({
       targetDistanceMiles: workoutForm.targetDistanceMiles ? parseFloat(workoutForm.targetDistanceMiles) : null,
       targetPaceDesc: workoutForm.targetPaceDesc || null,
       description: workoutForm.description || null,
+      targetRpe: workoutForm.targetRpe ? parseInt(workoutForm.targetRpe) : null,
+      hrZoneTarget: workoutForm.hrZoneTarget || null,
+      racePrep: workoutForm.racePrep,
     }
 
     if (workoutModal.editing) {
@@ -505,6 +523,21 @@ export default function ScheduleBuilder({
                                 {workout.target_pace_desc}
                               </span>
                             )}
+                            {workout.target_rpe && (
+                              <span className="text-xs px-1.5 py-0.5 hidden md:inline" style={{ backgroundColor: '#f0eeec', color: '#6b6865', borderRadius: '2px' }}>
+                                RPE {workout.target_rpe}
+                              </span>
+                            )}
+                            {workout.hr_zone_target && (
+                              <span className="text-xs px-1.5 py-0.5 hidden lg:inline" style={{ backgroundColor: '#f0eeec', color: '#6b6865', borderRadius: '2px' }}>
+                                {workout.hr_zone_target.toUpperCase()}
+                              </span>
+                            )}
+                            {workout.race_prep && (
+                              <span className="text-xs px-1.5 py-0.5 hidden lg:inline" style={{ backgroundColor: '#fff8f0', color: '#b45309', borderRadius: '2px' }}>
+                                Race Prep
+                              </span>
+                            )}
                             {workout.description && (
                               <span className="text-xs hidden lg:block truncate max-w-xs" style={{ color: '#c8c4c0' }}>
                                 {workout.description}
@@ -792,6 +825,45 @@ export default function ScheduleBuilder({
                     style={{ border: '1px solid #e0deda', color: '#1a1917' }} placeholder="7:30/mi" />
                 </div>
               </div>
+
+              {/* RPE + HR Zone */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>
+                    Target RPE <span className="normal-case tracking-normal" style={{ color: '#c8c4c0' }}>(1–10)</span>
+                  </label>
+                  <select value={workoutForm.targetRpe}
+                    onChange={e => setWorkoutForm(p => ({ ...p, targetRpe: e.target.value }))}
+                    className="w-full px-3 py-2.5 text-sm bg-white outline-none"
+                    style={{ border: '1px solid #e0deda', color: '#1a1917' }}>
+                    <option value="">—</option>
+                    {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9c9895' }}>HR Zone</label>
+                  <select value={workoutForm.hrZoneTarget}
+                    onChange={e => setWorkoutForm(p => ({ ...p, hrZoneTarget: e.target.value }))}
+                    className="w-full px-3 py-2.5 text-sm bg-white outline-none"
+                    style={{ border: '1px solid #e0deda', color: '#1a1917' }}>
+                    <option value="">—</option>
+                    {HR_ZONES.map(z => <option key={z} value={z}>{HR_ZONE_LABELS[z]}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              {/* Race prep toggle */}
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" checked={workoutForm.racePrep}
+                  onChange={e => setWorkoutForm(p => ({ ...p, racePrep: e.target.checked }))}
+                  className="w-4 h-4" />
+                <span className="text-xs uppercase tracking-widest" style={{ color: '#9c9895' }}>
+                  Race prep workout
+                  <span className="ml-2 normal-case tracking-normal" style={{ color: '#c8c4c0' }}>
+                    — race-pace simulation
+                  </span>
+                </span>
+              </label>
 
               {/* Notes — bigger textarea */}
               <div>
