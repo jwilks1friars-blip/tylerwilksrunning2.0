@@ -40,7 +40,7 @@ function buildSignature(
   return crypto.createHmac('sha1', signingKey).update(baseString).digest('base64')
 }
 
-function makeOAuthParams(extra: Record<string, string> = {}) {
+function makeOAuthParams(extra: Record<string, string> = {}): Record<string, string> {
   return {
     oauth_consumer_key: GARMIN_CONSUMER_KEY,
     oauth_nonce: crypto.randomBytes(16).toString('hex'),

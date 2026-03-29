@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
   })
 
   // Auto-generate AI insight for run activities
+  const runTypes = ['Run', 'TrailRun', 'VirtualRun']
   if (runTypes.includes(activity.type)) {
     try {
       const { data: profile } = await supabase
@@ -102,7 +103,6 @@ export async function POST(request: NextRequest) {
   }
 
   // Notify coach via Slack for run activities
-  const runTypes = ['Run', 'TrailRun', 'VirtualRun']
   if (process.env.SLACK_WEBHOOK_COACH && runTypes.includes(activity.type)) {
     try {
       const { data: profile } = await supabase
